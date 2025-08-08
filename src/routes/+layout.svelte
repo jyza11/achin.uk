@@ -1,6 +1,5 @@
 <script lang="ts">
 	import '../app.postcss';
-	import { AppBar, Avatar } from '@skeletonlabs/skeleton';
 	// Highlight JS
 	import hljs from 'highlight.js/lib/core';
 	import 'highlight.js/styles/github-dark.css';
@@ -21,7 +20,7 @@
 	import { storePopup } from '@skeletonlabs/skeleton';
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 
-	import logo from '$lib/assets/IMG_0594.jpg';
+	import logo from '$lib/assets/IMG_3811.jpeg';
 
 	import { onMount } from 'svelte';
 	
@@ -68,7 +67,6 @@
 					</svg>
 				</button>
 				
-				<strong class="text-xl font-bold">Achin</strong>
 			</div>
 			<nav class="hidden md:flex space-x-4">
 				<!-- Header navigation items -->
@@ -80,13 +78,20 @@
 	<aside class="bg-surface-50-900-token  border-surface-300-600-token w-56 p-4 hidden md:block">
 		<nav class="space-y-2">
 			<a href="/" class="block px-4 py-2 rounded-lg hover:bg-surface-200-700-token transition-colors">
-				Home
+				
+					<div class="logo-section">
+						<img 
+							src={logo} 
+							alt="Site Logo" 
+							class="logo-image"
+						/>
+					</div>
 			</a>
 			<a href="/gallery" class="block px-4 py-2 rounded-lg hover:bg-surface-200-700-token transition-colors">
-				Gallery
+				藝術品
 			</a>
 			<a href="/about" class="block px-4 py-2 rounded-lg hover:bg-surface-200-700-token transition-colors">
-				About
+				關於
 			</a>
 		</nav>
 	</aside>
@@ -131,14 +136,14 @@
 					class="block px-4 py-2 rounded-lg hover:bg-surface-200-700-token transition-colors"
 					on:click={closeMobileMenu}
 				>
-					Gallery
+					藝術品
 				</a>
 				<a 
 					href="/about" 
 					class="block px-4 py-2 rounded-lg hover:bg-surface-200-700-token transition-colors"
 					on:click={closeMobileMenu}
 				>
-					About
+					關於
 				</a>
 			</nav>
 		</aside>

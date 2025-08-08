@@ -1,8 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
-	
 	// Dynamically import all images from the gallery folder
-	const imageModules = import.meta.glob('$lib/assets/*.{png,jpg,jpeg,gif,webp,svg}', {
+	const imageModules = import.meta.glob('$lib/assets/gallery/*.{png,jpg,jpeg,gif,webp,svg}', {
 		eager: true,
 		as: 'url'
 	});
@@ -55,39 +54,45 @@
 </script>
 
 <div class="gallery-container">
-	{#if isLoading}
-		<div class="skeleton-loader" aria-label="Loading image...">
-			<div class="skeleton-shimmer"></div>
-		</div>
-	{/if}
+	<!-- Logo Section -->
+
 	
-	{#if selectedImage && !imageError}
-		<img
-			src={selectedImage.src}
-			alt={selectedImage.alt}
-			class="gallery-image"
-			class:hidden={isLoading}
-			on:load={handleImageLoad}
-			on:error={handleImageError}
-		/>
-	{/if}
-	
-	{#if imageError}
-		<div class="error-state">
-			<p>Failed to load image</p>
-			<button on:click={loadRandomImage} class="retry-btn">
-				Try Another Image
-			</button>
-		</div>
-	{/if}
-	
-	<button 
-		on:click={loadRandomImage} 
-		class="random-btn"
-		disabled={isLoading}
-	>
-		{isLoading ? 'Loading...' : 'Show Random Image'}
-	</button>
+	<!-- Gallery Section -->
+	<div class="gallery-section">
+		{#if isLoading}
+			<div class="skeleton-loader" aria-label="Loading image...">
+				<div class="skeleton-shimmer"></div>
+			</div>
+		{/if}
+		
+		{#if selectedImage && !imageError}
+			<img
+				src={selectedImage.src}
+				alt={selectedImage.alt}
+				class="gallery-image"
+				class:hidden={isLoading}
+				on:load={handleImageLoad}
+				on:error={handleImageError}
+			/>
+		{/if}
+		
+		{#if imageError}
+			<div class="error-state">
+				<p>Failed to load image</p>
+				<button on:click={loadRandomImage} class="retry-btn">
+					Try Another Image
+				</button>
+			</div>
+		{/if}
+		
+		<button 
+			on:click={loadRandomImage} 
+			class="random-btn"
+			disabled={isLoading}
+		>
+			{isLoading ? 'Loading...' : 'Show Random Image'}
+		</button>
+	</div>
 </div>
 
 <style>
@@ -95,10 +100,29 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 1rem;
+		gap: 2rem;
 		max-width: 800px;
 		margin: 0 auto;
 		padding: 1rem;
+	}
+	
+	.logo-section {
+		text-align: center;
+	}
+	
+	.logo-image {
+		max-width: 200px;
+		height: auto;
+		border-radius: 8px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	}
+	
+	.gallery-section {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+		width: 100%;
 	}
 	
 	.gallery-image {
@@ -155,7 +179,7 @@
 	
 	.retry-btn,
 	.random-btn {
-		background: #007bff;
+		background: #d8dce1;
 		color: white;
 		border: none;
 		padding: 0.5rem 1rem;
@@ -167,11 +191,11 @@
 	
 	.retry-btn:hover,
 	.random-btn:hover:not(:disabled) {
-		background: #0056b3;
+		background: #3b3f42;
 	}
 	
 	.random-btn:disabled {
-		background: #6d7d6c;
+		background: #6c757d;
 		cursor: not-allowed;
 	}
 </style>
