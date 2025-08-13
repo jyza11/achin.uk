@@ -88,10 +88,19 @@
 					</div>
 			</a>
 			<a href="/gallery" class="block px-4 py-2 rounded-lg hover:bg-surface-200-700-token transition-colors">
-				藝術品
+				油畫
+			</a>
+			<a href="/sketch" class="block px-4 py-2 rounded-lg hover:bg-surface-200-700-token transition-colors">
+				鉛筆
 			</a>
 			<a href="/about" class="block px-4 py-2 rounded-lg hover:bg-surface-200-700-token transition-colors">
 				關於
+			</a>
+			<a href="/contact" class="block px-4 py-2 rounded-lg hover:bg-surface-200-700-token transition-colors">
+				 合作
+			</a>
+			<a href="/events" class="block px-4 py-2 rounded-lg hover:bg-surface-200-700-token transition-colors">
+				展覽
 			</a>
 		</nav>
 	</aside>
