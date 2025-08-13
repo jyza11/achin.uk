@@ -15,9 +15,15 @@ export default {
 		typography,
 		skeleton({
 			themes: {
+				custom: [
+					{
+						name: 'custom-theme',
+						enhancements: true,
+					},
+				],
 				preset: [
 					{
-						name: 'skeleton',
+						name: 'crimson',
 						enhancements: true,
 					},
 				],
