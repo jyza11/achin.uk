@@ -95,15 +95,18 @@
 
 	<!-- Desktop Sidebar -->
 	<aside class="bg-surface-50-900-token  border-surface-300-600-token w-56 p-4 hidden md:block">
-		<nav class="space-y-2">
+				<!-- Logo Section -->
 			<a href="/" class="block px-4 py-2 rounded-lg hover:bg-surface-200-700-token transition-colors">
-    	         <div class="logo-section">
-    	                 <img
-    	                         src={logo}
-    	                         alt="Site Logo"
-    	                         class="logo-image"
-    	                 />
-				 </div>
+				<div class="mb-6 text-center">
+					<img 
+						src={logo} 
+						alt="Site Logo" 
+						class="w-48 h-32 object-contain mx-auto"
+					/>
+				</div>
+			</a>
+		<nav class="space-y-2">
+
 			{#each navItems as item}
 				<a 
 					href={item.href} 
@@ -136,7 +139,7 @@
 		<!-- Mobile Sidebar -->
 		<aside class="fixed top-0 left-0 w-64 h-full bg-white dark:bg-gray-900  border-gray-200 dark:border-gray-700 z-50 md:hidden transform transition-transform duration-300 ease-in-out shadow-xl">
 			<div class="flex items-center justify-between p-4  border-gray-200 dark:border-gray-700">
-				<strong class="text-xl font-bold text-gray-900 dark:text-white">Menu</strong>
+				<strong class="text-xl font-bold text-gray-900 dark:text-white">Achin</strong>
 				<button 
 					class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
 					on:click={closeMobileMenu}
@@ -147,7 +150,15 @@
 					</svg>
 				</button>
 			</div>
-			
+			<a href="/" class="block px-4 py-2 rounded-lg hover:bg-surface-200-700-token transition-colors" on:click={closeMobileMenu}>
+				<div class="mb-6 text-center">
+					<img 
+						src={logo} 
+						alt="Site Logo" 
+						class="w-48 h-32 object-contain"
+					/>
+				</div>
+			</a>	
 			<nav class="p-4 space-y-2">
 				{#each navItems as item}
 					<a 
