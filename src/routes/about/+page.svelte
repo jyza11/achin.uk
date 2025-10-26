@@ -13,16 +13,19 @@
 		</figure>
 		<!-- / -->
 		<div class="flex justify-center space-x-2">
+			
 			<a
 				class="btn variant-filled"
 				href="/"
 				target="_blank"
 				rel="noreferrer"
 			>
-			donation 支持藝術家
+			用錢 支持藝術家
+			
 			</a>
 		</div>
-		<div class="space-y-2">
+		<div class="space-y-2  flex flex-col ">
+			我不在家就在去咖啡館的路上…… 雙叟 左岸 巴黎 花街…… 黃金海岸的比基尼…… 可憐我ㄧ雙Ferragamo的高跟鞋
 		</div>
 	</div>
 </div>
