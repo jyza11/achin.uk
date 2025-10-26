@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	// Dynamically import all images from the gallery folder
-	const imageModules = import.meta.glob('$lib/assets/gallery/*.{png,jpg,jpeg,gif,webp,svg}', {
+	const imageModules = import.meta.glob('$lib/assets/sketch/*.{png,jpg,jpeg,gif,webp,svg}', {
 		eager: true,
 		as: 'url'
 	});
