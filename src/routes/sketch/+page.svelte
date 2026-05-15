@@ -128,8 +128,6 @@
 	.gallery-image {
 		max-width: 100%;
 		height: auto;
-		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-		transition: opacity 0.3s ease;
 	}
 	
 	.gallery-image.hidden {
