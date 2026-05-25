@@ -20,5 +20,6 @@ Thumbs.db
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# Netlify
+# Netlify — ignore build artifacts but keep the site link
 .netlify/*
+!.netlify/state.json

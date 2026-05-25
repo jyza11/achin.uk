@@ -81,10 +81,24 @@ Adjust CSP when adding Stripe.js and any analytics.
 
 ## 🟢 Low Severity Findings
 
-### L1 — Unused `adapter-auto` in devDependencies
-**Location:** `package.json` line 17 — `@sveltejs/adapter-auto`
-**Why low:** `svelte.config.js` uses `adapter-netlify`, so `adapter-auto` is dead weight. Not a security issue, but unused deps = larger attack surface and slower `npm install`.
-**Fix:** `npm uninstall @sveltejs/adapter-auto`.
+### L1 — Dependency Drift Risk (caret ranges + no version pinning)
+**Location:** `package.json` devDependencies — most use `^` (caret) ranges, allowing minor upgrades on every fresh install
+**What happens:** A fresh `npm install` (especially after deleting `package-lock.json`) can resolve to versions with peer-dep conflicts. This session triggered exactly that — `vite` escalated to v8 via newer `vite-plugin-svelte`, breaking the install.
+**Fix:**
+- `.nvmrc` pins Node version ✅ (added 2026-05-25)
+- `engines` field in `package.json` ✅ (added 2026-05-25)
+- `engine-strict=true` in `.npmrc` ✅ (added 2026-05-25)
+- Keep `package-lock.json` committed; use `npm ci` for reproducible installs
+- Never delete the lockfile without a recovery plan (e.g. `git checkout deploy -- package-lock.json`)
+
+### L1b — Earlier audit gave wrong fix advice (corrected)
+**Previous claim:** "Drop `adapter-auto` — `svelte.config.js` uses `adapter-netlify`."
+**Reality:** `svelte.config.js` actually imports from `@sveltejs/adapter-auto`. The earlier advice would break the build. Reading 5 files isn't enough — must `grep -r "from '@sveltejs/adapter"` to verify imports before recommending uninstall.
+**Lesson for future audits:** Before any "remove this package" recommendation, run:
+```
+grep -rE "from ['\"]@?package-name" src/ *.config.* *.ts *.js
+```
+If grep returns matches, do NOT recommend uninstall.
 
 ### L2 — No `SECURITY.md` Vulnerability Reporting Policy
 **Why low:** Project is private (no GitHub remote) and small. If you ever make it public, add `SECURITY.md` with a contact email so finders can report responsibly.
@@ -184,6 +198,25 @@ Not reviewed (no relevant code yet):
 - Database queries (no DB)
 - Authentication logic (no accounts)
 - Image upload handlers (none)
+
+---
+
+## Audit History
+
+Add a new entry every time a dependency audit is run, or whenever a finding is resolved/added.
+
+### 2026-05-25 — Initial dependency hardening
+- Added `.nvmrc` pinning Node 22 LTS
+- Added `engines` field to `package.json` (node 22.x, npm ≥10)
+- Extended `.npmrc` with `audit-level=moderate`, `save-prefix=~`
+- Tightened `.gitignore` for `.netlify/*` (keep `state.json`)
+- Corrected previous incorrect L1 (the bad "uninstall adapter-auto" advice)
+- See `docs/dependencies/RUNBOOK.md` for the recurring procedure
+
+### 2026-05-15 — Initial audit
+- 7 findings catalogued (later corrected; L1 was wrong, see L1b)
+- `netlify.toml` security headers added
+- No critical findings at time of audit
 
 ---
 
