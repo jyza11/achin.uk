@@ -22,4 +22,3 @@ vite.config.ts.timestamp-*
 
 # Netlify
 .netlify/*
-!.netlify/state.json
