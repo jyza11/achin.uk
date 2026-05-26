@@ -22,4 +22,9 @@ vite.config.ts.timestamp-*
 
 # Netlify — ignore build artifacts but keep the site link
 .netlify/*
-!.netlify/state.json
+
+# ignore node env
+.npmrc
+.nvmrc 
+
+
