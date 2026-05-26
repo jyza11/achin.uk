@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Current Exhibition — Quiet Hours · Eloise Marchand</title>
+<meta name="description" content="Quiet Hours — a cycle of 22 oils made over three winters in Brittany. Galerie Saint-Louis, Paris." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" />
+<link rel="stylesheet" href="assets/styles.css" />
+<script src="assets/image-slot.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="meta-left">
+      <span><span class="dot"></span>&nbsp;Open today · 10—18h</span>
+      <span class="sep" style="opacity:.5">·</span>
+      <span>Paris · Île Saint-Louis</span>
+    </div>
+    <a class="wordmark" href="index.html">Eloise <span class="amp">&amp;</span> Marchand</a>
+    <div class="meta-right">
+      <span>EN · FR</span>
+      <span style="opacity:.5">·</span>
+      <span>Est. MMVII</span>
+    </div>
+    <button class="menu-btn" id="menuBtn" aria-label="Menu"><span></span></button>
+  </div>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="works.html">Works</a>
+      <a href="exhibition.html" class="active">Current Exhibition</a>
+      <a href="studio.html">Studio &amp; Practice</a>
+      <a href="press.html">Press &amp; CV</a>
+      <a href="visit.html">Visit</a>
+      <a href="visit.html#contact">Contact</a>
+    </div>
+  </nav>
+</header>
+<section class="band">
+  <div class="section-head">
+    <div>
+      <span class="section-num">I. — Now on view</span>
+      <h2 class="section-title">Current <em>Exhibition</em></h2>
+    </div>
+    <div class="section-aside">14 May — 27 July 2026<br />Galerie Saint-Louis, Paris</div>
+  </div>
+  <div class="exhibition">
+    <div class="exhibition-img">
+      <image-slot id="exh-hero"
+        shape="rect"
+        placeholder="Exhibition install shot — 16:11 ratio · room view of the show">
+        <div class="canvas-art ca-2"></div>
+      </image-slot>
+    </div>
+    <div class="exh-meta">
+      <div>
+        <div class="exh-kicker">Solo Exhibition · 22 works</div>
+        <h3 class="exh-title">Quiet Hours</h3>
+        <p class="exh-blurb">A cycle of paintings made over three winters in Brittany — domestic interiors, distant tides, and the slow attention of long afternoons. Accompanied by a printed monograph with an essay by Marc Lévêque.</p>
+      </div>
+      <dl class="exh-details">
+        <div><dt>Curator</dt><dd>Hélène Boucher</dd></div>
+        <div><dt>Catalogue</dt><dd>136pp, hardback</dd></div>
+        <div><dt>Opening</dt><dd>13 May, 18h00</dd></div>
+        <div><dt>Admission</dt><dd>Free of charge</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section class="band" style="padding-top:0">
+  <div class="page-cta">
+    <p>The exhibition continues at Galerie Saint-Louis through 27 July. For press enquiries or to arrange a private viewing, please write to <a href="mailto:press@eloisemarchand.fr">press@eloisemarchand.fr</a>.</p>
+    <div class="hero-actions">
+      <a class="btn primary" href="works.html">View Selected Works <span class="arrow"></span></a>
+      <a class="btn" href="visit.html">Plan a visit</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-inner">
+    <div class="foot-top">
+      <div>
+        <div class="foot-mark">Eloise <span class="amp">&amp;</span><br />Marchand</div>
+        <p>Painter of interiors, weather and the slow hour. Working from Paris &amp; the Breton coast.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="works.html">Selected Works</a></li>
+          <li><a href="exhibition.html">Current Exhibition</a></li>
+          <li><a href="studio.html">Studio &amp; Practice</a></li>
+          <li><a href="press.html">Press &amp; CV</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Visit</h4>
+        <ul>
+          <li><a href="visit.html">Plan a visit</a></li>
+          <li><a href="visit.html#contact">Contact</a></li>
+          <li><a href="#">Private viewings</a></li>
+          <li><a href="#">Commissions</a></li>
+        </ul>
+      </div>
+      <div class="news">
+        <h4>Letter from the studio</h4>
+        <p>Four times a year. New works, exhibition notices, and the occasional note on what is being read in the studio.</p>
+        <form class="news-form" onsubmit="event.preventDefault(); this.querySelector('input').value=''; this.querySelector('button').textContent='Merci ✦';">
+          <input type="email" placeholder="your address" />
+          <button type="submit">Subscribe ↗</button>
+        </form>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div>© MMXXVI Eloise Marchand · All rights reserved · Tous droits réservés</div>
+      <div class="right">Site by Atelier Vincennes · Photography by Émile Caron</div>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

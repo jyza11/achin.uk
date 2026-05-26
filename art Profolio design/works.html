@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Selected Works — Catalogue Raisonné · Eloise Marchand</title>
+<meta name="description" content="Selected paintings, 2020 — 2026. Oil on linen." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" />
+<link rel="stylesheet" href="assets/styles.css" />
+<script src="assets/image-slot.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="meta-left">
+      <span><span class="dot"></span>&nbsp;Open today · 10—18h</span>
+      <span class="sep" style="opacity:.5">·</span>
+      <span>Paris · Île Saint-Louis</span>
+    </div>
+    <a class="wordmark" href="index.html">Eloise <span class="amp">&amp;</span> Marchand</a>
+    <div class="meta-right">
+      <span>EN · FR</span>
+      <span style="opacity:.5">·</span>
+      <span>Est. MMVII</span>
+    </div>
+    <button class="menu-btn" id="menuBtn" aria-label="Menu"><span></span></button>
+  </div>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="works.html" class="active">Works</a>
+      <a href="exhibition.html">Current Exhibition</a>
+      <a href="studio.html">Studio &amp; Practice</a>
+      <a href="press.html">Press &amp; CV</a>
+      <a href="visit.html">Visit</a>
+      <a href="visit.html#contact">Contact</a>
+    </div>
+  </nav>
+</header>
+<section class="band">
+  <div class="section-head">
+    <div>
+      <span class="section-num">II. — Catalogue raisonné</span>
+      <h2 class="section-title">Selected <em>Works</em></h2>
+    </div>
+    <div class="section-aside">
+      Oils 2020 — 2026 · 42 in catalogue<br />Tap any plate for the wall label
+    </div>
+  </div>
+  <div class="works" id="worksGrid">
+    <!-- works rendered by works.js -->
+  </div>
+</section>
+
+<!-- ──────────────────── LIGHTBOX ──────────────────── -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">✕</button>
+  <div class="lb-inner">
+    <div class="lb-art" id="lbArt"></div>
+    <div class="lb-meta">
+      <div class="lb-counter" id="lbCounter">Plate · 01 / 07</div>
+      <div class="kk" id="lbKicker">Oil on linen · Catalogue n° 47</div>
+      <h3 id="lbTitle">Vespers, an Open Window</h3>
+      <p id="lbDesc">A southwest-facing interior at the close of day; the room half-empty, the linen curtain held briefly against the warmth.</p>
+      <dl class="lb-spec">
+        <div><dt>Medium</dt><dd id="lbMedium">Oil on Belgian linen</dd></div>
+        <div><dt>Dimensions</dt><dd id="lbDim">146 × 114 cm</dd></div>
+        <div><dt>Year</dt><dd id="lbYear">2025</dd></div>
+        <div><dt>Status</dt><dd id="lbStatus">Available · enquire</dd></div>
+      </dl>
+      <div class="lb-nav">
+        <button id="lbPrev">← Previous</button>
+        <button id="lbNext">Next →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/works.js"></script>
+
+<footer>
+  <div class="foot-inner">
+    <div class="foot-top">
+      <div>
+        <div class="foot-mark">Eloise <span class="amp">&amp;</span><br />Marchand</div>
+        <p>Painter of interiors, weather and the slow hour. Working from Paris &amp; the Breton coast.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="works.html">Selected Works</a></li>
+          <li><a href="exhibition.html">Current Exhibition</a></li>
+          <li><a href="studio.html">Studio &amp; Practice</a></li>
+          <li><a href="press.html">Press &amp; CV</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Visit</h4>
+        <ul>
+          <li><a href="visit.html">Plan a visit</a></li>
+          <li><a href="visit.html#contact">Contact</a></li>
+          <li><a href="#">Private viewings</a></li>
+          <li><a href="#">Commissions</a></li>
+        </ul>
+      </div>
+      <div class="news">
+        <h4>Letter from the studio</h4>
+        <p>Four times a year. New works, exhibition notices, and the occasional note on what is being read in the studio.</p>
+        <form class="news-form" onsubmit="event.preventDefault(); this.querySelector('input').value=''; this.querySelector('button').textContent='Merci ✦';">
+          <input type="email" placeholder="your address" />
+          <button type="submit">Subscribe ↗</button>
+        </form>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div>© MMXXVI Eloise Marchand · All rights reserved · Tous droits réservés</div>
+      <div class="right">Site by Atelier Vincennes · Photography by Émile Caron</div>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>
