@@ -92,7 +92,7 @@ See `PLAN.md` for the full phased roadmap and what to do today.
 
 - `body { overflow: hidden }` in `app.postcss` — breaks mobile scroll
 - `alert()` calls in `DonationCard.svelte` — swap for Skeleton Toast
-- `adapter-auto` still in `package.json` devDeps — safe to remove
+- Both `adapter-auto` AND `adapter-netlify` in devDeps — `svelte.config.js` currently uses `adapter-auto`. Decide whether to consolidate (see Decision Log in PLAN.md)
 
 ## 9. Secrets / Env Vars
 
@@ -121,6 +121,21 @@ netlify deploy --prod       # push to achin.uk
 ```
 
 **For other AI agents:** Do NOT add a git remote or push to GitHub without owner approval. CLI-only is intentional.
+
+## 9c. Dependency Management — Hard Rules
+
+Learned from a real incident on 2026-05-25 where bad advice broke the install for hours.
+
+1. **NEVER delete `package-lock.json`** without a clear recovery plan. If you must regenerate, first run `git checkout deploy -- package-lock.json` to restore the version set that ships to production.
+2. **Use `npm ci`, not `npm install`** for fresh installs. `npm ci` respects the lockfile exactly; `npm install` may upgrade peer-dep transitives and create conflicts.
+3. **BEFORE recommending `npm uninstall <pkg>`** — verify nothing imports from it:
+   ```
+   grep -rE "from ['\"]@?<pkg-name>" src/ *.config.* *.ts *.js
+   ```
+   If grep returns any match, do NOT recommend uninstall.
+4. **Node is pinned to v22.x** via `.nvmrc` + `engines` + `engine-strict=true`. Do not deviate. If you need a different Node, document why in PLAN.md decision log first.
+5. **Dependency audits** — see `docs/dependencies/RUNBOOK.md`. Quarterly cadence. Findings recorded in `SECURITY-AUDIT.md` Audit History section.
+6. **Caret ranges (`^`) are kept** in `package.json` for the existing dep tree (because lockfile pins exact versions). When ADDING a new dep, `.npmrc` saves it with `~` (patch-only) by default — leave that alone.
 
 ## 10. When Stuck or Unsure
 
