@@ -5,55 +5,41 @@
 	export let works: Work[] = [];
 	export let limit: number | null = null;
 
-	// Cycle through w-1..w-7 span classes for visual rhythm
-	const spanPattern = ['w-1', 'w-2', 'w-3', 'w-4', 'w-5', 'w-6', 'w-7'];
-
-	$: visible = limit ? works.slice(0, limit) : works;
+	// `=== null` so a limit of 0 still acts as "show none" (avoids the falsy-zero bug)
+	$: visible = limit !== null && limit !== undefined ? works.slice(0, limit) : works;
 
 	function openLightbox(index: number) {
 		lightboxStore.open(visible, index);
 	}
+
+	function handleKey(event: KeyboardEvent, index: number) {
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			openLightbox(index);
+		}
+	}
 </script>
 
+<!--
+	REBUILD: simple uniform grid, plain <img>, explicit pixel-height frame.
+	No aspect-ratio percent-resolution, no .w-N asymmetric spans, no
+	background-image-on-empty-div. Once we confirm images render reliably
+	we can layer the asymmetric editorial layout back on top.
+-->
 <div class="works">
-	{#each visible as work, i}
-		<button
-			type="button"
-			class="work {spanPattern[i % spanPattern.length]}"
+	{#each visible as work, i (work.src)}
+		<div
+			class="work"
+			role="button"
+			tabindex="0"
 			on:click={() => openLightbox(i)}
+			on:keydown={(event) => handleKey(event, i)}
 			aria-label="View {work.title}"
 		>
 			<div class="frame">
-				<img src={work.src} alt={work.alt} />
+				<img src={work.src} alt={work.alt} loading="lazy" />
 			</div>
-			<div class="label">
-				<span class="t">{work.title}</span>
-				{#if work.year}
-					<span class="y">{work.year}</span>
-				{/if}
-			</div>
-			{#if work.medium || work.sold}
-				<div class="meta">
-					{work.medium}
-					{#if work.sold}<span class="sold">Sold</span>{/if}
-				</div>
-			{/if}
-		</button>
+			<div class="label">{work.title}</div>
+		</div>
 	{/each}
 </div>
-
-<style>
-	.work {
-		background: none;
-		border: 0;
-		padding: 0;
-		font: inherit;
-		color: inherit;
-		text-align: left;
-	}
-	.frame img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-</style>

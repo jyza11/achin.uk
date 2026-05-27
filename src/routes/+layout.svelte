@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.postcss';
 
-	// Highlight JS (kept as infrastructure from Skeleton UI)
+	// Highlight JS (Skeleton infrastructure — keep)
 	import hljs from 'highlight.js/lib/core';
 	import 'highlight.js/styles/github-dark.css';
 	import { storeHighlightJs } from '@skeletonlabs/skeleton';
@@ -16,31 +16,27 @@
 	hljs.registerLanguage('typescript', typescript);
 	storeHighlightJs.set(hljs);
 
-	// Floating UI for popups (kept as infrastructure)
+	// Floating UI for Popups (Skeleton infrastructure — keep)
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import Lightbox from '$lib/components/Lightbox.svelte';
 
 	const navItems = [
-		{ href: '/gallery', label: '油畫' },
-		{ href: '/sketch', label: '素描' },
-		{ href: '/about', label: '關於' },
-		{ href: '/contact', label: '合作' },
-		{ href: '/events', label: '展覽' }
+		{ href: '/gallery', label: '油畫', romaji: 'Paintings' },
+		{ href: '/sketch',  label: '素描', romaji: 'Sketches' },
+		{ href: '/about',   label: '關於', romaji: 'About' },
+		{ href: '/contact', label: '合作', romaji: 'Contact' },
+		{ href: '/events',  label: '展覽', romaji: 'Exhibitions' }
 	];
 
 	let menuOpen = false;
 
-	function toggleMenu() {
-		menuOpen = !menuOpen;
-	}
-
-	function closeMenu() {
-		menuOpen = false;
-	}
+	function toggleMenu() { menuOpen = !menuOpen; }
+	function closeMenu()  { menuOpen = false; }
 
 	onMount(() => {
 		function handleKeydown(event: KeyboardEvent) {
@@ -53,78 +49,81 @@
 	$: currentPath = $page.url.pathname;
 </script>
 
-<header class="topbar">
-	<div class="topbar-inner">
-		<div class="meta-left">
-			<span><span class="dot"></span>&nbsp;Open today · 10—18h</span>
-			<span class="sep" style="opacity:.5">·</span>
-			<span>Taipei · Studio</span>
-		</div>
-		<a class="wordmark zh" href="/">Achin</a>
-		<div class="meta-right">
-			<span>中 · EN</span>
-			<span style="opacity:.5">·</span>
-			<span>Est. MMXXIV</span>
-		</div>
-		<button class="menu-btn" on:click={toggleMenu} aria-label="Menu">
-			<span></span>
-		</button>
-	</div>
-	<nav class="nav" class:open={menuOpen}>
-		<div class="nav-inner">
-			{#each navItems as item}
-				<a
-					href={item.href}
-					class="zh"
-					class:active={currentPath === item.href}
-					on:click={closeMenu}
-				>
-					{item.label}
-				</a>
-			{/each}
-		</div>
-	</nav>
+<!-- Mobile topbar — only renders on mobile (CSS controls display) -->
+<header class="pf-topbar-mobile">
+	<a href="/" class="pf-wordmark-small" on:click={closeMenu}>Achin</a>
+	<button class="pf-menu-btn" on:click={toggleMenu} aria-label="Open menu">
+		<span></span>
+	</button>
 </header>
 
-<main>
-	<slot />
-</main>
+<!-- Mobile backdrop (visible only when drawer is open on mobile) -->
+<button
+	class="pf-sidebar-backdrop"
+	class:open={menuOpen}
+	on:click={closeMenu}
+	aria-label="Close menu"
+	tabindex={menuOpen ? 0 : -1}
+></button>
 
-<footer>
-	<div class="foot-inner">
-		<div class="foot-top">
-			<div class="foot-mark">
-				Achin
-				<p>Painter of quiet hours and stolen afternoons.</p>
-			</div>
-			<div>
-				<h4>Explore</h4>
-				<ul>
-					{#each navItems as item}
-						<li><a href={item.href}>{item.label}</a></li>
-					{/each}
-				</ul>
-			</div>
-			<div>
-				<h4>Studio</h4>
-				<ul>
-					<li>Taipei</li>
-					<li>By appointment</li>
-					<li><a href="/contact">合作 · Contact</a></li>
-				</ul>
-			</div>
-			<div class="news">
-				<h4>Newsletter</h4>
-				<p>Occasional notes — new work, openings, slow letters.</p>
-				<form class="news-form" on:submit|preventDefault>
-					<input type="email" placeholder="your email" aria-label="Email" />
-					<button type="submit">Subscribe</button>
-				</form>
-			</div>
-		</div>
-		<div class="foot-bottom">
-			<div>© Achin {new Date().getFullYear()} · All works copyright the artist</div>
-			<div class="right">Site by hand · No tracking</div>
-		</div>
+<!-- Sidebar — fixed on desktop, slides in on mobile -->
+<aside class="pf-sidebar" class:open={menuOpen}>
+	<a href="/" class="pf-sidebar-wordmark" on:click={closeMenu}>Achin</a>
+	<span class="pf-sidebar-tag">Painter · Studio</span>
+
+	<nav class="pf-sidebar-nav" aria-label="Primary">
+		<div class="pf-sidebar-section">Index</div>
+		{#each navItems as item}
+			<a
+				href={item.href}
+				class:active={currentPath === item.href}
+				on:click={closeMenu}
+			>
+				<span>{item.label}</span>
+				<span class="romaji">{item.romaji}</span>
+			</a>
+		{/each}
+	</nav>
+
+	<div class="pf-sidebar-foot">
+		© Achin {new Date().getFullYear()}<br />
+		Studio · Taipei
 	</div>
-</footer>
+</aside>
+
+<!-- Main content — offset to make room for the fixed sidebar -->
+<div class="pf-content">
+	<main class="pf-main">
+		<slot />
+	</main>
+
+	<footer class="pf-footer">
+		<div>© Achin {new Date().getFullYear()} · All works copyright the artist</div>
+		<div class="right">By appointment · Taipei</div>
+	</footer>
+</div>
+
+<!-- Lightbox mounted once globally; renders nothing while closed -->
+<Lightbox />
+
+<style>
+	.pf-content {
+		margin-left: 220px;
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+	}
+	.pf-main {
+		flex: 1;
+		padding: 24px;
+		min-width: 0;
+	}
+	@media (max-width: 768px) {
+		.pf-content {
+			margin-left: 0;
+		}
+		.pf-main {
+			padding: 16px;
+		}
+	}
+</style>

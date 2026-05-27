@@ -5,8 +5,7 @@
 	let submitted = false;
 
 	function handleSubmit() {
-		// Wire this up to your form backend (Netlify Forms, Formspree, etc.)
-		// For now, just acknowledge in-page.
+		// TODO: wire to your backend (Netlify Forms / Formspree / etc.)
 		submitted = true;
 	}
 </script>
@@ -49,37 +48,81 @@
 			<div class="row"><span class="k">Instagram</span><span class="v">@achin.studio</span></div>
 
 			{#if !submitted}
-				<form on:submit|preventDefault={handleSubmit} style="margin-top: 24px; display: flex; flex-direction: column; gap: 14px;">
-					<input
-						type="text"
-						bind:value={name}
-						placeholder="Your name"
-						required
-						style="background: transparent; border: 0; border-bottom: 1px solid var(--rule); padding: 8px 0; font-family: var(--serif); font-size: 16px; color: var(--ink); outline: none;"
-					/>
-					<input
-						type="email"
-						bind:value={email}
-						placeholder="Your email"
-						required
-						style="background: transparent; border: 0; border-bottom: 1px solid var(--rule); padding: 8px 0; font-family: var(--serif); font-size: 16px; color: var(--ink); outline: none;"
-					/>
-					<textarea
-						bind:value={message}
-						placeholder="Message"
-						required
-						rows="4"
-						style="background: transparent; border: 0; border-bottom: 1px solid var(--rule); padding: 8px 0; font-family: var(--serif); font-size: 16px; color: var(--ink); outline: none; resize: vertical;"
-					></textarea>
-					<button type="submit" class="btn primary" style="align-self: flex-start;">
+				<form class="contact-form" on:submit|preventDefault={handleSubmit}>
+					<label class="field">
+						<span class="field-label">Name</span>
+						<input type="text" bind:value={name} required autocomplete="name" />
+					</label>
+					<label class="field">
+						<span class="field-label">Email</span>
+						<input type="email" bind:value={email} required autocomplete="email" />
+					</label>
+					<label class="field">
+						<span class="field-label">Message</span>
+						<textarea bind:value={message} required rows="4"></textarea>
+					</label>
+					<button type="submit" class="btn primary">
 						Send <span class="arrow"></span>
 					</button>
 				</form>
 			{:else}
-				<p style="margin-top: 24px; font-family: var(--serif); font-style: italic; color: var(--oxblood-ink);">
-					Thank you — your message has been noted. A reply will follow within a few days.
+				<p class="thanks">
+					Thank you — your note has been received. A reply will follow within a few days.
 				</p>
 			{/if}
 		</div>
 	</div>
 </section>
+
+<style>
+	.contact-form {
+		margin-top: 28px;
+		padding-top: 24px;
+		border-top: 1px solid rgba(201, 191, 168, 0.5);
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
+	}
+	.field {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	.field-label {
+		font-family: var(--mono);
+		font-size: 10px;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--ink-3);
+	}
+	.field input,
+	.field textarea {
+		background: transparent;
+		border: 0;
+		border-bottom: 1px solid var(--rule);
+		padding: 6px 0;
+		font-family: var(--serif);
+		font-size: 16px;
+		color: var(--ink);
+		outline: none;
+		transition: border-color 0.2s ease;
+	}
+	.field input:focus,
+	.field textarea:focus {
+		border-bottom-color: var(--oxblood);
+	}
+	.field textarea {
+		resize: vertical;
+		font-family: var(--serif);
+		line-height: 1.55;
+	}
+	.thanks {
+		margin-top: 28px;
+		padding-top: 24px;
+		border-top: 1px solid rgba(201, 191, 168, 0.5);
+		font-family: var(--serif);
+		font-style: italic;
+		font-size: 17px;
+		color: var(--oxblood-ink);
+	}
+</style>
