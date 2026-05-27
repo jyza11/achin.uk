@@ -17,18 +17,19 @@
 
 	<div class="statement">
 		<div class="statement-portrait">
-			<img src={profilePic} alt="The artist" style="width:100%;height:100%;object-fit:cover;" />
+			<img src={profilePic} alt="The artist" />
 		</div>
 		<div>
 			<p class="pq">
 				我不在家就在去咖啡館的路上 — 雙叟 · 左岸 · 巴黎 · 花街 — 黃金海岸的比基尼 — 可憐我一雙 Ferragamo 的高跟鞋。
 			</p>
 			<p>
-				A practice built on slow looking. Oil on linen, graphite on paper, and the long hours between. Light, weather, and the corners of rooms held still long enough to draw out the hour before the room forgets itself.
+				A practice built on slow looking. Oil on linen, graphite on paper, and the long hours between — light, weather, and the corners of rooms held still long enough to draw out the hour before the room forgets itself.
 			</p>
 			<p>
-				Working from life and from memory. Sittings at the café, drawings in the morning, paintings revisited in the studio after the day has cooled. Solo and collaborative shows in Taipei and abroad — see <a href="/events" style="color: oklch(0.85 0.10 35); border-bottom: 1px solid currentColor;">展覽</a> for current and forthcoming.
+				Working from life and from memory. Sittings at the café, drawings in the morning, paintings revisited in the studio after the day has cooled.
 			</p>
+
 			<div class="statement-meta">
 				<div><span class="k">Born</span><span class="v">Taipei</span></div>
 				<div><span class="k">Based</span><span class="v">Studio · Taipei</span></div>
