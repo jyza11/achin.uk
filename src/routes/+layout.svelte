@@ -23,6 +23,7 @@
 
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import Lightbox from '$lib/components/Lightbox.svelte';
 
 	const navItems = [
 		{ href: '/gallery', label: '油畫', romaji: 'Paintings' },
@@ -101,6 +102,9 @@
 		<div class="right">By appointment · Taipei</div>
 	</footer>
 </div>
+
+<!-- Lightbox mounted once globally; renders nothing while closed -->
+<Lightbox />
 
 <style>
 	.pf-content {

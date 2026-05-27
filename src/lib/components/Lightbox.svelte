@@ -1,50 +1,69 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
+	import { browser } from '$app/environment';
+	import { beforeNavigate } from '$app/navigation';
 	import { lightboxStore } from '$lib/stores/lightbox';
-	import type { Work } from '$lib/data/works';
 
-	let state: { isOpen: boolean; works: Work[]; index: number } = { isOpen: false, works: [], index: 0 };
+	let closeButton: HTMLButtonElement | undefined;
 
-	const unsub = lightboxStore.subscribe((s) => (state = s));
+	// Close on any route change — prevents stale state across pages
+	beforeNavigate(() => lightboxStore.close());
 
-	$: current = state.works[state.index];
+	$: current = $lightboxStore.works[$lightboxStore.index];
+
+	// Body scroll lock + auto-focus close button when opened
+	$: if (browser) {
+		if ($lightboxStore.isOpen) {
+			document.body.style.overflow = 'hidden';
+			// next tick — let the dialog render before focusing
+			setTimeout(() => closeButton?.focus(), 0);
+		} else {
+			document.body.style.overflow = '';
+		}
+	}
 
 	onMount(() => {
-		function handleKey(e: KeyboardEvent) {
+		function handleKey(event: KeyboardEvent) {
+			const state = get(lightboxStore);
 			if (!state.isOpen) return;
-			if (e.key === 'Escape') lightboxStore.close();
-			if (e.key === 'ArrowRight') lightboxStore.next();
-			if (e.key === 'ArrowLeft') lightboxStore.prev();
+			if (event.key === 'Escape') lightboxStore.close();
+			if (event.key === 'ArrowRight') lightboxStore.next();
+			if (event.key === 'ArrowLeft') lightboxStore.prev();
 		}
 		document.addEventListener('keydown', handleKey);
 		return () => {
 			document.removeEventListener('keydown', handleKey);
-			unsub();
+			// safety: clear any scroll lock if the component unmounts mid-open
+			if (browser) document.body.style.overflow = '';
 		};
 	});
 </script>
 
-<div
-	class="lightbox"
-	class:open={state.isOpen}
-	on:click|self={() => lightboxStore.close()}
-	on:keydown={(e) => e.key === 'Enter' && lightboxStore.close()}
-	role="dialog"
-	aria-modal="true"
-	aria-hidden={!state.isOpen}
-	tabindex="-1"
->
-	{#if current}
+{#if $lightboxStore.isOpen && current}
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+	<div
+		class="lightbox open"
+		role="dialog"
+		aria-modal="true"
+		aria-label="Artwork detail"
+		on:click|self={() => lightboxStore.close()}
+	>
 		<div class="lb-inner">
 			<div class="lb-art">
 				<div class="canvas-holder">
 					<img src={current.src} alt={current.alt} />
 				</div>
 			</div>
+
 			<div class="lb-meta">
-				<div class="lb-counter">{state.index + 1} / {state.works.length}</div>
+				<div class="lb-counter">
+					{$lightboxStore.index + 1} / {$lightboxStore.works.length}
+				</div>
 				<div class="kk">Selected Work</div>
 				<h3>{current.title}</h3>
+
 				{#if current.medium || current.size || current.year || current.sold}
 					<dl class="lb-spec">
 						{#if current.medium}
@@ -61,30 +80,22 @@
 						{/if}
 					</dl>
 				{/if}
+
 				<div class="lb-nav">
 					<button type="button" on:click={() => lightboxStore.prev()}>← Prev</button>
 					<button type="button" on:click={() => lightboxStore.next()}>Next →</button>
 				</div>
 			</div>
+
 			<button
 				class="lb-close"
 				type="button"
+				bind:this={closeButton}
 				on:click={() => lightboxStore.close()}
 				aria-label="Close"
 			>
 				✕
 			</button>
 		</div>
-	{/if}
-</div>
-
-<style>
-	.lb-art img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-	.lb-inner {
-		position: relative;
-	}
-</style>
+	</div>
+{/if}
