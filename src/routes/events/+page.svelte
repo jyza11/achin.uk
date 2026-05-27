@@ -11,12 +11,37 @@
 		<div class="section-aside">Solo · Group · Studio openings</div>
 	</header>
 
-	<div style="text-align: center; padding: 80px 0;">
-		<p style="font-family: var(--serif); font-style: italic; font-size: 24px; color: var(--ink-2); margin: 0 0 16px; text-wrap: balance;">
-			展覽 · Coming soon
-		</p>
-		<p style="font-family: var(--serif); font-size: 17px; color: var(--ink-3); max-width: 42ch; margin: 0 auto;">
-			Exhibition listings will appear here. For studio visits and press inquiries in the meantime, see <a href="/contact" style="color: var(--oxblood); border-bottom: 1px solid currentColor;">合作</a>.
+	<div class="events-empty">
+		<p class="events-empty-line">展覽 · Coming soon</p>
+		<p class="events-empty-deck">
+			Exhibition listings will appear here as they're scheduled. For studio visits and press inquiries in the meantime, see
+			<a href="/contact">合作</a>.
 		</p>
 	</div>
 </section>
+
+<style>
+	.events-empty {
+		text-align: center;
+		padding: 80px 0;
+	}
+	.events-empty-line {
+		font-family: var(--serif);
+		font-style: italic;
+		font-size: 28px;
+		color: var(--ink-2);
+		margin: 0 0 16px;
+		text-wrap: balance;
+	}
+	.events-empty-deck {
+		font-family: var(--serif);
+		font-size: 17px;
+		color: var(--ink-3);
+		max-width: 42ch;
+		margin: 0 auto;
+	}
+	.events-empty-deck a {
+		color: var(--oxblood);
+		border-bottom: 1px solid currentColor;
+	}
+</style>
