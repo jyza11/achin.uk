@@ -1,186 +1,130 @@
 <script lang="ts">
 	import '../app.postcss';
-	// Highlight JS
+
+	// Highlight JS (kept as infrastructure from Skeleton UI)
 	import hljs from 'highlight.js/lib/core';
 	import 'highlight.js/styles/github-dark.css';
 	import { storeHighlightJs } from '@skeletonlabs/skeleton';
-	import xml from 'highlight.js/lib/languages/xml'; // for HTML
+	import xml from 'highlight.js/lib/languages/xml';
 	import css from 'highlight.js/lib/languages/css';
 	import javascript from 'highlight.js/lib/languages/javascript';
 	import typescript from 'highlight.js/lib/languages/typescript';
 
-	hljs.registerLanguage('xml', xml); // for HTML
+	hljs.registerLanguage('xml', xml);
 	hljs.registerLanguage('css', css);
 	hljs.registerLanguage('javascript', javascript);
 	hljs.registerLanguage('typescript', typescript);
 	storeHighlightJs.set(hljs);
 
-	// Floating UI for Popups
+	// Floating UI for popups (kept as infrastructure)
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 
-    // To be review 
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	
-	let isMobileMenuOpen = false;
-	
-	// Navigation items configuration
-	const navItems = [
-		{ href: '/gallery', label: '油畫', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
-		{ href:	'/sketch', label: '素描', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
-		{ href: '/about', label: '關於', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
-		{ href: '/contact', label: '合作', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
-		{ href: '/events', label: '展覽', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' }
-	];
-	// import logo image
-	import logo from '$lib/assets/IMG_3811.jpeg';
 
-	// Shared navigation link styles - FIXED FOR BETTER CONTRAST
-	const navLinkClass = "block px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors";
-	const activeNavLinkClass = "block px-4 py-2 rounded-lg bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium transition-colors";
-	
-	function toggleMobileMenu() {
-		isMobileMenuOpen = !isMobileMenuOpen;
+	const navItems = [
+		{ href: '/gallery', label: '油畫' },
+		{ href: '/sketch', label: '素描' },
+		{ href: '/about', label: '關於' },
+		{ href: '/contact', label: '合作' },
+		{ href: '/events', label: '展覽' }
+	];
+
+	let menuOpen = false;
+
+	function toggleMenu() {
+		menuOpen = !menuOpen;
 	}
-	
-	function closeMobileMenu() {
-		isMobileMenuOpen = false;
+
+	function closeMenu() {
+		menuOpen = false;
 	}
-	
-	function getNavLinkClass(href) {
-		return $page.url.pathname === href ? activeNavLinkClass : navLinkClass;
-	}
-	
-	// Close menu when clicking outside or pressing escape
+
 	onMount(() => {
-		function handleKeydown(event) {
-			if (event.key === 'Escape') {
-				closeMobileMenu();
-			}
+		function handleKeydown(event: KeyboardEvent) {
+			if (event.key === 'Escape') closeMenu();
 		}
-		
 		document.addEventListener('keydown', handleKeydown);
-		
-		return () => {
-			document.removeEventListener('keydown', handleKeydown);
-		};
+		return () => document.removeEventListener('keydown', handleKeydown);
 	});
+
+	$: currentPath = $page.url.pathname;
 </script>
 
-<!-- This is the proper Skeleton v3 layout approach using semantic HTML -->
-<div class="h-full grid grid-rows-[auto_1fr_auto] md:grid-cols-[auto_1fr]">
-	<!-- Header -->
-	<header class="bg-surface-100-800-token  border-surface-300-600-token md:col-span-2">
-		<div class="flex items-center justify-between p-4">
-			<div class="flex items-center space-x-4">
-				<!-- Mobile menu button -->
-				<button 
-					class="md:hidden p-2 rounded-lg hover:bg-surface-200-700-token transition-colors"
-					on:click={toggleMobileMenu}
-					aria-label="Toggle mobile menu"
-				>
-					<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-					</svg>
-				</button>
-				
-			</div>
-			<nav class="hidden md:flex space-x-4">
-				<!-- Header navigation items -->
-			</nav>
+<header class="topbar">
+	<div class="topbar-inner">
+		<div class="meta-left">
+			<span><span class="dot"></span>&nbsp;Open today · 10—18h</span>
+			<span class="sep" style="opacity:.5">·</span>
+			<span>Taipei · Studio</span>
 		</div>
-	</header>
-
-	<!-- Desktop Sidebar -->
-	<aside class="bg-surface-50-900-token  border-surface-300-600-token w-56 p-4 hidden md:block">
-				<!-- Logo Section -->
-			<a href="/" class="block px-4 py-2 rounded-lg hover:bg-surface-200-700-token transition-colors">
-				<div class="mb-6 text-center">
-					<img 
-						src={logo} 
-						alt="Site Logo" 
-						class="w-48 h-32 object-contain mx-auto"
-					/>
-				</div>
-			</a>
-		<nav class="space-y-2">
-
+		<a class="wordmark zh" href="/">Achin</a>
+		<div class="meta-right">
+			<span>中 · EN</span>
+			<span style="opacity:.5">·</span>
+			<span>Est. MMXXIV</span>
+		</div>
+		<button class="menu-btn" on:click={toggleMenu} aria-label="Menu">
+			<span></span>
+		</button>
+	</div>
+	<nav class="nav" class:open={menuOpen}>
+		<div class="nav-inner">
 			{#each navItems as item}
-				<a 
-					href={item.href} 
-					class={getNavLinkClass(item.href)}
-					aria-current={$page.url.pathname === item.href ? 'page' : undefined}
+				<a
+					href={item.href}
+					class="zh"
+					class:active={currentPath === item.href}
+					on:click={closeMenu}
 				>
-					<div class="flex items-center space-x-3">
-						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-						</svg>
-						<span>{item.label}</span>
-					</div>
+					{item.label}
 				</a>
 			{/each}
-		</nav>
-	</aside>
+		</div>
+	</nav>
+</header>
 
-	<!-- Mobile Sidebar Overlay -->
-	{#if isMobileMenuOpen}
-		<!-- Backdrop -->
-		<div 
-			class="fixed inset-0 bg-black/50 z-40 md:hidden"
-			on:click={closeMobileMenu}
-			on:keydown={(e) => e.key === 'Enter' && closeMobileMenu()}
-			role="button"
-			tabindex="0"
-			aria-label="Close mobile menu"
-		></div>
-		
-		<!-- Mobile Sidebar -->
-		<aside class="fixed top-0 left-0 w-64 h-full bg-white dark:bg-gray-900  border-gray-200 dark:border-gray-700 z-50 md:hidden transform transition-transform duration-300 ease-in-out shadow-xl">
-			<div class="flex items-center justify-between p-4  border-gray-200 dark:border-gray-700">
-				<strong class="text-xl font-bold text-gray-900 dark:text-white">Achin</strong>
-				<button 
-					class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-					on:click={closeMobileMenu}
-					aria-label="Close mobile menu"
-				>
-					<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-					</svg>
-				</button>
+<main>
+	<slot />
+</main>
+
+<footer>
+	<div class="foot-inner">
+		<div class="foot-top">
+			<div class="foot-mark">
+				Achin
+				<p>Painter of quiet hours and stolen afternoons.</p>
 			</div>
-			<a href="/" class="block px-4 py-2 rounded-lg hover:bg-surface-200-700-token transition-colors" on:click={closeMobileMenu}>
-				<div class="mb-6 text-center">
-					<img 
-						src={logo} 
-						alt="Site Logo" 
-						class="w-48 h-32 object-contain"
-					/>
-				</div>
-			</a>	
-			<nav class="p-4 space-y-2">
-				{#each navItems as item}
-					<a 
-						href={item.href} 
-						class={getNavLinkClass(item.href)}
-						on:click={closeMobileMenu}
-						aria-current={$page.url.pathname === item.href ? 'page' : undefined}
-					>
-						<div class="flex items-center space-x-3">
-							<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
-							</svg>
-							<span>{item.label}</span>
-						</div>
-					</a>
-				{/each}
-			</nav>
-		</aside>
-	{/if}
-
-	<!-- Main Content -->
-	<main class="overflow-auto p-4">
-		<slot />
-	</main>
-</div>
+			<div>
+				<h4>Explore</h4>
+				<ul>
+					{#each navItems as item}
+						<li><a href={item.href}>{item.label}</a></li>
+					{/each}
+				</ul>
+			</div>
+			<div>
+				<h4>Studio</h4>
+				<ul>
+					<li>Taipei</li>
+					<li>By appointment</li>
+					<li><a href="/contact">合作 · Contact</a></li>
+				</ul>
+			</div>
+			<div class="news">
+				<h4>Newsletter</h4>
+				<p>Occasional notes — new work, openings, slow letters.</p>
+				<form class="news-form" on:submit|preventDefault>
+					<input type="email" placeholder="your email" aria-label="Email" />
+					<button type="submit">Subscribe</button>
+				</form>
+			</div>
+		</div>
+		<div class="foot-bottom">
+			<div>© Achin {new Date().getFullYear()} · All works copyright the artist</div>
+			<div class="right">Site by hand · No tracking</div>
+		</div>
+	</div>
+</footer>
