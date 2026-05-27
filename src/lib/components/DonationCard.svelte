@@ -1,12 +1,12 @@
 <!-- DonationCard.svelte -->
-<script>
+<script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	
+
 	const dispatch = createEventDispatcher();
-	
+
 	// Donation amounts
 	const presetAmounts = [10, 25, 50, 100, 250];
-	let selectedAmount = null;
+	let selectedAmount: number | null = null;
 	let customAmount = '';
 	let donorName = '';
 	let donorEmail = '';
@@ -14,15 +14,15 @@
 	let isProcessing = false;
 	
 	// Handle preset amount selection
-	function selectAmount(amount) {
+	function selectAmount(amount: number) {
 		selectedAmount = amount;
 		customAmount = '';
 	}
-	
+
 	// Handle custom amount input
-	function handleCustomAmount(event) {
-		const value = event.target.value;
-		if (value && !isNaN(value) && parseFloat(value) > 0) {
+	function handleCustomAmount(event: Event) {
+		const value = (event.target as HTMLInputElement).value;
+		if (value && !isNaN(parseFloat(value)) && parseFloat(value) > 0) {
 			selectedAmount = parseFloat(value);
 			customAmount = value;
 		} else {
@@ -66,7 +66,7 @@
 			donorEmail = '';
 			message = '';
 			
-		} catch (error) {
+		} catch {
 			alert('Donation failed. Please try again.');
 		} finally {
 			isProcessing = false;
