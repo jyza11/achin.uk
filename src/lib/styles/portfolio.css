@@ -375,6 +375,149 @@ section.band {
   color: var(--paper);
 }
 
+/* ─────────────────────── BUTTON ─────────────────────── */
+.btn {
+  font-family: var(--sans);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 14px 22px;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  background: transparent;
+  transition: all .25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn:hover { background: var(--ink); color: var(--paper); }
+.btn.primary { background: var(--ink); color: var(--paper); }
+.btn.primary:hover { background: var(--oxblood-ink); border-color: var(--oxblood-ink); }
+.btn .arrow {
+  width: 14px;
+  height: 1px;
+  background: currentColor;
+  position: relative;
+}
+.btn .arrow::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: -3px;
+  width: 7px;
+  height: 7px;
+  border-top: 1px solid currentColor;
+  border-right: 1px solid currentColor;
+  transform: rotate(45deg);
+}
+
+/* ─────────────────────── VISIT BAND ─────────────────────── */
+.visit-band {
+  background: var(--paper-2);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.visit {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: start;
+}
+
+.visit-text h2 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(34px, 4.5vw, 54px);
+  line-height: 1;
+  margin: 0 0 20px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.visit-text h2 em { font-style: italic; color: var(--oxblood-ink); }
+
+.visit-text p {
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  max-width: 42ch;
+  margin: 0 0 28px;
+}
+
+.hours {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  border-top: 1px solid var(--rule);
+}
+.hours-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(201,191,168,0.5);
+  font-family: var(--serif);
+  font-size: 17px;
+  color: var(--ink);
+}
+.hours-row.closed {
+  color: var(--ink-3);
+  font-style: italic;
+}
+
+.visit-card {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  padding: 36px;
+}
+.visit-card h3 {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 28px;
+  margin: 0 0 8px;
+  color: var(--ink);
+}
+.visit-card .addr {
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  margin-bottom: 24px;
+}
+.visit-card .row {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(201,191,168,0.5);
+  font-size: 14px;
+}
+.visit-card .row .k {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding-top: 2px;
+}
+.visit-card .row .v {
+  font-family: var(--serif);
+  font-size: 16px;
+  color: var(--ink);
+}
+
+/* visit-band responsive */
+@media (max-width: 1100px) {
+  .visit { grid-template-columns: 1fr 1fr; gap: 36px; }
+}
+@media (max-width: 768px) {
+  .visit { grid-template-columns: 1fr; gap: 32px; }
+  .visit-card { padding: 24px; }
+}
+
 /* ─────────────────────── PAGE CTA ─────────────────────── */
 .page-cta {
   border-top: 1px solid var(--rule);
