@@ -519,21 +519,22 @@ section.band {
 }
 
 /* ─────────────────────── WORKS GRID ─────────────────────── */
-/* REBUILD baseline: uniform auto-fill grid, explicit pixel-height frames,
-   plain <img object-fit: cover>. Every dimension here is either a fixed px
-   value or a value that resolves against a fixed-px parent — no aspect-ratio
-   percent-resolution chains, no .w-N asymmetric spans, no absolute-positioned
-   inner divs. This is intentionally boring so it cannot collapse. The
-   editorial asymmetric layout can be layered back on once images verify. */
+/* Editorial asymmetric 12-column grid. `data-shape` attribute (not class
+   names like .w-1, which would collide with Tailwind's width utility)
+   varies each cell's column span and aspect ratio for an editorial rhythm.
+   Each frame has min-height as a fallback so it can never collapse to 0
+   (the failure mode we hit before). */
 .works {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 32px;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 40px 28px;
 }
 
 .work {
   cursor: pointer;
   outline: none;
+  /* default span when no data-shape — defensive fallback */
+  grid-column: span 6;
 }
 .work:focus-visible {
   outline: 2px solid var(--oxblood);
@@ -542,7 +543,7 @@ section.band {
 
 .work .frame {
   width: 100%;
-  height: 320px;                  /* explicit px — no aspect-ratio dependency */
+  min-height: 280px;              /* fallback if aspect-ratio doesn't resolve */
   background: oklch(0.965 0.012 80);
   padding: 18px;                  /* the cream mat border */
   box-sizing: border-box;
@@ -552,6 +553,8 @@ section.band {
   box-shadow:
     inset 0 0 0 1px oklch(0.88 0.02 80),
     0 20px 40px -25px rgba(40,30,20,0.25);
+  /* default aspect-ratio when no data-shape variant */
+  aspect-ratio: 4 / 3;
 }
 
 .work:hover .frame {
@@ -564,7 +567,7 @@ section.band {
 .work .frame img {
   display: block;
   width: 100%;
-  height: 100%;                   /* parent has definite px height — resolves cleanly */
+  height: 100%;
   object-fit: cover;
   background: oklch(0.93 0.015 80); /* visible while image loads */
 }
@@ -578,9 +581,53 @@ section.band {
   color: var(--ink);
 }
 
+/* ── shape variants — desktop ── */
+.work[data-shape="1"] { grid-column: span 7; }
+.work[data-shape="1"] .frame { aspect-ratio: 4 / 3; }
+
+.work[data-shape="2"] { grid-column: span 5; }
+.work[data-shape="2"] .frame { aspect-ratio: 4 / 5; }
+
+.work[data-shape="3"] { grid-column: span 4; }
+.work[data-shape="3"] .frame { aspect-ratio: 3 / 4; }
+
+.work[data-shape="4"] { grid-column: span 4; }
+.work[data-shape="4"] .frame { aspect-ratio: 1 / 1; }
+
+.work[data-shape="5"] { grid-column: span 4; }
+.work[data-shape="5"] .frame { aspect-ratio: 3 / 4; }
+
+.work[data-shape="6"] { grid-column: span 5; }
+.work[data-shape="6"] .frame { aspect-ratio: 5 / 4; }
+
+.work[data-shape="7"] { grid-column: span 7; }
+.work[data-shape="7"] .frame { aspect-ratio: 16 / 10; }
+
+/* ── tablet — collapse asymmetric to half-and-half ── */
+@media (max-width: 1100px) {
+  .works { gap: 36px 20px; }
+  .work[data-shape] { grid-column: span 6; }
+  .work[data-shape="1"] .frame,
+  .work[data-shape="2"] .frame,
+  .work[data-shape="3"] .frame,
+  .work[data-shape="4"] .frame,
+  .work[data-shape="5"] .frame,
+  .work[data-shape="6"] .frame { aspect-ratio: 4 / 5; }
+  .work[data-shape="7"] { grid-column: span 12; }
+  .work[data-shape="7"] .frame { aspect-ratio: 16 / 10; }
+}
+
+/* ── mobile — single column, varied aspect ratios for visual rhythm ── */
 @media (max-width: 768px) {
-  .works { gap: 24px; }
-  .work .frame { height: 260px; }
+  .works { gap: 24px; grid-template-columns: 1fr; }
+  .work[data-shape] { grid-column: span 1; }
+  .work[data-shape="1"] .frame,
+  .work[data-shape="7"] .frame { aspect-ratio: 4 / 3; }
+  .work[data-shape="2"] .frame,
+  .work[data-shape="3"] .frame,
+  .work[data-shape="5"] .frame { aspect-ratio: 3 / 4; }
+  .work[data-shape="4"] .frame { aspect-ratio: 1 / 1; }
+  .work[data-shape="6"] .frame { aspect-ratio: 5 / 4; }
 }
 
 /* ─────────────────────── LIGHTBOX ─────────────────────── */

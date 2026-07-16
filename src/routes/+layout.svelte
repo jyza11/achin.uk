@@ -52,7 +52,13 @@
 <!-- Mobile topbar — only renders on mobile (CSS controls display) -->
 <header class="pf-topbar-mobile">
 	<a href="/" class="pf-wordmark-small" on:click={closeMenu}>Achin</a>
-	<button class="pf-menu-btn" on:click={toggleMenu} aria-label="Open menu">
+	<button
+		class="pf-menu-btn"
+		on:click={toggleMenu}
+		aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+		aria-expanded={menuOpen}
+		aria-controls="primary-nav"
+	>
 		<span></span>
 	</button>
 </header>
@@ -71,12 +77,12 @@
 	<a href="/" class="pf-sidebar-wordmark" on:click={closeMenu}>Achin</a>
 	<span class="pf-sidebar-tag">Painter · Studio</span>
 
-	<nav class="pf-sidebar-nav" aria-label="Primary">
+	<nav class="pf-sidebar-nav" id="primary-nav" aria-label="Primary">
 		<div class="pf-sidebar-section">Index</div>
 		{#each navItems as item}
 			<a
 				href={item.href}
-				class:active={currentPath === item.href}
+				class:active={currentPath === item.href || currentPath.startsWith(item.href + '/')}
 				on:click={closeMenu}
 			>
 				<span>{item.label}</span>

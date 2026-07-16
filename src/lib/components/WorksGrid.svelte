@@ -5,8 +5,14 @@
 	export let works: Work[] = [];
 	export let limit: number | null = null;
 
-	// `=== null` so a limit of 0 still acts as "show none" (avoids the falsy-zero bug)
-	$: visible = limit !== null && limit !== undefined ? works.slice(0, limit) : works;
+	// Validate limit: null/undefined → show all; finite non-negative number → slice;
+	// anything else (NaN, negative, Infinity) → show all (defensive — these would
+	// silently produce empty/wrong slices otherwise).
+	$: visible = (() => {
+		if (limit === null || limit === undefined) return works;
+		if (!Number.isFinite(limit) || limit < 0) return works;
+		return works.slice(0, Math.floor(limit));
+	})();
 
 	function openLightbox(index: number) {
 		lightboxStore.open(visible, index);
@@ -21,15 +27,22 @@
 </script>
 
 <!--
-	REBUILD: simple uniform grid, plain <img>, explicit pixel-height frame.
-	No aspect-ratio percent-resolution, no .w-N asymmetric spans, no
-	background-image-on-empty-div. Once we confirm images render reliably
-	we can layer the asymmetric editorial layout back on top.
+	Editorial asymmetric grid: each cell gets a `data-shape` from 1 to 7,
+	cycling through a curated pattern of column spans + aspect ratios. CSS
+	rules live in portfolio.css under the WORKS GRID section.
+
+	`data-shape` (vs class names like `.w-1`) — chosen to avoid colliding
+	with Tailwind's `.w-1` width utility, which loads after this stylesheet
+	and would otherwise override `grid-column: span N`.
+
+	Each cell has a min-height fallback in CSS so it can never collapse even
+	if the aspect-ratio doesn't resolve (the failure mode we hit earlier).
 -->
 <div class="works">
-	{#each visible as work, i (work.src)}
+	{#each visible as work, i (i)}
 		<div
 			class="work"
+			data-shape={(i % 7) + 1}
 			role="button"
 			tabindex="0"
 			on:click={() => openLightbox(i)}
