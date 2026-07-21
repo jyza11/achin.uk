@@ -15,6 +15,12 @@
 	})();
 
 	function openLightbox(index: number) {
+		// Mobile uses the horizontal-swipe pattern with a per-painting details
+		// panel (see WORKS GRID mobile block in portfolio.css). The swipe view IS
+		// the detail view, so the lightbox is redundant here — suppress the open.
+		// Breakpoint matches the CSS `@media (max-width: 768px)` block. The typeof
+		// guard prevents ReferenceError during SSR (no window on the server).
+		if (typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches) return;
 		lightboxStore.open(visible, index);
 	}
 
@@ -37,6 +43,11 @@
 
 	Each cell has a min-height fallback in CSS so it can never collapse even
 	if the aspect-ratio doesn't resolve (the failure mode we hit earlier).
+
+	The `.mobile-details` block below is emitted for every work but hidden on
+	desktop. On mobile it becomes the second scroll-snap "screen" inside each
+	painting card — swipe UP to reveal, swipe DOWN to hide. See portfolio.css
+	under the WORKS GRID mobile media query.
 -->
 <div class="works">
 	{#each visible as work, i (i)}
@@ -53,6 +64,22 @@
 				<img src={work.src} alt={work.alt} loading="lazy" />
 			</div>
 			<div class="label">{work.title}</div>
+
+			<div class="mobile-details">
+				<div class="md-counter">
+					{String(i + 1).padStart(2, '0')} / {String(visible.length).padStart(2, '0')}
+				</div>
+				<h3 class="md-title">{work.title}</h3>
+				{#if work.year || work.medium}
+					<div class="md-year">{[work.year, work.medium].filter(Boolean).join(' · ')}</div>
+				{/if}
+				{#if work.size}
+					<div class="md-dim">{work.size}</div>
+				{/if}
+				{#if work.sold}
+					<div class="md-status">Sold</div>
+				{/if}
+			</div>
 		</div>
 	{/each}
 </div>

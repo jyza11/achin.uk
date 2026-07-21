@@ -779,17 +779,183 @@ section.band {
   .work[data-shape="7"] .frame { aspect-ratio: 16 / 10; }
 }
 
-/* ── mobile — single column, varied aspect ratios for visual rhythm ── */
+/* ── mobile — horizontal-swipe gallery with pull-up details ─────────────
+   Requested UX (artist's brief): on phones the works grid must NOT scroll
+   vertically and must NOT rely on bottom nav buttons. Instead, swipe L/R
+   for the next/previous painting, swipe UP within a painting to reveal
+   its details (title, year, medium, dimensions, status), swipe DOWN to
+   hide again. Native browser gesture physics — pure CSS scroll-snap on
+   two axes; no JS gesture code.
+
+   Layout: `.works` becomes a horizontal (x-axis) snap container filling
+   the viewport. Each `.work` becomes 100vw × 100dvh, and is itself a
+   vertical (y-axis) snap container with two child screens: `.frame` (the
+   image) and `.mobile-details` (the metadata). Both use `scroll-snap-stop:
+   always` so the user cannot accidentally overshoot to an adjacent card.
+
+   The lightbox is suppressed on mobile by a matchMedia guard in
+   WorksGrid.svelte — on mobile the swipe view IS the detail view. If you
+   change this breakpoint, keep the JS matchMedia in sync.
+   ────────────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .works { gap: 24px; grid-template-columns: 1fr; }
-  .work[data-shape] { grid-column: span 1; }
-  .work[data-shape="1"] .frame,
-  .work[data-shape="7"] .frame { aspect-ratio: 4 / 3; }
-  .work[data-shape="2"] .frame,
-  .work[data-shape="3"] .frame,
-  .work[data-shape="5"] .frame { aspect-ratio: 3 / 4; }
-  .work[data-shape="4"] .frame { aspect-ratio: 1 / 1; }
-  .work[data-shape="6"] .frame { aspect-ratio: 5 / 4; }
+  .works {
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    grid-template-columns: none;
+
+    /* Full-bleed break-out: fill the viewport regardless of parent .pf-main
+       and section.band horizontal padding. Classic left:50% + margin-left:-50vw
+       trick — works regardless of any padding chain above. */
+    width: 100vw;
+    max-width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+
+    height: 100dvh;                    /* dynamic vh — mobile Safari safe */
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    overscroll-behavior: contain;      /* keep bounce inside the gallery */
+  }
+  .works::-webkit-scrollbar { display: none; }
+
+  /* Each painting card is 100vw wide and its own vertical scroll-snap area. */
+  .work,
+  .work[data-shape] {
+    grid-column: unset;
+    flex: 0 0 100vw;
+    width: 100vw;
+    height: 100dvh;
+    overflow-y: auto;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    position: relative;
+    background: var(--paper);
+    cursor: default;
+    scrollbar-width: none;
+    padding: 0;
+  }
+  .work::-webkit-scrollbar { display: none; }
+  .work:hover .frame { transform: none; }  /* undo desktop hover-lift */
+
+  /* IMAGE PANEL — first vertical snap point of the painting. */
+  .work .frame,
+  .work[data-shape] .frame {
+    height: 100dvh;
+    aspect-ratio: unset;
+    min-height: unset;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--paper);
+    box-shadow: inset 0 0 0 1px oklch(0.88 0.02 80);
+    transform: none;
+    box-sizing: border-box;
+  }
+  .work .frame img {
+    object-fit: contain;               /* preserve painting's aspect on mobile */
+    max-height: calc(100dvh - 88px);   /* leave room below for the pull hint */
+    width: auto;
+    max-width: 100%;
+    margin: 0 auto;
+    background: transparent;
+  }
+
+  /* Pull hint: a small pill at the bottom of the image panel that reads
+     visually as "swipe up for details" (matches the iOS bottom-sheet
+     grabber convention). */
+  .work .frame::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 22px;
+    width: 36px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--ink-3);
+    opacity: 0.4;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  /* The desktop label is hidden on mobile — the same content (and more) lives
+     in the mobile-details panel below. */
+  .work .label { display: none; }
+
+  /* DETAILS PANEL — second vertical snap point. Swipe up from the image to
+     reach it; swipe down to return. */
+  .work .mobile-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    height: 100dvh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    padding: 40px 28px 56px;
+    box-sizing: border-box;
+    background: var(--paper-2);
+    border-top: 1px solid var(--rule);
+  }
+  .work .mobile-details .md-counter {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 6px;
+  }
+  .work .mobile-details .md-title {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 34px;
+    line-height: 1.08;
+    margin: 0 0 14px;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  .work .mobile-details .md-year,
+  .work .mobile-details .md-dim {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .work .mobile-details .md-status {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--oxblood);
+    margin-top: 8px;
+  }
+}
+
+/* Desktop keeps the grid untouched; the mobile-details panel is inert here. */
+@media (min-width: 769px) {
+  .work .mobile-details { display: none; }
+}
+
+/* Users who prefer reduced motion get instant snap, no smooth scroll. */
+@media (prefers-reduced-motion: reduce) {
+  .works,
+  .work {
+    scroll-behavior: auto;
+  }
 }
 
 /* ─────────────────────── LIGHTBOX ─────────────────────── */
