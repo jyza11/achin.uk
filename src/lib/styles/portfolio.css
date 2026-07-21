@@ -283,6 +283,27 @@ section.band {
   text-align: right;
 }
 
+/* section-head as coda (below content) instead of lead-in (above content).
+   Flips the border/padding/margin so the underline becomes a top-rule and
+   the vertical rhythm reads as "closing off" the section rather than
+   opening it. Mobile inherits — the media query below already collapses
+   grid-template-columns to 1fr; only the vertical spacing needs adjustment. */
+.section-head--footer {
+  border-bottom: 0;
+  border-top: 1px solid var(--rule);
+  padding-bottom: 0;
+  padding-top: 24px;
+  margin-bottom: 0;
+  margin-top: 56px;
+}
+
+@media (max-width: 768px) {
+  .section-head--footer {
+    margin-top: 40px;
+    padding-top: 20px;
+  }
+}
+
 /* ─────────────────────── HERO (home page) ─────────────────────── */
 .hero {
   max-width: 1200px;
@@ -822,7 +843,12 @@ section.band {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    overscroll-behavior: contain;      /* keep bounce inside the gallery */
+    /* Trap horizontal overscroll (no accidental browser-back gesture on first
+       painting), but allow vertical overscroll to bubble up so the user can
+       scroll the page past the 100dvh gallery to see the description + header
+       that follow. */
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: auto;
   }
   .works::-webkit-scrollbar { display: none; }
 
@@ -847,7 +873,11 @@ section.band {
   .work::-webkit-scrollbar { display: none; }
   .work:hover .frame { transform: none; }  /* undo desktop hover-lift */
 
-  /* IMAGE PANEL — first vertical snap point of the painting. */
+  /* IMAGE PANEL — first vertical snap point of the painting.
+     Padding tuned aggressively small on mobile so the painting fills as much
+     of the viewport as possible. The remaining 4px sides preserve just enough
+     of the cream-mat aesthetic to signal a museum-style passe-partout; the
+     44px bottom leaves room for the pull-hint pill without cramping it. */
   .work .frame,
   .work[data-shape] .frame {
     height: 100dvh;
@@ -855,7 +885,7 @@ section.band {
     min-height: unset;
     scroll-snap-align: start;
     scroll-snap-stop: always;
-    padding: 20px;
+    padding: 8px 4px 44px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -866,7 +896,7 @@ section.band {
   }
   .work .frame img {
     object-fit: contain;               /* preserve painting's aspect on mobile */
-    max-height: calc(100dvh - 88px);   /* leave room below for the pull hint */
+    max-height: calc(100dvh - 52px);   /* padding top+bottom — image can fill nearly full height */
     width: auto;
     max-width: 100%;
     margin: 0 auto;
