@@ -1,6 +1,14 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import WorksGrid from '$lib/components/WorksGrid.svelte';
 	import { sketchWorks } from '$lib/data/works';
+
+	// Minimal-canvas mode — same opt-in as /gallery (see portfolio.css
+	// MINIMAL CANVAS MODE section): pure white, no chrome while mounted.
+	onMount(() => {
+		document.body.classList.add('minimal-canvas');
+		return () => document.body.classList.remove('minimal-canvas');
+	});
 </script>
 
 <svelte:head>
@@ -14,7 +22,8 @@
 			<h1 class="section-title">Drawings <em>and studies</em></h1>
 		</div>
 		<div class="section-aside">
-			{sketchWorks.length} {sketchWorks.length === 1 ? 'sketch' : 'sketches'} · Graphite on paper
+			{sketchWorks.length}
+			{sketchWorks.length === 1 ? 'sketch' : 'sketches'} · Graphite on paper
 		</div>
 	</header>
 

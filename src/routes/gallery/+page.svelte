@@ -1,6 +1,17 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import WorksGrid from '$lib/components/WorksGrid.svelte';
 	import { galleryWorks } from '$lib/data/works';
+
+	// Minimal-canvas mode: adds `body.minimal-canvas` while this route is
+	// mounted; removed on navigation away. All the visual overrides (white
+	// background, no frames, no hairlines, no paper grain, no pull-hint,
+	// hidden footer) live under that class in portfolio.css so any other
+	// art-viewing route (e.g. /sketch) can opt in the same way — one line.
+	onMount(() => {
+		document.body.classList.add('minimal-canvas');
+		return () => document.body.classList.remove('minimal-canvas');
+	});
 </script>
 
 <svelte:head>
@@ -29,7 +40,8 @@
 
 	<div class="gallery-note">
 		<p>
-			A selection of recent oil paintings — each on linen unless noted. Tap any painting on desktop for a lightbox; on mobile, swipe up on a painting to see its details.
+			A selection of recent oil paintings — each on linen unless noted. Tap any painting on desktop
+			for a lightbox; on mobile, swipe up on a painting to see its details.
 		</p>
 		<!-- Replace this paragraph with the artist's own voice / bilingual pair when ready. -->
 	</div>
@@ -40,7 +52,8 @@
 			<h1 class="section-title">Selected <em>works</em></h1>
 		</div>
 		<div class="section-aside">
-			{galleryWorks.length} {galleryWorks.length === 1 ? 'work' : 'works'} · Oil on linen
+			{galleryWorks.length}
+			{galleryWorks.length === 1 ? 'work' : 'works'} · Oil on linen
 		</div>
 	</header>
 </section>
@@ -57,6 +70,15 @@
 		padding-top: 0;
 	}
 
+	/* Kill the cream placeholder background on the img element itself.
+	   `.work .frame img` in portfolio.css sets `background: oklch(0.93 …)`
+	   as a load-state colour; it also shows in the letterbox strips when
+	   object-fit:contain leaves space around a painting. Anchored to the
+	   body.minimal-canvas class so this only fires on the gallery route. */
+	:global(body.minimal-canvas .work .frame img) {
+		background: transparent;
+	}
+
 	.empty {
 		font-family: var(--serif);
 		font-style: italic;
@@ -67,9 +89,8 @@
 
 	.gallery-note {
 		max-width: 56ch;
-		margin: 40px auto 24px;
-		padding: 24px 0;
-		border-top: 1px solid var(--rule);
+		margin: 48px auto 24px; /* the 48px top margin replaces the border-top separator */
+		padding: 0;
 		text-align: center;
 	}
 

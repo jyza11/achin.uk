@@ -27,16 +27,20 @@
 
 	const navItems = [
 		{ href: '/gallery', label: '油畫', romaji: 'Paintings' },
-		{ href: '/sketch',  label: '素描', romaji: 'Sketches' },
-		{ href: '/about',   label: '關於', romaji: 'About' },
+		{ href: '/sketch', label: '素描', romaji: 'Sketches' },
+		{ href: '/about', label: '關於', romaji: 'About' },
 		{ href: '/contact', label: '合作', romaji: 'Contact' },
-		{ href: '/events',  label: '展覽', romaji: 'Exhibitions' }
+		{ href: '/events', label: '展覽', romaji: 'Exhibitions' }
 	];
 
 	let menuOpen = false;
 
-	function toggleMenu() { menuOpen = !menuOpen; }
-	function closeMenu()  { menuOpen = false; }
+	function toggleMenu() {
+		menuOpen = !menuOpen;
+	}
+	function closeMenu() {
+		menuOpen = false;
+	}
 
 	onMount(() => {
 		function handleKeydown(event: KeyboardEvent) {
@@ -54,6 +58,7 @@
 	<a href="/" class="pf-wordmark-small" on:click={closeMenu}>Achin</a>
 	<button
 		class="pf-menu-btn"
+		class:open={menuOpen}
 		on:click={toggleMenu}
 		aria-label={menuOpen ? 'Close menu' : 'Open menu'}
 		aria-expanded={menuOpen}

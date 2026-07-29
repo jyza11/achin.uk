@@ -243,6 +243,14 @@ The works grid uses a **horizontal-swipe pattern on mobile** (custom design deci
 
 **If you break this pattern later**, update this section AND the outer `../CLAUDE.md`.
 
+### Minimal-canvas mode (art-viewing routes)
+
+`/gallery` and `/sketch` add `body.minimal-canvas` in `onMount` (removed on destroy). The `MINIMAL CANVAS MODE` section in `portfolio.css` overrides everything to pure white, chrome-less: no paper grain, no sidebar/topbar borders, no footer, no frame mat, and — deliberate artist choice — **no pull-hint pill on mobile**, trading swipe discoverability for minimalism. The mobile `.work` card background must also be overridden to white (it carries its own `var(--paper)`), not just `.frame`.
+
+Known accepted limitations:
+- Hard loads of these routes flash cream chrome before hydration (class is client-side only).
+- With the pull hint gone, `.mobile-details` (title/year/sold) is only reachable if the user guesses the swipe-up gesture.
+
 ---
 
 ## Where the vanilla HTML reference lives
