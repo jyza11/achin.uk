@@ -4,14 +4,24 @@
    Component patterns (hero, works grid, lightbox, etc.) come later.
    ═══════════════════════════════════════════════════════════ */
 
+/*
+   WHITE CANVAS PALETTE (2026-08-30) — replaced the original cream "paper"
+   scale. The page is pure white; the secondary tones are warm-neutral
+   near-whites, not cream. They stay very slightly warm (not blue-grey) so
+   they sit correctly under the warm --ink and the oxblood accent.
+
+   Previous cream values, for reference if this is ever reverted:
+     --paper #efe9dc · --paper-2 #e7e0cf · --paper-3 #ddd4bd · --rule #c9bfa8
+*/
 :root {
-	--paper: #ffffff;
-	--paper-2: #e7e0cf;
-	--paper-3: #ddd4bd;
+	--paper: #ffffff; /* the page */
+	--paper-2: #f7f6f4; /* bands, nav hover/active — barely there */
+	--paper-3: #efedea; /* deepest neutral, reserved for future use */
 	--ink: #1a1612;
 	--ink-2: #3a322a;
 	--ink-3: #6b6055;
-	--rule: #c9bfa8;
+	--rule: #e4e1dc; /* hairline borders */
+	--rule-soft: #f1efec; /* inner/secondary hairlines (was a hardcoded rgba) */
 	--oxblood: oklch(0.42 0.11 25);
 	--oxblood-ink: oklch(0.28 0.09 25);
 
@@ -21,7 +31,19 @@
 }
 
 /* base typography — applied globally, but Tailwind base reset still owns box-sizing/margins */
-body {
+/*
+   `html body` (not plain `body`) is deliberate. Skeleton's theme CSS also
+   targets `body` with `background-color: rgb(var(--color-surface-50))`, loads
+   after this file, and wins on equal specificity — and because that custom
+   property is not defined here, it computes to an INVALID colour, leaving the
+   body transparent. The page then only looked white because of the
+   `bg-white` utility on <html> in app.html.
+
+   Raising specificity to `html body` (0,0,2 vs Skeleton's 0,0,1) makes the
+   white canvas actually belong to the body, so the design no longer depends
+   on a Tailwind utility sitting behind it. Verified in-browser 2026-08-30.
+*/
+html body {
 	background: var(--paper);
 	color: var(--ink);
 	font-family: var(--sans);
@@ -32,17 +54,17 @@ body {
 	text-rendering: optimizeLegibility;
 }
 
-/* subtle paper grain overlay — sits above everything, ignores clicks */
-body::before {
-	content: '';
-	position: fixed;
-	inset: 0;
-	pointer-events: none;
-	z-index: 9999;
-	opacity: 0.35;
-	mix-blend-mode: multiply;
-	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.10  0 0 0 0 0.09  0 0 0 0 0.07  0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-}
+/*
+   PAPER GRAIN — REMOVED 2026-08-30.
+
+   The site used a fixed SVG turbulence overlay (`body::before`, 0.35 opacity,
+   `mix-blend-mode: multiply`, warm dark noise) to fake printed paper texture.
+   Multiplying a warm noise over the page is exactly what tinted white towards
+   beige, so it is incompatible with the white-canvas direction and is gone.
+
+   Do not reintroduce a multiply overlay on this design. If a texture is ever
+   wanted again, it must not darken or warm the background.
+*/
 
 /* ───────────────────────── SIDEBAR ───────────────────────── */
 
@@ -244,9 +266,12 @@ body::before {
 
 /* ─────────────────────── SITE FOOTER ─────────────────────── */
 
+/* Dark band. Text is white at 60% — was cream rgba(239,233,220,.6), the old
+   --paper value hardcoded. Note there was a duplicate `color` declaration
+   here; the cream one silently won. Now declared once. */
 .pf-footer {
 	background: var(--ink);
-	color: var(--paper);
+	color: rgba(255, 255, 255, 0.6);
 	padding: 22px 28px;
 	font-family: var(--mono);
 	font-size: 10px;
@@ -255,7 +280,6 @@ body::before {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 16px;
-	color: rgba(239, 233, 220, 0.6);
 }
 
 .pf-footer .right {
@@ -478,12 +502,12 @@ section.band {
 	font-family: var(--serif);
 	font-style: italic;
 	font-size: 22px;
-	color: rgba(239, 233, 220, 0.85);
+	color: rgba(255, 255, 255, 0.85);
 }
 .ticker-track span::after {
 	content: '·';
 	margin-left: 42px;
-	color: rgba(239, 233, 220, 0.35);
+	color: rgba(255, 255, 255, 0.35);
 }
 @keyframes ticker-scroll {
 	from {
@@ -535,7 +559,7 @@ section.band {
 	color: var(--paper);
 }
 .statement-band .section-aside {
-	color: rgba(239, 233, 220, 0.6);
+	color: rgba(255, 255, 255, 0.6);
 }
 
 .statement {
@@ -607,7 +631,7 @@ section.band {
 	font-size: 10px;
 	letter-spacing: 0.16em;
 	text-transform: uppercase;
-	color: rgba(239, 233, 220, 0.55);
+	color: rgba(255, 255, 255, 0.55);
 	display: block;
 	margin-bottom: 8px;
 }
@@ -712,7 +736,7 @@ section.band {
 	display: grid;
 	grid-template-columns: 1fr auto;
 	padding: 12px 0;
-	border-bottom: 1px solid rgba(201, 191, 168, 0.5);
+	border-bottom: 1px solid var(--rule-soft);
 	font-family: var(--serif);
 	font-size: 17px;
 	color: var(--ink);
@@ -747,7 +771,7 @@ section.band {
 	grid-template-columns: 90px 1fr;
 	gap: 12px;
 	padding: 10px 0;
-	border-top: 1px solid rgba(201, 191, 168, 0.5);
+	border-top: 1px solid var(--rule-soft);
 	font-size: 14px;
 }
 .visit-card .row .k {
@@ -939,6 +963,25 @@ section.band {
    change this breakpoint, keep the JS matchMedia in sync.
    ────────────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
+	/* The mobile gallery is NOT a full 100dvh tall: the sticky topbar and
+	   .pf-main's top padding sit above it and push it down the page. Sizing
+	   the panels to a raw 100dvh made them overhang the fold by exactly that
+	   offset, so the centred painting rendered low with dead space under the
+	   wordmark. --gallery-vh is the real visible height; use it for every
+	   full-screen panel below instead of 100dvh. */
+	:root {
+		--pf-topbar-h: 72px;
+		--pf-main-pad-top: 16px;
+		--gallery-vh: calc(100dvh - var(--pf-topbar-h));
+	}
+
+	/* Pin the topbar to the height --pf-topbar-h claims, so the maths above
+	   stays true if the wordmark or menu button ever changes size. */
+	.pf-topbar-mobile {
+		height: var(--pf-topbar-h);
+		box-sizing: border-box;
+	}
+
 	.works {
 		display: flex;
 		flex-direction: row;
@@ -955,8 +998,11 @@ section.band {
 		right: 50%;
 		margin-left: -50vw;
 		margin-right: -50vw;
+		/* Break out vertically too: cancel .pf-main's top padding so the
+		   painting sits flush under the topbar and its gaps stay symmetric. */
+		margin-top: calc(-1 * var(--pf-main-pad-top));
 
-		height: 100dvh; /* dynamic vh — mobile Safari safe */
+		height: var(--gallery-vh); /* dynamic vh minus the chrome above */
 		overflow-x: auto;
 		overflow-y: hidden;
 		scroll-snap-type: x mandatory;
@@ -980,7 +1026,7 @@ section.band {
 		grid-column: unset;
 		flex: 0 0 100vw;
 		width: 100vw;
-		height: 100dvh;
+		height: var(--gallery-vh);
 		overflow-y: auto;
 		scroll-snap-align: center;
 		scroll-snap-stop: always;
@@ -1006,7 +1052,7 @@ section.band {
      44px bottom leaves room for the pull-hint pill without cramping it. */
 	.work .frame,
 	.work[data-shape] .frame {
-		height: 100dvh;
+		height: var(--gallery-vh);
 		aspect-ratio: unset;
 		min-height: unset;
 		scroll-snap-align: start;
@@ -1022,7 +1068,9 @@ section.band {
 	}
 	.work .frame img {
 		object-fit: contain; /* preserve painting's aspect on mobile */
-		max-height: calc(100dvh - 52px); /* padding top+bottom — image can fill nearly full height */
+		max-height: calc(
+			var(--gallery-vh) - 52px
+		); /* padding top+bottom — image can fill nearly full height */
 		width: auto;
 		max-width: 100%;
 		margin: 0 auto;
@@ -1059,7 +1107,7 @@ section.band {
 		flex-direction: column;
 		justify-content: center;
 		gap: 10px;
-		height: 100dvh;
+		height: var(--gallery-vh);
 		scroll-snap-align: start;
 		scroll-snap-stop: always;
 		padding: 40px 28px 56px;
@@ -1136,10 +1184,8 @@ body.minimal-canvas {
 	background: #ffffff;
 }
 
-/* Kill the paper-grain overlay entirely on this mode. */
-body.minimal-canvas::before {
-	display: none;
-}
+/* (The paper-grain override that used to live here is gone — the grain itself
+   was removed globally on 2026-08-30, so there is nothing left to kill.) */
 
 /* Sidebar → white, no border. Nav links keep their own hover + active
    colour to stay discoverable without a visible container edge. */
@@ -1202,7 +1248,7 @@ body.minimal-canvas .section-head--footer {
 	/* With padding zeroed the image can now fill the frame edge-to-edge
      (still object-fit: contain, so aspect is preserved — no cropping). */
 	body.minimal-canvas .work .frame img {
-		max-height: 100dvh;
+		max-height: var(--gallery-vh);
 		max-width: 100vw;
 	}
 }
@@ -1286,7 +1332,7 @@ body.minimal-canvas .section-head--footer {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 16px;
-	border-top: 1px solid rgba(239, 233, 220, 0.2);
+	border-top: 1px solid rgba(255, 255, 255, 0.2);
 	padding-top: 20px;
 	margin-bottom: 28px;
 }
@@ -1295,7 +1341,7 @@ body.minimal-canvas .section-head--footer {
 	font-size: 10px;
 	letter-spacing: 0.16em;
 	text-transform: uppercase;
-	color: rgba(239, 233, 220, 0.55);
+	color: rgba(255, 255, 255, 0.55);
 	margin: 0;
 }
 .lb-spec dd {
@@ -1311,7 +1357,7 @@ body.minimal-canvas .section-head--footer {
 	right: 24px;
 	width: 44px;
 	height: 44px;
-	border: 1px solid rgba(239, 233, 220, 0.3);
+	border: 1px solid rgba(255, 255, 255, 0.3);
 	border-radius: 999px;
 	color: var(--paper);
 	background: transparent;
@@ -1324,7 +1370,7 @@ body.minimal-canvas .section-head--footer {
 	cursor: pointer;
 }
 .lb-close:hover {
-	background: rgba(239, 233, 220, 0.1);
+	background: rgba(255, 255, 255, 0.1);
 }
 
 .lb-counter {
@@ -1332,7 +1378,7 @@ body.minimal-canvas .section-head--footer {
 	font-size: 11px;
 	letter-spacing: 0.18em;
 	text-transform: uppercase;
-	color: rgba(239, 233, 220, 0.5);
+	color: rgba(255, 255, 255, 0.5);
 	margin-bottom: 14px;
 }
 
@@ -1342,7 +1388,7 @@ body.minimal-canvas .section-head--footer {
 	margin-top: 8px;
 }
 .lb-nav button {
-	border: 1px solid rgba(239, 233, 220, 0.3);
+	border: 1px solid rgba(255, 255, 255, 0.3);
 	background: transparent;
 	color: var(--paper);
 	padding: 12px 18px;
@@ -1353,7 +1399,7 @@ body.minimal-canvas .section-head--footer {
 	cursor: pointer;
 }
 .lb-nav button:hover {
-	background: rgba(239, 233, 220, 0.08);
+	background: rgba(255, 255, 255, 0.08);
 }
 
 @media (max-width: 768px) {

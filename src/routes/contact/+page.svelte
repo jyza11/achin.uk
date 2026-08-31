@@ -78,7 +78,7 @@
 	.contact-form {
 		margin-top: 28px;
 		padding-top: 24px;
-		border-top: 1px solid rgba(201, 191, 168, 0.5);
+		border-top: 1px solid var(--rule-soft);
 		display: flex;
 		flex-direction: column;
 		gap: 18px;
@@ -119,7 +119,7 @@
 	.thanks {
 		margin-top: 28px;
 		padding-top: 24px;
-		border-top: 1px solid rgba(201, 191, 168, 0.5);
+		border-top: 1px solid var(--rule-soft);
 		font-family: var(--serif);
 		font-style: italic;
 		font-size: 17px;

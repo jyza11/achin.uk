@@ -61,17 +61,24 @@
 
 ---
 
-## Design tokens — the same as the reference
+## Design tokens — WHITE canvas (diverges from the reference)
 
-Full palette + font stack lives in `src/lib/styles/portfolio.css:1–21`. Preserve these names exactly — components reference them by name.
+Full palette + font stack lives in `src/lib/styles/portfolio.css:16–31`. Preserve these names exactly — components reference them by name.
 
 ```css
---paper, --paper-2, --paper-3         /* backgrounds, cream tones */
+--paper, --paper-2, --paper-3         /* backgrounds — WHITE + warm near-whites */
 --ink, --ink-2, --ink-3               /* text, dark sections */
---rule                                /* hairline borders */
+--rule, --rule-soft                   /* hairline borders (soft = inner/secondary) */
 --oxblood, --oxblood-ink              /* single accent */
 --serif, --sans, --mono               /* three-role font stack */
 ```
+
+**⚠️ The app is white, the vanilla reference is cream.** As of **2026-08-30** `--paper` is `#ffffff` and the secondary tones are warm near-whites (`#f7f6f4`, `#efedea`), with hairlines at `#e4e1dc` / `#f1efec`. The artist's direction: nothing tints the artwork.
+
+- **Never reintroduce cream** — `#efe9dc`, `#e7e0cf`, `#ddd4bd`, `#c9bfa8`, `rgba(201,191,168,…)` are all retired. When porting a pattern from the reference, translate its cream to the white scale.
+- **Warm-neutral, not cold grey.** They must sit under the warm `--ink`. No `#f5f5f5` / `#eee`.
+- **No hardcoded colours** — use the tokens.
+- **The paper grain is gone** (removed 2026-08-30). It was a `body::before` SVG-turbulence overlay with `mix-blend-mode: multiply`; multiplying warm dark noise is what made white read as beige. Do not add any darkening overlay back.
 
 **Font-role rule (from the design reference):**
 - `--serif` (Cormorant Garamond) = voice (headlines, quotes, body prose)
@@ -245,11 +252,14 @@ The works grid uses a **horizontal-swipe pattern on mobile** (custom design deci
 
 ### Minimal-canvas mode (art-viewing routes)
 
-`/gallery` and `/sketch` add `body.minimal-canvas` in `onMount` (removed on destroy). The `MINIMAL CANVAS MODE` section in `portfolio.css` overrides everything to pure white, chrome-less: no paper grain, no sidebar/topbar borders, no footer, no frame mat, and — deliberate artist choice — **no pull-hint pill on mobile**, trading swipe discoverability for minimalism. The mobile `.work` card background must also be overridden to white (it carries its own `var(--paper)`), not just `.frame`.
+`/gallery` and `/sketch` add `body.minimal-canvas` in `onMount` (removed on destroy). The `MINIMAL CANVAS MODE` section in `portfolio.css` strips the page to chrome-less: no sidebar/topbar borders, no footer, no frame mat, and — deliberate artist choice — **no pull-hint pill on mobile**, trading swipe discoverability for minimalism.
 
-Known accepted limitations:
-- Hard loads of these routes flash cream chrome before hydration (class is client-side only).
+**Scope note (changed 2026-08-30):** this mode used to do two jobs — turn cream into white *and* remove chrome. Now that the **whole site is white by default**, only the chrome-removal half still does anything. The redundant colour overrides are harmless but no longer load-bearing; the paper-grain override was deleted outright because the grain itself is gone.
+
+Known accepted limitation:
 - With the pull hint gone, `.mobile-details` (title/year/sold) is only reachable if the user guesses the swipe-up gesture.
+
+(The old "hard loads flash cream chrome before hydration" limitation is **resolved** — there is no cream left to flash. The base page and the minimal-canvas page are now the same colour, so the client-side class toggle is no longer visible.)
 
 ---
 

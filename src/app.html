@@ -1,5 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" class="bg-white dark:bg-black">
+<!--
+	`dark:bg-black` removed 2026-08-30. This is a white-canvas design with
+	near-black ink; there is no dark theme. Skeleton's dark variant is
+	class-based, so the utility was dormant — but any future `.dark` class on
+	<html> would have turned the page black under near-black text. The white
+	canvas now lives on `html body` in portfolio.css; `bg-white` here is just
+	a belt-and-braces paint for the area outside the body box.
+-->
+<html lang="en" class="bg-white">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
