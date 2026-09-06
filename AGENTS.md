@@ -43,7 +43,18 @@ npm run dev          # Vite dev server :5173
 npm run check        # svelte-check — expect 0 errors (4 a11y warnings in orphaned DonationCard are known)
 npm run build        # adapter-netlify build — must pass before commit
 npm run lint         # prettier --check + eslint — must pass before commit (npm run format fixes style)
+node scripts/seed-dev.mjs   # dev only: one painting + /about text into a running local PocketBase
 ```
+
+**CMS backend (local dev):** the PocketBase binary lives at `pocketbase/pocketbase` (git-ignored;
+download the darwin_arm64 release matching `pocketbase/pb_migrations/` — v0.40.3 as of 2026-09-06 —
+and verify its sha256 against the release `checksums.txt`). Run it via the `pocketbase` entry in
+`.claude/launch.json` (= `./pocketbase/pocketbase serve --http=127.0.0.1:8090 --dir=./pocketbase/pb_data
+--migrationsDir=./pocketbase/pb_migrations`). Dashboard: `http://127.0.0.1:8090/_/`. Migrations in
+`pb_migrations/` apply on start and **are the schema of record — commit them; never edit
+collections only in the dashboard.** Dev superuser credentials: `pocketbase/.env.dev` (git-ignored;
+create with `./pocketbase/pocketbase superuser upsert <email> <password> --dir=./pocketbase/pb_data`).
+The site reads `PUBLIC_PB_URL` from `.env` (copy `.env.example`).
 
 **After `npx sv migrate …` or any major dependency bump:**
 `rm -rf node_modules package-lock.json && npm install`. The migrate tool edits `package.json`
@@ -59,10 +70,14 @@ src/
 ├── lib/
 │   ├── styles/portfolio.css design tokens (:root ~line 16) + all site CSS, sections split by ═══ dividers
 │   ├── components/          WorksGrid, Lightbox, DonationCard (orphaned — unbuilt donation feature, spec ../SUPPORT-README.md)
-│   ├── data/works.ts        Vite glob of assets → galleryWorks / sketchWorks (+ optional .jpg.json sidecars, 0 exist)
+│   ├── data/works.ts        Vite glob of bundled assets → galleryWorks / sketchWorks — now the FALLBACK when the CMS is down
+│   ├── server/              pb.ts (client, 3s timeout) · works.ts loadWorks() · content.ts loadBlocks() — server-only
+│   ├── text.ts              paragraphs() helper shared by server + components
 │   ├── stores/lightbox.ts   factory store with method API
 │   └── assets/              224 images, 65 MB, in git: gallery/ 75 · sketch/ 81 · 68 loose untriaged (pro.jpg = portrait)
-└── routes/                  / gallery sketch about contact events (+layout = sidebar/mobile drawer/nav source, +error)
+└── routes/                  / gallery sketch about contact events; /, gallery, sketch, about have +page.server.ts (CMS loads)
+pocketbase/                  pb_migrations/ = schema (committed) · pocketbase binary, pb_data/, .env.dev = local only (ignored)
+scripts/seed-dev.mjs         dev seed (one painting + /about blocks)
 AGENTS.md                    this file — orientation + all design decisions
 NOTES.md                     dated small observations
 ```
@@ -84,24 +99,31 @@ NOTES.md                     dated small observations
 **Built and verified in browser:** all 6 routes, sidebar + mobile drawer, WorksGrid + Lightbox
 (open/arrows/Escape/focus/scroll-lock), minimal-canvas mode, white palette, Svelte 5, Skeleton
 removed, desktop grid no longer crops (`object-fit: contain`), `check` + `lint` + `build` clean.
-**The site is a test site** — not yet public; launch window 7–9 Sep 2026 (Part 2 › Deployment).
+**CMS slice works (2026-09-06):** `/`, `/gallery`, `/sketch`, `/about` load from a local
+PocketBase server-side; one seeded painting and the `/about` text render from the CMS; `/sketch`
+(no CMS rows yet) and any route with the backend down fall back to the bundled images /
+hardcoded text. **The site is a test site** — not yet public; launch window 7–9 Sep 2026.
 
-**Known gaps:** images in git with iPhone UUID names and no thumbnails; 68 loose files untriaged;
-**all page text is hardcoded in `.svelte` files** (inventory in Part 2 › CMS design); contact
-info is placeholder and **the contact form is fake** (`handleSubmit` only flips a flag);
-`contact/article.js` is an orphaned 中文 essay; `DonationCard` orphaned; the desktop grid's frame
-mat is a warm near-white (`oklch(0.965 0.012 80)`) — owner to confirm it's not "cream".
+**Known gaps:** the 224 bundled images are still the live content until migrated (iPhone UUID
+names, no metadata); 68 loose files untriaged; the CMS serves the uploaded file at full size on
+its raw URL (the site only requests `?thumb=` — a server-side resize hook is still to do);
+contact info is placeholder and **the contact form is fake**; `contact/article.js` is an orphaned
+中文 essay; `DonationCard` orphaned; the desktop grid's frame mat is a warm near-white
+(`oklch(0.965 0.012 80)`) — owner to confirm it's not "cream".
 
 ## Next actions (in order)
 
-1. **CMS slice (approved 2026-09-06):** PocketBase locally → `works` + `content_blocks`
-   collections → upload one painting and Achin's intro through the built-in dashboard →
-   `/gallery` and `/about` fetch server-side → verify in browser. Adds the `pocketbase` package.
+1. **Achin tries the dashboard** (`http://127.0.0.1:8090/_/` on the owner's Mac, or after
+   deployment on the VPS): upload a real painting, edit `about.quote`/`about.statement`. His
+   feedback shapes the custom `/admin`.
 2. **Deployment** (Part 2): pick the VPS, DNS → Cloudflare, ship the test site in the 7–9 Sep
    window. The static site can launch before the CMS backend is live.
 3. **Contact form** → Netlify Forms before launch (messages vanish today).
-4. Triage the 68 loose images → migration script → custom `/admin` → SEO pass.
-5. Later: CSS design system + admin UI styling (Tailwind keep/remove decided then); Business
+4. Migration: triage the 68 loose images → script the 224 images into `works` (reuse
+   `scripts/seed-dev.mjs` as the template) → drop the Vite-glob fallback data once complete.
+5. Server-side resize hook (`pb_hooks/`) so originals never leave the private field; then custom
+   `/admin`, SEO pass.
+6. Later: CSS design system + admin UI styling (Tailwind keep/remove decided then); Business
    features.
 
 ## Doc rules — every agent, every edit
@@ -172,8 +194,9 @@ pipeline only ever produces a smaller faithful copy.
 
 ## [Platform] CMS design — content, media, data layer
 
-**Status:** v2.1 **APPROVED for a local prototype** 2026-09-06 (the "CMS slice", Next actions #1).
-Full build follows the slice. v2 replaced the Supabase design (v1, 2026-08-31); v2.1 narrowed scope.
+**Status:** v2.1 **APPROVED 2026-09-06; the local slice is built and verified** (schema v1 in
+`pocketbase/pb_migrations/`, server-side loads with fallback, seed script). Next: artist trial,
+then migration of the 224 images. v2 replaced the Supabase design (v1, 2026-08-31).
 
 ### Scope
 
@@ -219,10 +242,14 @@ direction (its rule governs the media pipeline below).
 - Migration blockers: triage the 68 loose files in `src/lib/assets/` (works vs page imagery —
   needs the owner's eyes), then a one-time script: 224 images → PocketBase (originals private +
   web-res public) + seeded metadata rows.
-- **Slice first, spec second:** the local prototype (one painting + Achin's intro in, shown on
-  the site) validates the shape; the full spec (collections schema, admin flow, migration script
-  plan, backup/restore cron) is written from what the slice teaches. Server hardening lives under
-  Deployment.
+- **Schema v1 (built):** `works` — title_zh/en, description_zh/en, year, medium, size, sold,
+  collection (gallery|sketch), sort, status (draft|published), `image` (public, thumbs
+  `400x0`/`1600x0` = width-fit, never crop), `original` (protected file). `content_blocks` —
+  slug (unique), text_zh, text_en, note. Rules: read published/public rows without auth; write
+  requires a `users` login. Superusers (owner) bypass rules.
+- **Still to build:** server-side resize hook so the raw `image` URL never exposes full
+  resolution; `users` accounts for Achin + team (roles); the custom `/admin`; backup/restore cron
+  (Deployment).
 
 ### Reasoning
 
