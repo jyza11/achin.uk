@@ -28,7 +28,8 @@
 		<div class="visit-text">
 			<h2>Quiet hours, <em>open door</em>.</h2>
 			<p>
-				The studio is open by appointment for visitors, collectors, and curators. Acquisitions, commissions, and press inquiries — please write directly.
+				The studio is open by appointment for visitors, collectors, and curators. Acquisitions,
+				commissions, and press inquiries — please write directly.
 			</p>
 			<div class="hours">
 				<div class="hours-row"><span>Mon · Tue</span><span>10—18h</span></div>

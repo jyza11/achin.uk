@@ -14,7 +14,8 @@
 	<div class="events-empty">
 		<p class="events-empty-line">展覽 · Coming soon</p>
 		<p class="events-empty-deck">
-			Exhibition listings will appear here as they're scheduled. For studio visits and press inquiries in the meantime, see
+			Exhibition listings will appear here as they're scheduled. For studio visits and press
+			inquiries in the meantime, see
 			<a href="/contact">合作</a>.
 		</p>
 	</div>

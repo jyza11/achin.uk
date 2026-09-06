@@ -1,9 +1,9 @@
 // src/routes/blog/article.js
 export default {
-    title: "故事的開始 往往只是因為一個念頭",
-    author: "Andy",
-    publishDate: "2024-03-15",
-    content: `
+	title: '故事的開始 往往只是因為一個念頭',
+	author: 'Andy',
+	publishDate: '2024-03-15',
+	content: `
     故事的開始 往往只是因為一個念頭
 
     好玩~好事~好開心~好愛.............
@@ -85,4 +85,4 @@ export default {
     
     並不自私的和別人分享過後.......... andy
     `.trim()
-  };
+};

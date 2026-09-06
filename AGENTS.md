@@ -27,13 +27,13 @@ Part 2 — Design decisions, by category: [Guideline] Art direction · [Platform
 
 ## Stack
 
-| Layer | Choice | Note |
-|---|---|---|
-| Framework | SvelteKit 2 + **Svelte 5** (runes) | Migrated 2026-09-06. `$state/$derived/$effect/$props`, `onclick`, `{@render children()}`. No `svelte/legacy` shims — don't add any. |
-| Language | TypeScript 5, Vite 5 | `<script lang="ts">` everywhere |
-| Styling | Hand-written `src/lib/styles/portfolio.css` (1,535 lines) | **Tailwind 3.4 installed but unused** (utilities only in the orphaned `DonationCard`). **Skeleton UI 2.11 installed, never activated** — its tokens resolve to nothing; don't use them. Removal decided later (see Next actions). |
-| Deploy | `@sveltejs/adapter-netlify`, `edge:false`, `split:false` | Don't change without OK |
-| Lint | ESLint 9 + Prettier 3 | `npm run lint` currently fails — pre-existing, see Commands |
+| Layer     | Choice                                                    | Note                                                                                                                                                                                                                              |
+| --------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Framework | SvelteKit 2 + **Svelte 5** (runes)                        | Migrated 2026-09-06. `$state/$derived/$effect/$props`, `onclick`, `{@render children()}`. No `svelte/legacy` shims — don't add any.                                                                                               |
+| Language  | TypeScript 5, Vite 5                                      | `<script lang="ts">` everywhere                                                                                                                                                                                                   |
+| Styling   | Hand-written `src/lib/styles/portfolio.css` (1,535 lines) | **Tailwind 3.4 installed but unused** (utilities only in the orphaned `DonationCard`). **Skeleton UI 2.11 installed, never activated** — its tokens resolve to nothing; don't use them. Removal decided later (see Next actions). |
+| Deploy    | `@sveltejs/adapter-netlify`, `edge:false`, `split:false`  | Don't change without OK                                                                                                                                                                                                           |
+| Lint      | ESLint 9 + Prettier 3                                     | `npm run lint` currently fails — pre-existing, see Commands                                                                                                                                                                       |
 
 ## Commands
 
@@ -225,17 +225,17 @@ serving needs — the private/public split and Cloudflare edge do the media work
 omitted Supabase's 7-day free-tier auto-pause, which would have taken the data down in a quiet
 week.
 
-| | Sveltia (git-based) | Supabase (managed BaaS) | PocketBase self-hosted (chosen) |
-|---|---|---|---|
-| Core idea | repo IS the database; saves are commits | rent Postgres+storage+auth | one Go binary you run; SQLite |
-| Business data later | ❌ impossible (webhooks can't write commits) | ✅ | ✅ |
-| Edit→live | 2–4 min rebuild | instant | instant |
-| Cost | £0 | £0 with pause + egress caps, then $25/mo | £0 marginal |
-| Learning value | low | medium | high — the point |
-| Uptime owner | Netlify | vendor | the site owner — accepted trade |
-| Exit path | files already in repo | `pg_dump` | copy one SQLite file + uploads dir |
-| Day-1 admin UI | ✅ | ❌ must build | ✅ built-in |
-| Credential blast radius | GitHub token = **code write** | data only | data only |
+|                         | Sveltia (git-based)                          | Supabase (managed BaaS)                  | PocketBase self-hosted (chosen)    |
+| ----------------------- | -------------------------------------------- | ---------------------------------------- | ---------------------------------- |
+| Core idea               | repo IS the database; saves are commits      | rent Postgres+storage+auth               | one Go binary you run; SQLite      |
+| Business data later     | ❌ impossible (webhooks can't write commits) | ✅                                       | ✅                                 |
+| Edit→live               | 2–4 min rebuild                              | instant                                  | instant                            |
+| Cost                    | £0                                           | £0 with pause + egress caps, then $25/mo | £0 marginal                        |
+| Learning value          | low                                          | medium                                   | high — the point                   |
+| Uptime owner            | Netlify                                      | vendor                                   | the site owner — accepted trade    |
+| Exit path               | files already in repo                        | `pg_dump`                                | copy one SQLite file + uploads dir |
+| Day-1 admin UI          | ✅                                           | ❌ must build                            | ✅ built-in                        |
+| Credential blast radius | GitHub token = **code write**                | data only                                | data only                          |
 
 **Known risks, accepted:** you are the uptime (mitigated by the Netlify frontend staying up +
 content snapshot + Cloudflare cache); PocketBase is pre-1.0 (pin, back up before upgrades, read

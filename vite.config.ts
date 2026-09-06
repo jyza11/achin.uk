@@ -18,26 +18,26 @@ export default defineConfig({
 			legacy: true,
 			safelist: {
 				greedy: [
-					/^pf-/,        // sidebar / topbar / footer / content shell
-					/^work/,       // works grid + work cells (data-shape attr)
-					/^frame/,      // mat frame inside .work
-					/^lightbox/,   // lightbox container
-					/^lb-/,        // lightbox descendants (lb-inner, lb-art, lb-meta, lb-close…)
-					/^section-/,   // section chrome (head/num/title/aside)
-					/^band$/,      // <section class="band">
-					/^visit/,      // visit band (hours, address)
-					/^hours/,      // hours grid
-					/^statement/,  // about page statement
-					/^events?$/,   // events page
-					/^contact/,    // contact page
-					/^page-cta/,   // page cta block
-					/^btn$/,       // buttons
-					/^pq$/,        // page quote
-					/^kk$/,        // small uppercase label inside lightbox
+					/^pf-/, // sidebar / topbar / footer / content shell
+					/^work/, // works grid + work cells (data-shape attr)
+					/^frame/, // mat frame inside .work
+					/^lightbox/, // lightbox container
+					/^lb-/, // lightbox descendants (lb-inner, lb-art, lb-meta, lb-close…)
+					/^section-/, // section chrome (head/num/title/aside)
+					/^band$/, // <section class="band">
+					/^visit/, // visit band (hours, address)
+					/^hours/, // hours grid
+					/^statement/, // about page statement
+					/^events?$/, // events page
+					/^contact/, // contact page
+					/^page-cta/, // page cta block
+					/^btn$/, // buttons
+					/^pq$/, // page quote
+					/^kk$/, // small uppercase label inside lightbox
 					/^pf-sidebar-backdrop$/, // mobile drawer backdrop
-					/^open$/,      // .open modifier (drawer, lightbox)
-					/^active$/,    // .active modifier (current nav link)
-					/^romaji$/     // sidebar nav romaji label
+					/^open$/, // .open modifier (drawer, lightbox)
+					/^active$/, // .active modifier (current nav link)
+					/^romaji$/ // sidebar nav romaji label
 				]
 			}
 		})
@@ -46,12 +46,5 @@ export default defineConfig({
 	// files like IMG_001.JPG (default from iPhone/Mac) match the glob in
 	// src/lib/data/works.ts but Vite refuses to handle them as URL assets,
 	// silently dropping them from gallery/sketch grids.
-	assetsInclude: [
-		'**/*.JPG',
-		'**/*.JPEG',
-		'**/*.PNG',
-		'**/*.GIF',
-		'**/*.WEBP',
-		'**/*.AVIF'
-	]
+	assetsInclude: ['**/*.JPG', '**/*.JPEG', '**/*.PNG', '**/*.GIF', '**/*.WEBP', '**/*.AVIF']
 });

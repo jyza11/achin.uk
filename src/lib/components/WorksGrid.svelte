@@ -12,11 +12,13 @@
 	// Validate limit: null/undefined → show all; finite non-negative number → slice;
 	// anything else (NaN, negative, Infinity) → show all (defensive — these would
 	// silently produce empty/wrong slices otherwise).
-	let visible = $derived((() => {
-		if (limit === null || limit === undefined) return works;
-		if (!Number.isFinite(limit) || limit < 0) return works;
-		return works.slice(0, Math.floor(limit));
-	})());
+	let visible = $derived(
+		(() => {
+			if (limit === null || limit === undefined) return works;
+			if (!Number.isFinite(limit) || limit < 0) return works;
+			return works.slice(0, Math.floor(limit));
+		})()
+	);
 
 	function openLightbox(index: number) {
 		// Mobile uses the horizontal-swipe pattern with a per-painting details

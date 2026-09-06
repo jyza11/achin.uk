@@ -53,7 +53,10 @@ function filenameToTitle(path: string): string {
 	const name = base.replace(/\.[^.]+$/, '');
 	return name
 		.replace(/[-_]/g, ' ')
-		.replace(/(^|[^a-zA-Z])([a-z])/g, (_, prefix: string, letter: string) => prefix + letter.toUpperCase());
+		.replace(
+			/(^|[^a-zA-Z])([a-z])/g,
+			(_, prefix: string, letter: string) => prefix + letter.toUpperCase()
+		);
 }
 
 /**
@@ -159,15 +162,15 @@ const sketchModules = import.meta.glob(
 
 // Sidecar JSON metadata — eagerly imported and parsed by Vite. Absent for
 // images without a `.json` sibling; that's fine, the work just uses defaults.
-const galleryMeta = import.meta.glob(
-	'../assets/gallery/*.json',
-	{ eager: true }
-) as Record<string, unknown>;
+const galleryMeta = import.meta.glob('../assets/gallery/*.json', { eager: true }) as Record<
+	string,
+	unknown
+>;
 
-const sketchMeta = import.meta.glob(
-	'../assets/sketch/*.json',
-	{ eager: true }
-) as Record<string, unknown>;
+const sketchMeta = import.meta.glob('../assets/sketch/*.json', { eager: true }) as Record<
+	string,
+	unknown
+>;
 
 export const galleryWorks: Work[] = buildWorks(galleryModules, galleryMeta, 'gallery');
 export const sketchWorks: Work[] = buildWorks(sketchModules, sketchMeta, 'sketch');

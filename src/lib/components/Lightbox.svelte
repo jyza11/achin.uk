@@ -93,13 +93,20 @@
 					{#if imageError}
 						<div class="lb-error">
 							<p>Couldn't load this image.</p>
-							<button type="button" onclick={() => { imageError = false; }}>Retry</button>
+							<button
+								type="button"
+								onclick={() => {
+									imageError = false;
+								}}>Retry</button
+							>
 						</div>
 					{:else}
 						<img
 							src={current.src}
 							alt={current.alt}
-							onerror={() => { imageError = true; }}
+							onerror={() => {
+								imageError = true;
+							}}
 						/>
 					{/if}
 				</div>
@@ -115,16 +122,28 @@
 				{#if current.medium || current.size || current.year || current.sold}
 					<dl class="lb-spec">
 						{#if current.medium}
-							<div><dt>Medium</dt><dd>{current.medium}</dd></div>
+							<div>
+								<dt>Medium</dt>
+								<dd>{current.medium}</dd>
+							</div>
 						{/if}
 						{#if current.size}
-							<div><dt>Size</dt><dd>{current.size}</dd></div>
+							<div>
+								<dt>Size</dt>
+								<dd>{current.size}</dd>
+							</div>
 						{/if}
 						{#if current.year}
-							<div><dt>Year</dt><dd>{current.year}</dd></div>
+							<div>
+								<dt>Year</dt>
+								<dd>{current.year}</dd>
+							</div>
 						{/if}
 						{#if current.sold}
-							<div><dt>Status</dt><dd>Sold</dd></div>
+							<div>
+								<dt>Status</dt>
+								<dd>Sold</dd>
+							</div>
 						{/if}
 					</dl>
 				{/if}

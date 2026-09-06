@@ -21,13 +21,17 @@
 		</div>
 		<div>
 			<p class="pq">
-				我不在家就在去咖啡館的路上 — 雙叟 · 左岸 · 巴黎 · 花街 — 黃金海岸的比基尼 — 可憐我一雙 Ferragamo 的高跟鞋。
+				我不在家就在去咖啡館的路上 — 雙叟 · 左岸 · 巴黎 · 花街 — 黃金海岸的比基尼 — 可憐我一雙
+				Ferragamo 的高跟鞋。
 			</p>
 			<p>
-				A practice built on slow looking. Oil on linen, graphite on paper, and the long hours between — light, weather, and the corners of rooms held still long enough to draw out the hour before the room forgets itself.
+				A practice built on slow looking. Oil on linen, graphite on paper, and the long hours
+				between — light, weather, and the corners of rooms held still long enough to draw out the
+				hour before the room forgets itself.
 			</p>
 			<p>
-				Working from life and from memory. Sittings at the café, drawings in the morning, paintings revisited in the studio after the day has cooled.
+				Working from life and from memory. Sittings at the café, drawings in the morning, paintings
+				revisited in the studio after the day has cooled.
 			</p>
 
 			<div class="statement-meta">

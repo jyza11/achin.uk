@@ -5,13 +5,15 @@
 	let message = $derived($page.error?.message ?? '');
 
 	// Friendly labels per status — fall through to the raw message otherwise
-	let label = $derived((() => {
-		if (status === 404) return 'Page not found';
-		if (status === 403) return 'Forbidden';
-		if (status === 410) return 'Gone';
-		if (status >= 500) return 'Something went wrong';
-		return message || 'Error';
-	})());
+	let label = $derived(
+		(() => {
+			if (status === 404) return 'Page not found';
+			if (status === 403) return 'Forbidden';
+			if (status === 410) return 'Gone';
+			if (status >= 500) return 'Something went wrong';
+			return message || 'Error';
+		})()
+	);
 </script>
 
 <svelte:head>
@@ -58,7 +60,10 @@
 	}
 
 	.error-status {
-		font-family: system-ui, -apple-system, sans-serif;
+		font-family:
+			system-ui,
+			-apple-system,
+			sans-serif;
 		font-size: clamp(4rem, 12vw, 7rem);
 		font-weight: 200;
 		line-height: 1;
@@ -96,7 +101,9 @@
 		text-decoration: none;
 		padding: 0.25rem 0;
 		border-bottom: 1px solid transparent;
-		transition: border-color 0.15s ease, color 0.15s ease;
+		transition:
+			border-color 0.15s ease,
+			color 0.15s ease;
 	}
 
 	.error-link:hover,
