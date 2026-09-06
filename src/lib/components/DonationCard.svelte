@@ -102,10 +102,13 @@
 
 	<!-- Amount Selection -->
 	<div class="mb-6">
-		<label class="block text-sm font-semibold text-surface-700 dark:text-surface-200 mb-3">
+		<p
+			id="donation-amount-label"
+			class="block text-sm font-semibold text-surface-700 dark:text-surface-200 mb-3"
+		>
 			捐款金額
-		</label>
-		<div class="grid grid-cols-3 gap-2 mb-4">
+		</p>
+		<div class="grid grid-cols-3 gap-2 mb-4" role="group" aria-labelledby="donation-amount-label">
 			{#each presetAmounts as amount}
 				<button
 					class="py-3 px-4 rounded-lg border-2 transition-all duration-200 font-medium
@@ -140,10 +143,14 @@
 	<!-- Donor Information -->
 	<div class="mb-6 space-y-4">
 		<div>
-			<label class="block text-sm font-semibold text-surface-700 dark:text-surface-200 mb-2">
+			<label
+				for="donor-name"
+				class="block text-sm font-semibold text-surface-700 dark:text-surface-200 mb-2"
+			>
 				Full Name *
 			</label>
 			<input
+				id="donor-name"
 				type="text"
 				bind:value={donorName}
 				placeholder="Enter your name"
@@ -156,10 +163,14 @@
 		</div>
 
 		<div>
-			<label class="block text-sm font-semibold text-surface-700 dark:text-surface-200 mb-2">
+			<label
+				for="donor-email"
+				class="block text-sm font-semibold text-surface-700 dark:text-surface-200 mb-2"
+			>
 				Email Address *
 			</label>
 			<input
+				id="donor-email"
 				type="email"
 				bind:value={donorEmail}
 				placeholder="Enter your email"
@@ -172,10 +183,14 @@
 		</div>
 
 		<div>
-			<label class="block text-sm font-semibold text-surface-700 dark:text-surface-200 mb-2">
+			<label
+				for="donor-message"
+				class="block text-sm font-semibold text-surface-700 dark:text-surface-200 mb-2"
+			>
 				Message (Optional)
 			</label>
 			<textarea
+				id="donor-message"
 				bind:value={message}
 				placeholder="Leave a message..."
 				rows="3"

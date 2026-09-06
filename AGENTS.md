@@ -11,7 +11,7 @@ This folder is its own git repo (remote `git@github.com:jyza11/achin.uk.git`, br
 
 **Contents**
 Part 1 — Orientation: Project rules · Stack · Commands · Folder map · Conventions · State · Next actions · Doc rules
-Part 2 — Design decisions, by category: [Guideline] Art direction · [Platform] CMS design · [Later] Business features
+Part 2 — Design decisions, by category: [Guideline] Art direction · [Platform] CMS design · [Platform] Deployment · [Later] Business features
 
 ---
 
@@ -31,9 +31,9 @@ Part 2 — Design decisions, by category: [Guideline] Art direction · [Platform
 | --------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Framework | SvelteKit 2 + **Svelte 5** (runes)                        | Migrated 2026-09-06. `$state/$derived/$effect/$props`, `onclick`, `{@render children()}`. No `svelte/legacy` shims — don't add any.                                                                                               |
 | Language  | TypeScript 5, Vite 5                                      | `<script lang="ts">` everywhere                                                                                                                                                                                                   |
-| Styling   | Hand-written `src/lib/styles/portfolio.css` (1,535 lines) | **Tailwind 3.4 installed but unused** (utilities only in the orphaned `DonationCard`). **Skeleton UI 2.11 installed, never activated** — its tokens resolve to nothing; don't use them. Removal decided later (see Next actions). |
-| Deploy    | `@sveltejs/adapter-netlify`, `edge:false`, `split:false`  | Don't change without OK                                                                                                                                                                                                           |
-| Lint      | ESLint 9 + Prettier 3                                     | `npm run lint` currently fails — pre-existing, see Commands                                                                                                                                                                       |
+| Styling   | Hand-written `src/lib/styles/portfolio.css` (1,535 lines) | **Tailwind 3.4 installed but unused** (utilities only in the orphaned `DonationCard`); keep/remove decided with the admin UI. Skeleton UI was removed 2026-09-06 — never activated. |
+| Deploy    | `@sveltejs/adapter-netlify`, `edge:false`, `split:false`  | Don't change without OK. See Part 2 › Deployment. |
+| Lint      | ESLint 9 + Prettier 3                                     | `npm run lint` passes. `*.md` is excluded from Prettier (table padding doubled doc size). |
 
 ## Commands
 
@@ -42,7 +42,7 @@ npm install          # first time
 npm run dev          # Vite dev server :5173
 npm run check        # svelte-check — expect 0 errors (4 a11y warnings in orphaned DonationCard are known)
 npm run build        # adapter-netlify build — must pass before commit
-npm run lint         # FAILS, pre-existing: Prettier flags 21 files, ESLint lints .netlify/ output. Fix = its own commit.
+npm run lint         # prettier --check + eslint — must pass before commit (npm run format fixes style)
 ```
 
 **After `npx sv migrate …` or any major dependency bump:**
@@ -55,7 +55,7 @@ and phantom `npm run check` errors. Found 2026-09-06.
 ```
 src/
 ├── app.html                 shell: Google Fonts (Cormorant Garamond, Inter Tight, JetBrains Mono)
-├── app.postcss              THE global CSS entry (there is no app.css) → imports portfolio.css + custom-theme.css + tailwind
+├── app.postcss              THE global CSS entry (there is no app.css) → imports portfolio.css + tailwind base/components/utilities
 ├── lib/
 │   ├── styles/portfolio.css design tokens (:root ~line 16) + all site CSS, sections split by ═══ dividers
 │   ├── components/          WorksGrid, Lightbox, DonationCard (orphaned — unbuilt donation feature, spec ../SUPPORT-README.md)
@@ -82,24 +82,27 @@ NOTES.md                     dated small observations
 ## State — 2026-09-06
 
 **Built and verified in browser:** all 6 routes, sidebar + mobile drawer, WorksGrid + Lightbox
-(open/arrows/Escape/focus/scroll-lock), minimal-canvas mode, white palette, Svelte 5.
+(open/arrows/Escape/focus/scroll-lock), minimal-canvas mode, white palette, Svelte 5, Skeleton
+removed, desktop grid no longer crops (`object-fit: contain`), `check` + `lint` + `build` clean.
+**The site is a test site** — not yet public; launch window 7–9 Sep 2026 (Part 2 › Deployment).
 
 **Known gaps:** images in git with iPhone UUID names and no thumbnails; 68 loose files untriaged;
 **all page text is hardcoded in `.svelte` files** (inventory in Part 2 › CMS design); contact
 info is placeholder and **the contact form is fake** (`handleSubmit` only flips a flag);
-`contact/article.js` is an orphaned 中文 essay; `DonationCard` orphaned; **desktop works grid
-crops paintings** (`object-fit: cover`) — violates Art direction, not fixed.
+`contact/article.js` is an orphaned 中文 essay; `DonationCard` orphaned; the desktop grid's frame
+mat is a warm near-white (`oklch(0.965 0.012 80)`) — owner to confirm it's not "cream".
 
 ## Next actions (in order)
 
-1. **Approve CMS design v2.1** (Part 2) → then the full spec (schema, admin flow, migration
-   plan, backups).
-2. **Fix the desktop grid crop** per Art direction (`object-fit: contain` on desktop).
-3. **Deployment:** pick the server (owner has idle Vultr + DigitalOcean VPSes) — a deploy
-   decision, not a CMS one. Hardening checklist goes with it. → becomes a Part 2 section.
-4. Triage the 68 loose images → migration script → data layer → `/admin` → SEO pass.
-5. Later, in this order: CSS design system + admin UI styling (Skeleton/Tailwind removal decided
-   then); Business features; lint config fix + format pass (own commit).
+1. **CMS slice (approved 2026-09-06):** PocketBase locally → `works` + `content_blocks`
+   collections → upload one painting and Achin's intro through the built-in dashboard →
+   `/gallery` and `/about` fetch server-side → verify in browser. Adds the `pocketbase` package.
+2. **Deployment** (Part 2): pick the VPS, DNS → Cloudflare, ship the test site in the 7–9 Sep
+   window. The static site can launch before the CMS backend is live.
+3. **Contact form** → Netlify Forms before launch (messages vanish today).
+4. Triage the 68 loose images → migration script → custom `/admin` → SEO pass.
+5. Later: CSS design system + admin UI styling (Tailwind keep/remove decided then); Business
+   features.
 
 ## Doc rules — every agent, every edit
 
@@ -151,10 +154,12 @@ revisiting the decision.
 
 ### Open / to-do
 
-- **Violation:** the desktop works grid crops paintings — `.work .frame img { object-fit: cover }`
-  (`portfolio.css` ≈ line 860) inside fixed `aspect-ratio` shapes per `data-shape`. Mobile is
-  correct (`object-fit: contain`, ≈ line 1070). Fix: desktop also `contain` (or derive each
-  cell's aspect from the image); the editorial "shape" pattern yields to the painting. Not started.
+- **Fixed 2026-09-06:** the desktop grid used `object-fit: cover` (cropped every painting); now
+  `contain` — the cell keeps its editorial `aspect-ratio`, the painting sits whole inside it,
+  letterboxed by the frame mat. Mobile was already `contain`.
+- **To confirm with the owner:** the desktop frame mat (`.work .frame`, `portfolio.css` ≈ line
+  834) is a warm near-white `oklch(0.965 0.012 80)` with a warm inset border. Not white. Keep as
+  "mat" or flatten to `--paper`?
 - **Missing:** text in Achin's own words on the style and mood he wants (references, dislikes,
   how the work should sit on the page). Needs a short interview. Until then, the rules above
   are the guideline.
@@ -167,8 +172,8 @@ pipeline only ever produces a smaller faithful copy.
 
 ## [Platform] CMS design — content, media, data layer
 
-**Status:** PROPOSED v2.1 (2026-09-06), **NOT APPROVED. Do not implement.** v2 replaced the
-Supabase design (v1, 2026-08-31); v2.1 narrowed scope.
+**Status:** v2.1 **APPROVED for a local prototype** 2026-09-06 (the "CMS slice", Next actions #1).
+Full build follows the slice. v2 replaced the Supabase design (v1, 2026-08-31); v2.1 narrowed scope.
 
 ### Scope
 
@@ -202,7 +207,9 @@ direction (its rule governs the media pipeline below).
 - **Content blocks:** all page prose is hardcoded in `.svelte` files (inventoried 2026-09-03:
   hero, ticker, statement + 中文 quote duplicated on `/` and `/about`, placeholder contact info,
   orphaned essay `src/routes/contact/article.js`). Becomes a `content_blocks` collection keyed
-  by slug with `text_zh` / `text_en`. The fake contact form gets wired or removed.
+  by slug with `text_zh` / `text_en`. **Achin edits his own intro** (homepage statement + `/about`
+  text) through the admin — these blocks are part of the first slice. The fake contact form gets
+  wired or removed.
 - **Editorial requirements:** mobile-first upload (the artist photographs on a phone); `status`
   draft/published + soft-delete trash (PocketBase has no undo); roles admin / artist / editor
   enforced by collection API rules, not by hiding buttons; an SMTP provider for password resets.
@@ -212,9 +219,10 @@ direction (its rule governs the media pipeline below).
 - Migration blockers: triage the 68 loose files in `src/lib/assets/` (works vs page imagery —
   needs the owner's eyes), then a one-time script: 224 images → PocketBase (originals private +
   web-res public) + seeded metadata rows.
-- No question blocks approval. **Next:** owner approves v2.1 → full spec (collections schema,
-  admin flow, migration script plan, backup/restore cron) → code. Server hardening lives with
-  deployment.
+- **Slice first, spec second:** the local prototype (one painting + Achin's intro in, shown on
+  the site) validates the shape; the full spec (collections schema, admin flow, migration script
+  plan, backup/restore cron) is written from what the slice teaches. Server hardening lives under
+  Deployment.
 
 ### Reasoning
 
@@ -244,6 +252,38 @@ Postgres); server compromise (hardening checklist is part of deployment).
 
 **Market note** (2026-09-02): no vendor sells the whole protection stack for a self-owned site —
 Cara / Kin.art bundle it only on their own platforms. Composed here from parts.
+
+## [Platform] Deployment — where things run
+
+**Status:** PLANNED 2026-09-06. Test site today; **launch window 7–9 Sep 2026.** Server not yet
+chosen. The launch does **not** wait for the CMS: the current static build can go live first and
+PocketBase joins when it's ready.
+
+### Decisions
+
+- **Frontend:** Netlify, `adapter-netlify` (`edge:false`, `split:false`), deploys from branch
+  `deploy`. Env var `PUBLIC_PB_URL` points the site at the backend.
+- **Backend:** PocketBase on **one** self-hosted Linux VPS (owner has idle Vultr + DigitalOcean —
+  pick the one with more RAM and a current OS; region near Taipei visitors if possible). Runs as
+  a systemd service, pinned version, behind **Caddy** (auto-HTTPS) on a subdomain such as
+  `api.achin.uk`.
+- **DNS:** Gandi stays registrar; nameservers → **Cloudflare free**, proxy on: CDN cache,
+  AI-crawler blocking, origin IP hidden. Switch DNS on launch day; until then the Netlify preview
+  URL is the test site.
+- **Hardening before the backend is public:** non-root user, SSH keys only (password auth off),
+  `ufw` default-deny (22 from the owner's IPs; 80/443 from Cloudflare ranges only), `fail2ban`,
+  `unattended-upgrades`. This checklist is deliberate learning, not overhead.
+- **Backups:** nightly cron copies `pb_data/` (SQLite + uploads) off-box (the other VPS or B2),
+  14-day retention, **one restore drill before launch**.
+- **Monitoring:** free uptime ping on PocketBase `/api/health`, alert to the owner's email.
+- **Secrets:** never in the repo — PocketBase admin + SMTP credentials live in the server
+  environment; site-side values in Netlify env.
+
+### Open / to-do
+
+1. Pick the VPS (specs, region). 2. Run the CMS slice locally, then move the same binary + data
+   to the VPS. 3. Cloudflare account + nameserver move at Gandi. 4. Restore drill. 5. Launch-day
+   DNS switch.
 
 ## [Later] Business features — donations, sales, currency
 

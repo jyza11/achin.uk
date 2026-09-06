@@ -2,3 +2,6 @@
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+
+# Docs are hand-maintained; prettier table padding doubles their size
+*.md
