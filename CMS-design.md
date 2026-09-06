@@ -3,7 +3,7 @@
 ## AGENT BRIEF — read this block only; stop at the line unless you need the reasoning
 
 - **STATUS: PROPOSED v2 (2026-09-03), NOT APPROVED. Do not implement.**
-  v2 **supersedes the Supabase design (v1, 2026-08-31)** after Jeffery's review: he
+  v2 **supersedes the Supabase design (v1, 2026-08-31)** after the owner's review: he
   prefers self-hosted / open-source / personally-researched stacks so the project doubles
   as dev + cybersecurity learning, and he already pays for two idle VPSes (Vultr, DigitalOcean).
 - **Stack:**
@@ -21,7 +21,7 @@
 - **Why not the alternatives:** Sveltia (git-based) — orders are impossible (webhooks
   can't write commits), every save = 2–4 min rebuild, and its GitHub token = repo WRITE
   access (content creds become code creds — bad blast radius). Supabase (v1 pick) —
-  managed service hides the ops/security skills Jeffery is training, free tier pauses
+  managed service hides the ops/security work the owner wants in-house, free tier pauses
   after 7 idle days, 5 GB egress cap.
 - **Day-1 CMS:** PocketBase's built-in admin dashboard — Achin can edit/upload
   immediately, zero code. The custom bilingual `/admin` route in SvelteKit is a later
@@ -30,7 +30,7 @@
   + small custom components. **Not Skeleton UI** — it is installed but never activated
   or used anywhere in the site (see AGENTS.md SESSION STATE). Likely deps to add:
   `pocketbase` SDK, `sveltekit-superforms` + `zod`, `svelte-dnd-action` — each needs
-  Jeffery's OK and a Svelte 4 compatibility check.
+  the owner's OK. (Svelte 5 migration done 2026-09-06, so Svelte 5-only libraries are fine.)
 - **Media handling:** originals → private collection (never publicly served);
   public collection holds web-res (~1600px) only; thumbnails come free via PocketBase's
   `?thumb=WxH` URL param. Protection layers: Cloudflare AI-bot blocking, robots.txt +
@@ -46,13 +46,13 @@
   Becomes a `content_blocks` collection keyed by slug with `text_zh` / `text_en` fields.
   ⚠️ The contact form is currently fake (`handleSubmit` does nothing) — wire or remove.
 - **Migration blockers unchanged from v1:** triage the 68 loose files in
-  `src/lib/assets/` (works vs page imagery — needs Jeffery's eyes), then a one-time
+  `src/lib/assets/` (works vs page imagery — needs the owner's eyes), then a one-time
   script: 224 images → PocketBase (originals private + web-res public) + seeded rows.
 - **Open questions before approval:** (1) which VPS — Vultr or DO, and its specs;
-  (2) who is the merchant of record — Jeffery (UK) or Achin (Taiwan)? Stripe doesn't
+  (2) who is the merchant of record — the owner (UK) or the artist (Taiwan)? Stripe doesn't
   fully operate in Taiwan; PayPal does. Tax/legal before code. (3) Glaze per-image: yes/no
   default.
-- **Next step:** Jeffery approves v2 → full spec (collections schema, VPS hardening
+- **Next step:** the owner approves v2 → full spec (collections schema, VPS hardening
   checklist, backup cron, admin flow, migration script plan) → then code.
 
 ---
@@ -62,7 +62,7 @@
 ## 1. What changed since v1
 
 v1 (2026-08-31) chose Supabase: managed Postgres + Storage + Auth, custom `/admin`.
-Jeffery's review (2026-09-01→03) surfaced four things v1 under-weighted:
+The owner's review (2026-09-01→03) surfaced four things v1 under-weighted:
 
 1. **Learning is a first-class constraint.** He is building a dev/cybersecurity career;
    a managed platform outsources exactly the skills (Linux hardening, TLS, reverse
@@ -83,7 +83,7 @@ Jeffery's review (2026-09-01→03) surfaced four things v1 under-weighted:
 | Edit→live | 2–4 min rebuild | instant | instant |
 | Cost | £0 | £0 with pause+egress caps, then $25/mo | £0 marginal (VPS already paid) |
 | Learning value | low | medium | high — the point |
-| Uptime owner | Netlify | vendor | **Jeffery** — accepted trade |
+| Uptime owner | Netlify | vendor | **the site owner** — accepted trade |
 | Exit path | files already in repo | `pg_dump` | copy one SQLite file + uploads dir |
 | Day-1 admin UI | ✅ | ❌ must build | ✅ built-in |
 | Credential blast radius | GitHub token = **code write** | data only | data only |

@@ -24,6 +24,11 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import Lightbox from '$lib/components/Lightbox.svelte';
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	let { children }: Props = $props();
 
 	const navItems = [
 		{ href: '/gallery', label: '油畫', romaji: 'Paintings' },
@@ -33,7 +38,7 @@
 		{ href: '/events', label: '展覽', romaji: 'Exhibitions' }
 	];
 
-	let menuOpen = false;
+	let menuOpen = $state(false);
 
 	function toggleMenu() {
 		menuOpen = !menuOpen;
@@ -50,16 +55,16 @@
 		return () => document.removeEventListener('keydown', handleKeydown);
 	});
 
-	$: currentPath = $page.url.pathname;
+	let currentPath = $derived($page.url.pathname);
 </script>
 
 <!-- Mobile topbar — only renders on mobile (CSS controls display) -->
 <header class="pf-topbar-mobile">
-	<a href="/" class="pf-wordmark-small" on:click={closeMenu}>Achin</a>
+	<a href="/" class="pf-wordmark-small" onclick={closeMenu}>Achin</a>
 	<button
 		class="pf-menu-btn"
 		class:open={menuOpen}
-		on:click={toggleMenu}
+		onclick={toggleMenu}
 		aria-label={menuOpen ? 'Close menu' : 'Open menu'}
 		aria-expanded={menuOpen}
 		aria-controls="primary-nav"
@@ -72,14 +77,14 @@
 <button
 	class="pf-sidebar-backdrop"
 	class:open={menuOpen}
-	on:click={closeMenu}
+	onclick={closeMenu}
 	aria-label="Close menu"
 	tabindex={menuOpen ? 0 : -1}
 ></button>
 
 <!-- Sidebar — fixed on desktop, slides in on mobile -->
 <aside class="pf-sidebar" class:open={menuOpen}>
-	<a href="/" class="pf-sidebar-wordmark" on:click={closeMenu}>Achin</a>
+	<a href="/" class="pf-sidebar-wordmark" onclick={closeMenu}>Achin</a>
 	<span class="pf-sidebar-tag">Painter · Studio</span>
 
 	<nav class="pf-sidebar-nav" id="primary-nav" aria-label="Primary">
@@ -88,7 +93,7 @@
 			<a
 				href={item.href}
 				class:active={currentPath === item.href || currentPath.startsWith(item.href + '/')}
-				on:click={closeMenu}
+				onclick={closeMenu}
 			>
 				<span>{item.label}</span>
 				<span class="romaji">{item.romaji}</span>
@@ -105,7 +110,7 @@
 <!-- Main content — offset to make room for the fixed sidebar -->
 <div class="pf-content">
 	<main class="pf-main">
-		<slot />
+		{@render children?.()}
 	</main>
 
 	<footer class="pf-footer">

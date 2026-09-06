@@ -5,25 +5,28 @@
 	import { beforeNavigate } from '$app/navigation';
 	import { lightboxStore } from '$lib/stores/lightbox';
 
-	let closeButton: HTMLButtonElement | undefined;
-	let imageError = false;
+	let closeButton: HTMLButtonElement | undefined = $state();
+	let imageError = $state(false);
 
-	// Open/close lifecycle state — captured on transition, restored on transition.
-	// Tracking `prevOpen` so the reactive block only fires its side effects on
-	// the open↔closed edge, not on every store update (e.g. next/prev).
+	// Open/close lifecycle bookkeeping — captured on the closed→open edge, restored
+	// on open→closed. Deliberately plain variables, not $state: the effect below
+	// writes them, and reactive bookkeeping would make its own writes dependencies.
 	let prevOpen = false;
 	let previouslyFocused: HTMLElement | null = null;
 	let savedOverflow = '';
 
 	beforeNavigate(() => lightboxStore.close());
 
-	$: current = $lightboxStore.works[$lightboxStore.index];
+	let current = $derived($lightboxStore.works[$lightboxStore.index]);
 
 	// Reset image-error state whenever the current work changes
-	$: if (current) imageError = false;
+	$effect(() => {
+		if (current) imageError = false;
+	});
 
-	$: if (browser) {
+	$effect(() => {
 		const isOpen = $lightboxStore.isOpen;
+		if (!browser) return;
 		if (isOpen && !prevOpen) {
 			// transition: closed → open
 			previouslyFocused = document.activeElement as HTMLElement | null;
@@ -38,7 +41,7 @@
 			previouslyFocused = null;
 		}
 		prevOpen = isOpen;
-	}
+	});
 
 	onMount(() => {
 		function handleKey(event: KeyboardEvent) {
@@ -72,14 +75,17 @@
 </script>
 
 {#if $lightboxStore.isOpen && current}
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<div
 		class="lightbox open"
 		role="dialog"
 		aria-modal="true"
 		aria-label={`Artwork: ${current.title}`}
-		on:click|self={() => lightboxStore.close()}
+		tabindex="-1"
+		onclick={(event) => {
+			// backdrop click only — clicks inside the dialog must not close it
+			if (event.target === event.currentTarget) lightboxStore.close();
+		}}
 	>
 		<div class="lb-inner">
 			<div class="lb-art">
@@ -87,13 +93,13 @@
 					{#if imageError}
 						<div class="lb-error">
 							<p>Couldn't load this image.</p>
-							<button type="button" on:click={() => { imageError = false; }}>Retry</button>
+							<button type="button" onclick={() => { imageError = false; }}>Retry</button>
 						</div>
 					{:else}
 						<img
 							src={current.src}
 							alt={current.alt}
-							on:error={() => { imageError = true; }}
+							onerror={() => { imageError = true; }}
 						/>
 					{/if}
 				</div>
@@ -124,8 +130,8 @@
 				{/if}
 
 				<div class="lb-nav">
-					<button type="button" on:click={() => lightboxStore.prev()}>← Prev</button>
-					<button type="button" on:click={() => lightboxStore.next()}>Next →</button>
+					<button type="button" onclick={() => lightboxStore.prev()}>← Prev</button>
+					<button type="button" onclick={() => lightboxStore.next()}>Next →</button>
 				</div>
 			</div>
 
@@ -133,7 +139,7 @@
 				class="lb-close"
 				type="button"
 				bind:this={closeButton}
-				on:click={() => lightboxStore.close()}
+				onclick={() => lightboxStore.close()}
 				aria-label="Close"
 			>
 				✕

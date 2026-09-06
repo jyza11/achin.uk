@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 
-	$: status = $page.status;
-	$: message = $page.error?.message ?? '';
+	let status = $derived($page.status);
+	let message = $derived($page.error?.message ?? '');
 
 	// Friendly labels per status — fall through to the raw message otherwise
-	$: label = (() => {
+	let label = $derived((() => {
 		if (status === 404) return 'Page not found';
 		if (status === 403) return 'Forbidden';
 		if (status === 410) return 'Gone';
 		if (status >= 500) return 'Something went wrong';
 		return message || 'Error';
-	})();
+	})());
 </script>
 
 <svelte:head>

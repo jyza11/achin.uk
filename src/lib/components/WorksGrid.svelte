@@ -2,17 +2,21 @@
 	import type { Work } from '$lib/data/works';
 	import { lightboxStore } from '$lib/stores/lightbox';
 
-	export let works: Work[] = [];
-	export let limit: number | null = null;
+	interface Props {
+		works?: Work[];
+		limit?: number | null;
+	}
+
+	let { works = [], limit = null }: Props = $props();
 
 	// Validate limit: null/undefined → show all; finite non-negative number → slice;
 	// anything else (NaN, negative, Infinity) → show all (defensive — these would
 	// silently produce empty/wrong slices otherwise).
-	$: visible = (() => {
+	let visible = $derived((() => {
 		if (limit === null || limit === undefined) return works;
 		if (!Number.isFinite(limit) || limit < 0) return works;
 		return works.slice(0, Math.floor(limit));
-	})();
+	})());
 
 	function openLightbox(index: number) {
 		// Mobile uses the horizontal-swipe pattern with a per-painting details
@@ -56,8 +60,8 @@
 			data-shape={(i % 7) + 1}
 			role="button"
 			tabindex="0"
-			on:click={() => openLightbox(i)}
-			on:keydown={(event) => handleKey(event, i)}
+			onclick={() => openLightbox(i)}
+			onkeydown={(event) => handleKey(event, i)}
 			aria-label="View {work.title}"
 		>
 			<div class="frame">

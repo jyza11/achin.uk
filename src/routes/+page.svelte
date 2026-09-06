@@ -1,6 +1,5 @@
 <script lang="ts">
 	import WorksGrid from '$lib/components/WorksGrid.svelte';
-	import Lightbox from '$lib/components/Lightbox.svelte';
 	import { galleryWorks } from '$lib/data/works';
 	import profilePic from '$lib/assets/pro.jpg';
 
@@ -82,5 +81,3 @@
 		</div>
 	</div>
 </section>
-
-<Lightbox />

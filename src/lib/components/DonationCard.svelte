@@ -6,12 +6,12 @@
 
 	// Donation amounts
 	const presetAmounts = [10, 25, 50, 100, 250];
-	let selectedAmount: number | null = null;
-	let customAmount = '';
-	let donorName = '';
-	let donorEmail = '';
-	let message = '';
-	let isProcessing = false;
+	let selectedAmount: number | null = $state(null);
+	let customAmount = $state('');
+	let donorName = $state('');
+	let donorEmail = $state('');
+	let message = $state('');
+	let isProcessing = $state(false);
 	
 	// Handle preset amount selection
 	function selectAmount(amount: number) {
@@ -73,7 +73,7 @@
 		}
 	}
 	
-	$: finalAmount = selectedAmount || 0;
+	let finalAmount = $derived(selectedAmount || 0);
 </script>
 
 <div class="donation-card bg-surface-50 dark:bg-surface-800 rounded-xl shadow-lg border border-surface-200 dark:border-surface-600 p-6 max-w-md mx-auto">
@@ -105,7 +105,7 @@
 							? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
 							: 'border-surface-300 dark:border-surface-600 hover:border-primary-300 bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-200'
 						}"
-					on:click={() => selectAmount(amount)}
+					onclick={() => selectAmount(amount)}
 				>
 					${amount}
 				</button>
@@ -119,7 +119,7 @@
 				type="number"
 				placeholder="Custom amount"
 				bind:value={customAmount}
-				on:input={handleCustomAmount}
+				oninput={handleCustomAmount}
 				class="w-full pl-8 pr-4 py-3 border border-surface-300 dark:border-surface-600 rounded-lg
 					focus:ring-2 focus:ring-primary-500 focus:border-primary-500
 					bg-surface-100 dark:bg-surface-700 text-surface-800 dark:text-surface-100
@@ -196,7 +196,7 @@
 	
 	<!-- Donate Button -->
 	<button
-		on:click={handleDonate}
+		onclick={handleDonate}
 		disabled={!finalAmount || isProcessing || !donorName.trim() || !donorEmail.trim()}
 		class="w-full py-4 px-6 rounded-lg font-bold text-lg transition-all duration-200
 			{isProcessing

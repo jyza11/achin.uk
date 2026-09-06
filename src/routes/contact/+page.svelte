@@ -1,10 +1,11 @@
 <script lang="ts">
-	let name = '';
-	let email = '';
-	let message = '';
-	let submitted = false;
+	let name = $state('');
+	let email = $state('');
+	let message = $state('');
+	let submitted = $state(false);
 
-	function handleSubmit() {
+	function handleSubmit(event: SubmitEvent) {
+		event.preventDefault();
 		// TODO: wire to your backend (Netlify Forms / Formspree / etc.)
 		submitted = true;
 	}
@@ -48,7 +49,7 @@
 			<div class="row"><span class="k">Instagram</span><span class="v">@achin.studio</span></div>
 
 			{#if !submitted}
-				<form class="contact-form" on:submit|preventDefault={handleSubmit}>
+				<form class="contact-form" onsubmit={handleSubmit}>
 					<label class="field">
 						<span class="field-label">Name</span>
 						<input type="text" bind:value={name} required autocomplete="name" />
