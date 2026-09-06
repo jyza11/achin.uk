@@ -1,4 +1,5 @@
-/// <reference path="../pb_data/types.d.ts" />
+// Runs inside PocketBase's JS VM (globals: migrate, Collection), not Node — excluded from ESLint.
+// Types for editor support: pocketbase/pb_data/types.d.ts (generated on first run).
 //
 // Schema v1 — the CMS slice. Two collections:
 //   works           one row per painting/sketch; `image` is what the site shows
