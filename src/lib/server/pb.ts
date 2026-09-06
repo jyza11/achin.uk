@@ -14,3 +14,16 @@ export function pbClient(): PocketBase {
 
 // Give up fast when the backend is down so the page falls back instead of hanging.
 export const PB_TIMEOUT_MS = 3000;
+
+/** One-line reason for a failed PocketBase call — a down backend is routine, not a stack trace. */
+export function pbErrorSummary(err: unknown): string {
+	const e = err as {
+		status?: number;
+		message?: string;
+		originalError?: { cause?: { code?: string } };
+	};
+	const code = e?.originalError?.cause?.code;
+	if (code) return `${code} (${PB_URL})`;
+	if (e?.status) return `HTTP ${e.status}: ${e.message ?? ''}`.trim();
+	return e?.message ?? String(err);
+}

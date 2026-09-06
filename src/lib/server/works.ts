@@ -1,7 +1,7 @@
 import type { RecordModel } from 'pocketbase';
 import type { Work } from '$lib/data/works';
 import { galleryWorks, sketchWorks } from '$lib/data/works';
-import { pbClient, PB_TIMEOUT_MS } from './pb';
+import { pbClient, pbErrorSummary, PB_TIMEOUT_MS } from './pb';
 
 export type WorksCollection = 'gallery' | 'sketch';
 export type WorksSource = 'cms' | 'local';
@@ -57,7 +57,9 @@ export async function loadWorks(
 			return { works: records.map((r) => toWork(pb, r)), source: 'cms' };
 		}
 	} catch (err) {
-		console.warn(`[works] PocketBase unavailable for "${collection}", using local images:`, err);
+		console.warn(
+			`[works] PocketBase unavailable for "${collection}", using local images: ${pbErrorSummary(err)}`
+		);
 	}
 	return { works: LOCAL[collection], source: 'local' };
 }
