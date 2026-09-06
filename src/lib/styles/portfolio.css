@@ -857,8 +857,10 @@ section.band {
 	display: block;
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
-	background: oklch(0.93 0.015 80); /* visible while image loads */
+	/* Art direction: never crop a painting. The cell keeps its editorial
+	   aspect-ratio; the image sits inside it whole, letterboxed by the mat. */
+	object-fit: contain;
+	background: transparent;
 }
 
 .work .label {
