@@ -4,10 +4,9 @@ Bilingual (中/EN) website for **Achin**, a Taipei painter. **This is the only d
 Part 1 orients you, Part 2 holds every design decision. `CLAUDE.md` just points here; `NOTES.md`
 holds dated small observations. Verified against the repo: **2026-09-06**.
 
-This folder is its own git repo (remote `git@github.com:jyza11/Achin-profolio.git`, branch
-**`deploy`**, not main). **Folder and repo names are pending a rename** — refer to this repo as
-"this repo" or "the app", never by folder name, so nothing here breaks when it happens. Deploys
-to Netlify. The parent folder `../` is a separate repo of frozen design reference — read
+This folder is its own git repo (remote `git@github.com:jyza11/achin.uk.git`, branch
+**`deploy`**, not main; renamed from `Achin-profolio` 2026-09-06). Refer to it as "this repo" or
+"the app", never by folder name. Deploys to Netlify. The parent folder `../` is a separate repo of frozen design reference — read
 `../AGENTS.md` only if you need it.
 
 **Contents**
