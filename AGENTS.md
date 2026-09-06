@@ -52,7 +52,9 @@ src/
 │   ├── stores/lightbox.ts   factory store with method API
 │   └── assets/              224 images, 65 MB, in git: gallery/ 75 · sketch/ 81 · 68 loose untriaged (pro.jpg = portrait)
 └── routes/                  / gallery sketch about contact events (+layout = sidebar/mobile drawer/nav source, +error)
-CMS-design.md                PROPOSED v2 architecture — read its AGENT BRIEF before touching data/images/text
+art-direction.md             HOW THE WORK IS SHOWN — no crops/edits/overlays. Read before any CSS, image, or grid change
+CMS-design.md                PROPOSED v2.1 — content/media/data layer. Read its AGENT BRIEF before touching data/images/text
+business-feat-design.md      PARKED — payments/orders; out of CMS scope
 NOTES.md                     dated small observations
 ```
 
@@ -76,18 +78,19 @@ NOTES.md                     dated small observations
 **Known gaps:** images in git with iPhone UUID names and no thumbnails; 68 loose files untriaged;
 **all page text is hardcoded in `.svelte` files** (inventory in `CMS-design.md`); contact info is
 placeholder and **the contact form is fake** (`handleSubmit` only flips a flag); `contact/article.js`
-is an orphaned 中文 essay; `DonationCard` orphaned; Svelte 5 migration **uncommitted** until the
-next commit lands.
+is an orphaned 中文 essay; `DonationCard` orphaned; **desktop works grid crops paintings**
+(`object-fit: cover`) — violates `art-direction.md`, not fixed.
 
 ## Open decisions / next actions (in order)
 
-1. **Commit the Svelte 5 migration** (this working tree).
-2. **Approve `CMS-design.md` v2** — self-hosted PocketBase on the owner's VPS + Cloudflare. Open
-   questions: which VPS (Vultr/DO), merchant of record (UK vs Taiwan), Glaze default.
-3. **Remove Skeleton + Tailwind?** and pick the CSS approach (public site keeps `portfolio.css`;
-   admin UI = shadcn-svelte on Tailwind v4 is the current lean). Not decided.
-4. Fix lint config (`.netlify/` ignore) + one `npm run format` pass — own commit.
-5. Triage the 68 loose images → migration script → data layer → `/admin` → SEO pass.
+1. **Approve `CMS-design.md` v2.1** (self-hosted PocketBase + Cloudflare; host-agnostic). No
+   blocking questions left → then the full spec (schema, admin flow, migration plan, backups).
+2. **Fix the desktop grid crop** per `art-direction.md` (`object-fit: contain` on desktop).
+3. **Deployment:** pick the server (owner has idle Vultr + DigitalOcean VPSes) — a deploy
+   decision, not a CMS one. Hardening checklist goes with it.
+4. Triage the 68 loose images → migration script → data layer → `/admin` → SEO pass.
+5. Later, in this order: CSS design system + admin UI styling (Skeleton/Tailwind removal decided
+   then); `business-feat-design.md`; lint config fix + format pass (own commit).
 
 ## Doc rules — every agent, every edit
 
