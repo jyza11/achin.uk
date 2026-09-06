@@ -1,10 +1,12 @@
-# my-skeleton-app — Achin portfolio (SvelteKit)
+# Achin.uk — artist website (SvelteKit)
 
-Bilingual (中/EN) portfolio for **Achin**, a Taipei painter. **This is the only doc for the app:**
+Bilingual (中/EN) website for **Achin**, a Taipei painter. **This is the only doc for the app:**
 Part 1 orients you, Part 2 holds every design decision. `CLAUDE.md` just points here; `NOTES.md`
 holds dated small observations. Verified against the repo: **2026-09-06**.
 
-Own git repo: `git@github.com:jyza11/Achin-profolio.git`, branch **`deploy`** (not main). Deploys
+This folder is its own git repo (remote `git@github.com:jyza11/Achin-profolio.git`, branch
+**`deploy`**, not main). **Folder and repo names are pending a rename** — refer to this repo as
+"this repo" or "the app", never by folder name, so nothing here breaks when it happens. Deploys
 to Netlify. The parent folder `../` is a separate repo of frozen design reference — read
 `../AGENTS.md` only if you need it.
 
