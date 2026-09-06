@@ -12,7 +12,7 @@ to Netlify. The parent folder `../` is a separate repo of frozen design referenc
 
 **Contents**
 Part 1 — Orientation: Project rules · Stack · Commands · Folder map · Conventions · State · Next actions · Doc rules
-Part 2 — Design decisions (A→Z): Art direction · Business features · CMS design
+Part 2 — Design decisions, by category: [Guideline] Art direction · [Platform] CMS design · [Later] Business features
 
 ---
 
@@ -106,9 +106,11 @@ crops paintings** (`object-fit: cover`) — violates Art direction, not fixed.
 
 - **One file.** Orientation in Part 1, every design decision in Part 2. Never create a separate
   design file; dated small observations go to `NOTES.md` and are deleted once folded in here.
-- **Part 2 template, always:** `## <Title> — <subtitle>` → **Status** line → `### Decisions` →
-  `### Open / to-do` → `### Reasoning` (skip unless revisiting). Sections stay **A→Z by title**.
-  A new context (Deployment, SEO, Admin UI…) = a new section with the same template — update the
+- **Part 2 template, always:** `## [Category] <Title> — <subtitle>` → **Status** line →
+  `### Decisions` → `### Open / to-do` → `### Reasoning` (skip unless revisiting). Sections are
+  **grouped by category, in dependency order:** `[Guideline]` (rules every other section obeys)
+  → `[Platform]` (what is being built) → `[Later]` (parked, depends on Platform). A new context
+  (Deployment, SEO, Admin UI…) goes into its category with the same template — update the
   Contents line at the top.
 - **Brief first.** Stack, state, next step readable in the first 60 lines; each Part 2 section's
   Decisions readable without its Reasoning.
@@ -123,10 +125,11 @@ crops paintings** (`object-fit: cover`) — violates Art direction, not fixed.
 
 # Part 2 — Design decisions
 
-Sorted A→Z. Read the **Status** and **Decisions** of a section before touching its area;
-**Reasoning** only when revisiting the decision.
+Grouped by category, in dependency order: **[Guideline]** → **[Platform]** → **[Later]**. Read
+the **Status** and **Decisions** of a section before touching its area; **Reasoning** only when
+revisiting the decision.
 
-## Art direction — how the work is shown
+## [Guideline] Art direction — how the work is shown
 
 **Status:** confirmed by the owner 2026-09-06. Governs every CSS, image-pipeline, and grid change.
 
@@ -163,28 +166,7 @@ Anything applied to the image — a crop, a tint, a texture, an adversarial pert
 change to the artwork the artist didn't make. Protection tools are therefore opt-in, and the
 pipeline only ever produces a smaller faithful copy.
 
-## Business features — donations, sales, currency
-
-**Status:** PARKED 2026-09-06, not started. Out of CMS scope by the owner's decision. Do not
-design or build until the CMS data layer exists.
-
-### Decisions (carried forward)
-
-- **Never handle card data.** Processor only (PayPal / Stripe Checkout). The database stores
-  order rows + the processor's transaction ID, updated by webhook. Multi-currency comes from the
-  processor.
-- Input already on disk: donation spec `../SUPPORT-README.md` + mockups
-  `../support-mockup-*.html`; `DonationCard.svelte` is the waiting stub.
-- Depends on the `orders` collection defined under CMS design.
-
-### Open / to-do (answer before designing)
-
-1. Merchant of record: the owner (UK) or the artist (Taiwan)? Tax/legal before code.
-2. Processor: Stripe is limited in Taiwan; PayPal works. Follows from (1).
-3. Terms of sale, privacy policy, GDPR for UK/EU buyers.
-4. Transactional email provider (shared with CMS password resets).
-
-## CMS design — content, media, data layer
+## [Platform] CMS design — content, media, data layer
 
 **Status:** PROPOSED v2.1 (2026-09-06), **NOT APPROVED. Do not implement.** v2 replaced the
 Supabase design (v1, 2026-08-31); v2.1 narrowed scope.
@@ -263,3 +245,24 @@ Postgres); server compromise (hardening checklist is part of deployment).
 
 **Market note** (2026-09-02): no vendor sells the whole protection stack for a self-owned site —
 Cara / Kin.art bundle it only on their own platforms. Composed here from parts.
+
+## [Later] Business features — donations, sales, currency
+
+**Status:** PARKED 2026-09-06, not started. Out of CMS scope by the owner's decision. Do not
+design or build until the CMS data layer exists.
+
+### Decisions (carried forward)
+
+- **Never handle card data.** Processor only (PayPal / Stripe Checkout). The database stores
+  order rows + the processor's transaction ID, updated by webhook. Multi-currency comes from the
+  processor.
+- Input already on disk: donation spec `../SUPPORT-README.md` + mockups
+  `../support-mockup-*.html`; `DonationCard.svelte` is the waiting stub.
+- Depends on the `orders` collection defined under CMS design.
+
+### Open / to-do (answer before designing)
+
+1. Merchant of record: the owner (UK) or the artist (Taiwan)? Tax/legal before code.
+2. Processor: Stripe is limited in Taiwan; PayPal works. Follows from (1).
+3. Terms of sale, privacy policy, GDPR for UK/EU buyers.
+4. Transactional email provider (shared with CMS password resets).
