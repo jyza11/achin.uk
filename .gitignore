@@ -23,3 +23,8 @@ vite.config.ts.timestamp-*
 # Local Netlify folder
 .netlify
 .claude/
+
+# PocketBase: binary + runtime data stay local; pb_migrations/ is the schema and IS committed
+pocketbase/pocketbase
+pocketbase/pb_data/
+pocketbase/.env*

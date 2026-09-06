@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import WorksGrid from '$lib/components/WorksGrid.svelte';
-	import { sketchWorks } from '$lib/data/works';
+
+	// Works come from PocketBase via +page.server.ts (local fallback when it's down).
+	let { data } = $props();
+	let sketchWorks = $derived(data.works);
 
 	// Minimal-canvas mode — same opt-in as /gallery (see portfolio.css
 	// MINIMAL CANVAS MODE section): pure white, no chrome while mounted.
@@ -28,9 +31,7 @@
 	</header>
 
 	{#if sketchWorks.length === 0}
-		<p class="empty">
-			No sketches to show yet. Add images to <code>src/lib/assets/sketch/</code> to populate this page.
-		</p>
+		<p class="empty">No sketches to show yet. Publish a sketch in the CMS to populate this page.</p>
 	{:else}
 		<WorksGrid works={sketchWorks} />
 	{/if}

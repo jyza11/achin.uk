@@ -1,7 +1,12 @@
 <script lang="ts">
 	import WorksGrid from '$lib/components/WorksGrid.svelte';
-	import { galleryWorks } from '$lib/data/works';
 	import profilePic from '$lib/assets/pro.jpg';
+
+	// Works + text blocks come from PocketBase via +page.server.ts (with local fallback).
+	let { data } = $props();
+	let galleryWorks = $derived(data.works);
+	const quote = $derived(data.blocks['about.quote']);
+	const statement = $derived(data.blocks['about.statement']);
 
 	const tickerPhrases = [
 		'油畫 · Paintings',
@@ -63,7 +68,7 @@
 		<p
 			style="font-family: var(--serif); font-style: italic; color: var(--ink-3); text-align: center; padding: 40px 0;"
 		>
-			Add images to <code>src/lib/assets/gallery/</code> to see them here.
+			Publish a painting in the CMS to see it here.
 		</p>
 	{/if}
 </section>
@@ -85,14 +90,22 @@
 			/>
 		</div>
 		<div>
-			<p class="pq">
-				我不在家就在去咖啡館的路上 — 雙叟 · 左岸 · 巴黎 · 花街 — 黃金海岸的比基尼 — 可憐我一雙
-				Ferragamo 的高跟鞋。
-			</p>
-			<p>
-				A practice built on slow looking — light, weather, and the corners of rooms held still long
-				enough to draw out the hour.
-			</p>
+			{#if quote?.zh}
+				<p class="pq">{quote.zh}</p>
+			{:else}
+				<p class="pq">
+					我不在家就在去咖啡館的路上 — 雙叟 · 左岸 · 巴黎 · 花街 — 黃金海岸的比基尼 — 可憐我一雙
+					Ferragamo 的高跟鞋。
+				</p>
+			{/if}
+			{#if statement?.en}
+				<p>{statement.en}</p>
+			{:else}
+				<p>
+					A practice built on slow looking — light, weather, and the corners of rooms held still
+					long enough to draw out the hour.
+				</p>
+			{/if}
 			<div class="statement-meta">
 				<div><span class="k">Born</span><span class="v">Taipei</span></div>
 				<div><span class="k">Based</span><span class="v">Studio · Taipei</span></div>

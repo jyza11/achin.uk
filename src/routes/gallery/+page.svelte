@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import WorksGrid from '$lib/components/WorksGrid.svelte';
-	import { galleryWorks } from '$lib/data/works';
+
+	// Works come from PocketBase via +page.server.ts (server-side, so crawlers get
+	// full HTML); `data.source` is 'local' when the backend was unreachable.
+	let { data } = $props();
+	let galleryWorks = $derived(data.works);
 
 	// Minimal-canvas mode: adds `body.minimal-canvas` while this route is
 	// mounted; removed on navigation away. All the visual overrides (white
@@ -31,9 +35,7 @@
 -->
 <section class="band">
 	{#if galleryWorks.length === 0}
-		<p class="empty">
-			No works to show yet. Add images to <code>src/lib/assets/gallery/</code> to populate this page.
-		</p>
+		<p class="empty">No works to show yet. Publish a painting in the CMS to populate this page.</p>
 	{:else}
 		<WorksGrid works={galleryWorks} />
 	{/if}
