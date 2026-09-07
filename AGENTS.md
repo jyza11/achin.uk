@@ -78,7 +78,8 @@ src/
 └── routes/                  / gallery sketch about contact events; /, gallery, sketch, about have +page.server.ts (CMS loads)
 pocketbase/                  pb_migrations/ = schema (committed) · pocketbase binary, pb_data/, .env.dev = local only (ignored)
 scripts/seed-dev.mjs         dev seed (one painting + /about blocks)
-AGENTS.md                    this file — orientation + all design decisions
+AGENTS.md                    this file — orientation + all design decisions (source of truth)
+README.md                    the short human on-ramp: what it is, run it, edit content. Never holds anything this file doesn't
 NOTES.md                     dated small observations
 ```
 
