@@ -36,71 +36,77 @@
 	});
 
 	let currentPath = $derived($page.url.pathname);
+	let isAdmin = $derived(currentPath === '/admin' || currentPath.startsWith('/admin/'));
 </script>
 
-<!-- Mobile topbar — only renders on mobile (CSS controls display) -->
-<header class="pf-topbar-mobile">
-	<a href="/" class="pf-wordmark-small" onclick={closeMenu}>Achin</a>
+{#if isAdmin}
+	<!-- /admin is its own client-only app — no site chrome (sidebar, topbar, Lightbox). -->
+	{@render children?.()}
+{:else}
+	<!-- Mobile topbar — only renders on mobile (CSS controls display) -->
+	<header class="pf-topbar-mobile">
+		<a href="/" class="pf-wordmark-small" onclick={closeMenu}>Achin</a>
+		<button
+			class="pf-menu-btn"
+			class:open={menuOpen}
+			onclick={toggleMenu}
+			aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+			aria-expanded={menuOpen}
+			aria-controls="primary-nav"
+		>
+			<span></span>
+		</button>
+	</header>
+
+	<!-- Mobile backdrop (visible only when drawer is open on mobile) -->
 	<button
-		class="pf-menu-btn"
+		class="pf-sidebar-backdrop"
 		class:open={menuOpen}
-		onclick={toggleMenu}
-		aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-		aria-expanded={menuOpen}
-		aria-controls="primary-nav"
-	>
-		<span></span>
-	</button>
-</header>
+		onclick={closeMenu}
+		aria-label="Close menu"
+		tabindex={menuOpen ? 0 : -1}
+	></button>
 
-<!-- Mobile backdrop (visible only when drawer is open on mobile) -->
-<button
-	class="pf-sidebar-backdrop"
-	class:open={menuOpen}
-	onclick={closeMenu}
-	aria-label="Close menu"
-	tabindex={menuOpen ? 0 : -1}
-></button>
+	<!-- Sidebar — fixed on desktop, slides in on mobile -->
+	<aside class="pf-sidebar" class:open={menuOpen}>
+		<a href="/" class="pf-sidebar-wordmark" onclick={closeMenu}>Achin</a>
+		<span class="pf-sidebar-tag">Painter · Studio</span>
 
-<!-- Sidebar — fixed on desktop, slides in on mobile -->
-<aside class="pf-sidebar" class:open={menuOpen}>
-	<a href="/" class="pf-sidebar-wordmark" onclick={closeMenu}>Achin</a>
-	<span class="pf-sidebar-tag">Painter · Studio</span>
+		<nav class="pf-sidebar-nav" id="primary-nav" aria-label="Primary">
+			<div class="pf-sidebar-section">Index</div>
+			{#each navItems as item}
+				<a
+					href={item.href}
+					class:active={currentPath === item.href || currentPath.startsWith(item.href + '/')}
+					onclick={closeMenu}
+				>
+					<span>{item.label}</span>
+					<span class="romaji">{item.romaji}</span>
+				</a>
+			{/each}
+		</nav>
 
-	<nav class="pf-sidebar-nav" id="primary-nav" aria-label="Primary">
-		<div class="pf-sidebar-section">Index</div>
-		{#each navItems as item}
-			<a
-				href={item.href}
-				class:active={currentPath === item.href || currentPath.startsWith(item.href + '/')}
-				onclick={closeMenu}
-			>
-				<span>{item.label}</span>
-				<span class="romaji">{item.romaji}</span>
-			</a>
-		{/each}
-	</nav>
+		<div class="pf-sidebar-foot">
+			© Achin {new Date().getFullYear()}<br />
+			Studio · Taipei
+		</div>
+	</aside>
 
-	<div class="pf-sidebar-foot">
-		© Achin {new Date().getFullYear()}<br />
-		Studio · Taipei
+	<!-- Main content — offset to make room for the fixed sidebar -->
+	<div class="pf-content">
+		<main class="pf-main">
+			{@render children?.()}
+		</main>
+
+		<footer class="pf-footer">
+			<div>© Achin {new Date().getFullYear()} · All works copyright the artist</div>
+			<div class="right">By appointment · Taipei</div>
+		</footer>
 	</div>
-</aside>
 
-<!-- Main content — offset to make room for the fixed sidebar -->
-<div class="pf-content">
-	<main class="pf-main">
-		{@render children?.()}
-	</main>
-
-	<footer class="pf-footer">
-		<div>© Achin {new Date().getFullYear()} · All works copyright the artist</div>
-		<div class="right">By appointment · Taipei</div>
-	</footer>
-</div>
-
-<!-- Lightbox mounted once globally; renders nothing while closed -->
-<Lightbox />
+	<!-- Lightbox mounted once globally; renders nothing while closed -->
+	<Lightbox />
+{/if}
 
 <style>
 	.pf-content {
