@@ -113,7 +113,11 @@ launch window 7–9 Sep 2026.
 **Media pipeline live (2026-09-08):** every upload keeps the untouched original in the
 protected `original` field and stores a ≤2400px, EXIF-stripped copy as the public `image`
 (`pb_hooks/works_images.pb.js`); all 153 rows reprocessed. HEIC uploads are refused with a
-message (export as JPEG). The public URL can no longer serve full resolution.
+message (export as JPEG). The public URL can no longer serve full resolution. A record only
+counts as processed once the `image` filename carries the `_web` marker **and** `original` is
+non-empty (hardened 2026-09-08 — the marker alone let an artist upload named e.g.
+`sunset_web.jpg` skip the pipeline); if the derivative step fails, the row is set back to
+`draft` and the failure logged, so a full-resolution file is never left public.
 
 **Known gaps:** contact details are placeholders (owner to
 supply real ones in the dashboard) and **the contact form is fake**; no `users` accounts exist
@@ -234,6 +238,9 @@ direction (its rule governs the media pipeline below).
   requests `?thumb=1600x0`, the lightbox the full web copy. HEIC is refused at upload with
   a clear message (the resizer can't decode it). sRGB conversion is not done — noted, not
   needed so far. Storage must stay on local disk (the hook reads from `pb_data/`).
+  **Hardened 2026-09-08:** "processed" requires the `_web` marker **and** a non-empty
+  `original` (the marker alone let a same-named artist upload skip the pipeline); a failed
+  derivative sets the row to `draft` and logs the failure, so full resolution is never public.
 - **Protection layers:** (1) full resolution never published; (2) Cloudflare AI-bot blocking +
   hotlink protection; (3) robots.txt AI blocks + noai meta + Content Signals (legal groundwork
   under EU/UK TDM rules); (4) C2PA Content Credentials later. Nothing prevents copying a

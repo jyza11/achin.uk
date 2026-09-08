@@ -58,7 +58,8 @@ Log in to the dashboard and edit two collections:
   and `text_en`.
 
 Upload the painting as photographed. The site never crops or edits artwork; it only requests
-resized copies.
+resized copies. If a work drops back to draft right after upload, its image could not be
+processed — export it as JPEG and upload again.
 
 ## Structure
 
