@@ -141,7 +141,7 @@
 	}
 </script>
 
-<form class="admin-form" onsubmit={handleSubmit}>
+<form class="admin-form" autocomplete="off" onsubmit={handleSubmit}>
 	<div class="admin-field admin-field-full">
 		<span class="admin-field-label">{fieldLabels.image}</span>
 		{#if previewUrl || currentImageUrl}
@@ -157,12 +157,26 @@
 
 	<div class="admin-field admin-field-full">
 		<label for="work-title-zh">{fieldLabels.title_zh}</label>
-		<input id="work-title-zh" type="text" bind:value={title_zh} maxlength="200" required />
+		<input
+			id="work-title-zh"
+			type="text"
+			bind:value={title_zh}
+			maxlength="200"
+			required
+			enterkeyhint="done"
+		/>
 	</div>
 
 	<div class="admin-field admin-field-full">
 		<label for="work-title-en">{fieldLabels.title_en}</label>
-		<input id="work-title-en" type="text" bind:value={title_en} />
+		<input
+			id="work-title-en"
+			type="text"
+			bind:value={title_en}
+			enterkeyhint="done"
+			autocapitalize="off"
+			spellcheck="false"
+		/>
 	</div>
 
 	<div class="admin-field admin-field-full">
@@ -179,17 +193,25 @@
 	<div class="admin-form-grid">
 		<div class="admin-field">
 			<label for="work-year">{fieldLabels.year}</label>
-			<input id="work-year" type="number" bind:value={year} min="1900" max="2100" />
+			<input
+				id="work-year"
+				type="number"
+				bind:value={year}
+				min="1900"
+				max="2100"
+				inputmode="numeric"
+				enterkeyhint="done"
+			/>
 		</div>
 
 		<div class="admin-field">
 			<label for="work-medium">{fieldLabels.medium}</label>
-			<input id="work-medium" type="text" bind:value={medium} />
+			<input id="work-medium" type="text" bind:value={medium} enterkeyhint="done" />
 		</div>
 
 		<div class="admin-field">
 			<label for="work-size">{fieldLabels.size}</label>
-			<input id="work-size" type="text" bind:value={size} />
+			<input id="work-size" type="text" bind:value={size} enterkeyhint="done" />
 		</div>
 
 		<div class="admin-field">
@@ -223,7 +245,13 @@
 
 		<div class="admin-field">
 			<label for="work-sort">{fieldLabels.sort}</label>
-			<input id="work-sort" type="number" bind:value={sort} />
+			<input
+				id="work-sort"
+				type="number"
+				bind:value={sort}
+				inputmode="numeric"
+				enterkeyhint="done"
+			/>
 			<p class="admin-hint">{formLabels.sortHint}</p>
 		</div>
 	</div>
@@ -233,17 +261,23 @@
 	{/if}
 
 	<div class="admin-form-actions">
-		<button class="admin-btn admin-btn-accent" type="submit" disabled={saving || deleting}>
+		<button
+			class="admin-btn admin-btn-accent admin-form-actions-save"
+			type="submit"
+			disabled={saving || deleting}
+		>
 			{saving ? actionLabels.saving : actionLabels.save}
 		</button>
 		{#if saving || deleting}
-			<span class="admin-btn" aria-disabled="true">{actionLabels.cancel}</span>
+			<span class="admin-btn admin-form-actions-cancel" aria-disabled="true"
+				>{actionLabels.cancel}</span
+			>
 		{:else}
-			<a class="admin-btn" href="/admin">{actionLabels.cancel}</a>
+			<a class="admin-btn admin-form-actions-cancel" href="/admin">{actionLabels.cancel}</a>
 		{/if}
 		{#if work}
 			<button
-				class="admin-btn admin-btn-danger"
+				class="admin-btn admin-btn-danger admin-form-actions-delete"
 				type="button"
 				onclick={handleDelete}
 				disabled={saving || deleting}

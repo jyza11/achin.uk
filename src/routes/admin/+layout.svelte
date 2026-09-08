@@ -76,13 +76,17 @@
 	{:else}
 		<div class="admin-shell">
 			<header class="admin-header">
-				<span class="admin-title">Achin 後台</span>
-				<nav class="admin-nav">
-					<a href="/admin">作品</a>
-					<a href="/admin/text">頁面文字</a>
-				</nav>
-				<span class="admin-user">{userEmail}</span>
-				<button class="admin-btn" onclick={logout}>登出</button>
+				<div class="admin-header-main">
+					<span class="admin-title">Achin 後台</span>
+					<nav class="admin-nav">
+						<a href="/admin">作品</a>
+						<a href="/admin/text">頁面文字</a>
+					</nav>
+				</div>
+				<div class="admin-header-meta">
+					<span class="admin-user">{userEmail}</span>
+					<button class="admin-btn" onclick={logout}>登出</button>
+				</div>
 			</header>
 			{@render children?.()}
 		</div>

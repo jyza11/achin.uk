@@ -36,6 +36,18 @@
 	function thumbUrl(work: Work): string {
 		return pb.files.getURL(work, work.image, { thumb: '400x0' });
 	}
+
+	// Mobile card meta line, e.g. "油畫 · 公開 · 2025 · 已售" — omits empty parts.
+	function workMeta(work: Work): string {
+		return [
+			collectionLabels[work.collection],
+			statusLabels[work.status],
+			work.year ? String(work.year) : '',
+			work.sold ? '已售' : ''
+		]
+			.filter(Boolean)
+			.join(' · ');
+	}
 </script>
 
 <svelte:head>
@@ -60,6 +72,34 @@
 {:else if filtered.length === 0}
 	<p class="admin-state">尚無作品</p>
 {:else}
+	<ul class="admin-work-cards">
+		{#each filtered as work (work.id)}
+			<li class:muted={work.status === 'draft'}>
+				<a class="admin-work-card" href={`/admin/works/${work.id}`}>
+					<img
+						class="admin-work-card-thumb"
+						src={thumbUrl(work)}
+						alt=""
+						loading="lazy"
+						decoding="async"
+					/>
+					<div class="admin-work-card-body">
+						<span class="admin-work-card-title">
+							{work.title_zh}
+							{#if work.status === 'draft'}
+								<span class="admin-badge-draft">草稿</span>
+							{/if}
+						</span>
+						{#if work.title_en}
+							<span class="admin-title-en">{work.title_en}</span>
+						{/if}
+						<span class="admin-work-card-meta">{workMeta(work)}</span>
+					</div>
+				</a>
+			</li>
+		{/each}
+	</ul>
+
 	<table class="admin-table">
 		<thead>
 			<tr>
