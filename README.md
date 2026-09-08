@@ -30,11 +30,12 @@ release's `checksums.txt`, and put the binary at `pocketbase/pocketbase`. Then:
 
 ```bash
 ./pocketbase/pocketbase superuser upsert you@example.com <password> --dir=./pocketbase/pb_data
-./pocketbase/pocketbase serve --http=127.0.0.1:8090 --dir=./pocketbase/pb_data --migrationsDir=./pocketbase/pb_migrations
+./pocketbase/pocketbase serve --http=127.0.0.1:8090 --dir=./pocketbase/pb_data --migrationsDir=./pocketbase/pb_migrations --hooksDir=./pocketbase/pb_hooks
 ```
 
 Dashboard: <http://127.0.0.1:8090/_/>. Collections are created automatically from
-`pocketbase/pb_migrations/` on first start.
+`pocketbase/pb_migrations/` on first start; `pocketbase/pb_hooks/` holds the image pipeline
+(originals kept private, a 2400 px web copy served to the site).
 
 **Site.** In a second terminal:
 

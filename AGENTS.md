@@ -50,9 +50,11 @@ node scripts/seed-dev.mjs   # dev only: one painting + /about text into a runnin
 download the darwin_arm64 release matching `pocketbase/pb_migrations/` — v0.40.3 as of 2026-09-06 —
 and verify its sha256 against the release `checksums.txt`). Run it via the `pocketbase` entry in
 `.claude/launch.json` (= `./pocketbase/pocketbase serve --http=127.0.0.1:8090 --dir=./pocketbase/pb_data
---migrationsDir=./pocketbase/pb_migrations`). Dashboard: `http://127.0.0.1:8090/_/`. Migrations in
-`pb_migrations/` apply on start and **are the schema of record — commit them; never edit
-collections only in the dashboard.** Dev superuser credentials: `pocketbase/.env.dev` (git-ignored;
+--migrationsDir=./pocketbase/pb_migrations --hooksDir=./pocketbase/pb_hooks`). Dashboard:
+`http://127.0.0.1:8090/_/`. Migrations in `pb_migrations/` apply on start and **are the schema of
+record — commit them; never edit collections only in the dashboard.** Hooks in `pb_hooks/`
+(media pipeline) hot-reload on change; each handler runs in its own VM, so shared code lives in
+`pb_hooks/lib/*.js` and is `require()`d inside the handler. Dev superuser credentials: `pocketbase/.env.dev` (git-ignored;
 create with `./pocketbase/pocketbase superuser upsert <email> <password> --dir=./pocketbase/pb_data`).
 The site reads `PUBLIC_PB_URL` from `.env` (copy `.env.example`).
 
@@ -77,8 +79,8 @@ src/
 │   └── assets/              triaged 2026-09-08: gallery/ 69 · sketch/ 81 (both migrated to the CMS, kept as fallback) ·
 │                            profile/ 6 (Achin's portrait page — LATER, own spec, not in the CMS) · pro.jpg (current portrait)
 └── routes/                  / gallery sketch about contact events — all have +page.server.ts (CMS loads with fallback)
-pocketbase/                  pb_migrations/ = schema (committed) · pocketbase binary, pb_data/, .env.dev = local only (ignored)
-scripts/                     migrate-images.mjs (bundled images → works, idempotent via source_file) · seed-dev.mjs (content blocks + 1 test painting)
+pocketbase/                  pb_migrations/ = schema · pb_hooks/ = media pipeline (both committed) · binary, pb_data/, .env.dev = local only (ignored)
+scripts/                     migrate-images.mjs (bundled images → works, idempotent) · reprocess-images.mjs (run the pipeline over old rows) · seed-dev.mjs (content blocks + 1 test painting)
 AGENTS.md                    this file — orientation + all design decisions (source of truth)
 README.md                    the short human on-ramp: what it is, run it, edit content. Never holds anything this file doesn't
 NOTES.md                     dated small observations
@@ -110,8 +112,12 @@ text. The owner created a record through the dashboard 2026-09-07 (worked; the t
 bilingual title layout was not obvious — input for `/admin`). **Test site** — not yet public;
 launch window 7–9 Sep 2026.
 
-**Known gaps:** the raw `image` URL still serves the uploaded file at full size (site requests
-`?thumb=` only) — server-side resize hook to do; contact details are placeholders (owner to
+**Media pipeline live (2026-09-08):** every upload keeps the untouched original in the
+protected `original` field and stores a ≤2400px, EXIF-stripped copy as the public `image`
+(`pb_hooks/works_images.pb.js`); all 153 rows reprocessed. HEIC uploads are refused with a
+message (export as JPEG). The public URL can no longer serve full resolution.
+
+**Known gaps:** contact details are placeholders (owner to
 supply real ones in the dashboard) and **the contact form is fake**; no `users` accounts exist
 yet (only the dev superuser); `contact/article.js` orphaned 中文 essay; `DonationCard` orphaned;
 2 test rows in `works` (測試作品, test image) to delete before launch; frame mat colour
@@ -119,11 +125,9 @@ yet (only the dev superuser); `contact/article.js` orphaned 中文 essay; `Donat
 
 ## Next actions (in order)
 
-1. **Server-side resize hook** (`pb_hooks/`): on upload, keep the original in the protected
-   field, write a ≤1600px EXIF-stripped sRGB copy to `image`. Owner asked for an explanation
-   before it's built (2026-09-08).
-2. **Contact form** → Netlify Forms (messages vanish today). Same: explain first, then build.
-3. `users` accounts for Achin + team (dashboard → users → New; set `role`); stop using the dev
+1. **Contact form** → Netlify Forms (messages vanish today). Explained to the owner 2026-09-08;
+   awaiting go. Can only be tested once deployed on Netlify.
+2. `users` accounts for Achin + team (dashboard → users → New; set `role`); stop using the dev
    superuser for content.
 4. **Deployment** (Part 2): pick the VPS, DNS → Cloudflare, ship the test site in the 7–9 Sep
    window. The static site can launch before the CMS backend is live. Reconcile prerendering
@@ -222,10 +226,14 @@ direction (its rule governs the media pipeline below).
   cron copying the DB file + uploads off-box, plus a tested restore.
 - **Day-1 CMS:** PocketBase's built-in dashboard — the artist edits/uploads immediately, zero
   code. The custom bilingual `/admin` route in SvelteKit is a later phase.
-- **Media pipeline (obeys Art direction):** originals stored **untouched** in a private
-  collection, never publicly served. Public derivative = same image **resized only** (~1600px
-  long edge, aspect kept), EXIF stripped (phone photos carry studio GPS), sRGB. Thumbnails via
-  PocketBase `?thumb=WxH` (fit, not crop).
+- **Media pipeline (built 2026-09-08, obeys Art direction):** `pb_hooks/works_images.pb.js` —
+  the uploaded file is kept **untouched** in the protected `original` field (token-only
+  access); the public `image` becomes the same picture **resized only** to fit 2400×2400
+  (long edge 2400 px — retina-sharp, the owner's "a human can't tell" bar), aspect kept,
+  never cropped, never upscaled, EXIF stripped (phone photos carry studio GPS). The grid
+  requests `?thumb=1600x0`, the lightbox the full web copy. HEIC is refused at upload with
+  a clear message (the resizer can't decode it). sRGB conversion is not done — noted, not
+  needed so far. Storage must stay on local disk (the hook reads from `pb_data/`).
 - **Protection layers:** (1) full resolution never published; (2) Cloudflare AI-bot blocking +
   hotlink protection; (3) robots.txt AI blocks + noai meta + Content Signals (legal groundwork
   under EU/UK TDM rules); (4) C2PA Content Credentials later. Nothing prevents copying a
