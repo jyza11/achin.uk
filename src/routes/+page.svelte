@@ -7,6 +7,11 @@
 	let galleryWorks = $derived(data.works);
 	const quote = $derived(data.blocks['about.quote']);
 	const statement = $derived(data.blocks['about.statement']);
+	const eyebrow = $derived(data.blocks['home.hero_eyebrow']?.en || 'Painter · Taipei');
+	const deck = $derived(
+		data.blocks['home.hero_deck']?.en ||
+			'Oil on linen — slow, considered surfaces of weather, water, and interior thresholds. Painted from life, then revisited from memory.'
+	);
 
 	const tickerPhrases = [
 		'油畫 · Paintings',
@@ -18,12 +23,9 @@
 
 <section class="hero">
 	<div class="hero-text reveal">
-		<div class="hero-eyebrow">Painter · Taipei</div>
+		<div class="hero-eyebrow">{eyebrow}</div>
 		<h1>The hour <em>before</em> the light forgets the room.</h1>
-		<p class="hero-deck">
-			Oil on linen — slow, considered surfaces of weather, water, and interior thresholds. Painted
-			from life, then revisited from memory.
-		</p>
+		<p class="hero-deck">{deck}</p>
 		<div class="hero-actions">
 			<a class="btn primary" href="/gallery">View Selected Works <span class="arrow"></span></a>
 			<a class="btn" href="/about">關於 · About</a>

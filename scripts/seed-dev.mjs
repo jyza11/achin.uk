@@ -71,6 +71,76 @@ const blocks = [
 		text_en:
 			'Working from life and from memory. Sittings at the café, drawings in the morning, paintings revisited in the studio after the day has cooled.',
 		note: 'Second paragraph on /about'
+	},
+	{
+		slug: 'home.hero_eyebrow',
+		text_zh: '',
+		text_en: 'Painter · Taipei',
+		note: 'Small label above the homepage headline'
+	},
+	{
+		slug: 'home.hero_deck',
+		text_zh: '',
+		text_en:
+			'Oil on linen — slow, considered surfaces of weather, water, and interior thresholds. Painted from life, then revisited from memory.',
+		note: 'Paragraph under the homepage headline'
+	},
+	{
+		slug: 'gallery.note',
+		text_zh: '',
+		text_en:
+			'A selection of recent oil paintings — each on linen unless noted. Tap any painting on desktop for a lightbox; on mobile, swipe up on a painting to see its details.',
+		note: 'Paragraph under the paintings on /gallery'
+	},
+	{
+		slug: 'contact.intro',
+		text_zh: '',
+		text_en:
+			'The studio is open by appointment for visitors, collectors, and curators. Acquisitions, commissions, and press inquiries — please write directly.',
+		note: '/contact opening paragraph'
+	},
+	{
+		slug: 'contact.hours',
+		text_zh: '',
+		text_en: 'Mon · Tue | 10—18h\nWed · Thu | 10—18h\nFri | 12—19h\nSat · Sun | By request',
+		note: '/contact hours — one row per line: "label | value"'
+	},
+	{
+		slug: 'contact.address',
+		text_zh: '',
+		text_en: 'Taipei · Studio\nBy appointment',
+		note: '/contact address, one line per row'
+	},
+	{
+		slug: 'contact.email',
+		text_zh: '',
+		text_en: 'studio@achin.example',
+		note: 'PLACEHOLDER — replace with the real studio email'
+	},
+	{
+		slug: 'contact.press',
+		text_zh: '',
+		text_en: 'press@achin.example',
+		note: 'PLACEHOLDER — replace with the real press email'
+	},
+	{
+		slug: 'contact.instagram',
+		text_zh: '',
+		text_en: '@achin.studio',
+		note: 'PLACEHOLDER — replace with the real handle'
+	},
+	{
+		slug: 'events.empty_line',
+		text_zh: '展覽 · Coming soon',
+		text_en: '',
+		note: '/events big line while there are no listings'
+	},
+	{
+		slug: 'events.empty_deck',
+		text_zh: '',
+		text_en:
+			"Exhibition listings will appear here as they're scheduled. For studio visits and press inquiries in the meantime, see",
+		note: '/events small text; the page appends the 合作 link'
 	}
 ];
 for (const b of blocks) {

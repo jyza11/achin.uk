@@ -6,6 +6,10 @@
 	// full HTML); `data.source` is 'local' when the backend was unreachable.
 	let { data } = $props();
 	let galleryWorks = $derived(data.works);
+	const note = $derived(
+		data.blocks['gallery.note']?.en ||
+			'A selection of recent oil paintings — each on linen unless noted. Tap any painting on desktop for a lightbox; on mobile, swipe up on a painting to see its details.'
+	);
 
 	// Minimal-canvas mode: adds `body.minimal-canvas` while this route is
 	// mounted; removed on navigation away. All the visual overrides (white
@@ -41,11 +45,7 @@
 	{/if}
 
 	<div class="gallery-note">
-		<p>
-			A selection of recent oil paintings — each on linen unless noted. Tap any painting on desktop
-			for a lightbox; on mobile, swipe up on a painting to see its details.
-		</p>
-		<!-- Replace this paragraph with the artist's own voice / bilingual pair when ready. -->
+		<p>{note}</p>
 	</div>
 
 	<header class="section-head section-head--footer">

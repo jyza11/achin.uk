@@ -1,3 +1,10 @@
+<script lang="ts">
+	// Empty-state text is editable in the CMS; falls back to the copy below.
+	let { data } = $props();
+	const line = $derived(data.blocks['events.empty_line']?.zh || '展覽 · Coming soon');
+	const deck = $derived(data.blocks['events.empty_deck']?.en);
+</script>
+
 <svelte:head>
 	<title>展覽 · Exhibitions — Achin</title>
 </svelte:head>
@@ -12,12 +19,16 @@
 	</header>
 
 	<div class="events-empty">
-		<p class="events-empty-line">展覽 · Coming soon</p>
-		<p class="events-empty-deck">
-			Exhibition listings will appear here as they're scheduled. For studio visits and press
-			inquiries in the meantime, see
-			<a href="/contact">合作</a>.
-		</p>
+		<p class="events-empty-line">{line}</p>
+		{#if deck}
+			<p class="events-empty-deck">{deck} <a href="/contact">合作</a>.</p>
+		{:else}
+			<p class="events-empty-deck">
+				Exhibition listings will appear here as they're scheduled. For studio visits and press
+				inquiries in the meantime, see
+				<a href="/contact">合作</a>.
+			</p>
+		{/if}
 	</div>
 </section>
 

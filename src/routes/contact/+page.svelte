@@ -1,4 +1,22 @@
 <script lang="ts">
+	import { paragraphs } from '$lib/text';
+
+	// Contact copy + details come from CMS content_blocks (fallback: the hardcoded text below).
+	// `contact.hours` is one line per row, "label | value", e.g. "Mon · Tue | 10—18h".
+	let { data } = $props();
+	const b = $derived(data.blocks);
+	const intro = $derived(b['contact.intro']?.en);
+	const hours = $derived(
+		(b['contact.hours']?.en ?? '')
+			.split('\n')
+			.map((l) => l.split('|').map((s) => s.trim()))
+			.filter((r) => r.length === 2 && r[0])
+	);
+	const address = $derived(b['contact.address']?.en);
+	const contactEmail = $derived(b['contact.email']?.en || 'studio@achin.example');
+	const press = $derived(b['contact.press']?.en || 'press@achin.example');
+	const instagram = $derived(b['contact.instagram']?.en || '@achin.studio');
+
 	let name = $state('');
 	let email = $state('');
 	let message = $state('');
@@ -27,27 +45,45 @@
 	<div class="visit">
 		<div class="visit-text">
 			<h2>Quiet hours, <em>open door</em>.</h2>
-			<p>
-				The studio is open by appointment for visitors, collectors, and curators. Acquisitions,
-				commissions, and press inquiries — please write directly.
-			</p>
+			{#if intro}
+				{#each paragraphs(intro) as para}
+					<p>{para}</p>
+				{/each}
+			{:else}
+				<p>
+					The studio is open by appointment for visitors, collectors, and curators. Acquisitions,
+					commissions, and press inquiries — please write directly.
+				</p>
+			{/if}
 			<div class="hours">
-				<div class="hours-row"><span>Mon · Tue</span><span>10—18h</span></div>
-				<div class="hours-row"><span>Wed · Thu</span><span>10—18h</span></div>
-				<div class="hours-row"><span>Fri</span><span>12—19h</span></div>
-				<div class="hours-row closed"><span>Sat · Sun</span><span>By request</span></div>
+				{#if hours.length > 0}
+					{#each hours as [label, value]}
+						<div class="hours-row" class:closed={/request|closed|休/i.test(value)}>
+							<span>{label}</span><span>{value}</span>
+						</div>
+					{/each}
+				{:else}
+					<div class="hours-row"><span>Mon · Tue</span><span>10—18h</span></div>
+					<div class="hours-row"><span>Wed · Thu</span><span>10—18h</span></div>
+					<div class="hours-row"><span>Fri</span><span>12—19h</span></div>
+					<div class="hours-row closed"><span>Sat · Sun</span><span>By request</span></div>
+				{/if}
 			</div>
 		</div>
 
 		<div class="visit-card">
 			<h3>Studio Achin</h3>
 			<div class="addr">
-				Taipei · Studio<br />
-				By appointment
+				{#if address}
+					{#each address.split('\n') as l}{l}<br />{/each}
+				{:else}
+					Taipei · Studio<br />
+					By appointment
+				{/if}
 			</div>
-			<div class="row"><span class="k">Email</span><span class="v">studio@achin.example</span></div>
-			<div class="row"><span class="k">Press</span><span class="v">press@achin.example</span></div>
-			<div class="row"><span class="k">Instagram</span><span class="v">@achin.studio</span></div>
+			<div class="row"><span class="k">Email</span><span class="v">{contactEmail}</span></div>
+			<div class="row"><span class="k">Press</span><span class="v">{press}</span></div>
+			<div class="row"><span class="k">Instagram</span><span class="v">{instagram}</span></div>
 
 			{#if !submitted}
 				<form class="contact-form" onsubmit={handleSubmit}>
