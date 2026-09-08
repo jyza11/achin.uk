@@ -83,6 +83,7 @@ src/
 └── routes/                  / gallery sketch about contact events — all have +page.server.ts (CMS loads with fallback)
     └── admin/               client-only (ssr=false) 繁體中文 admin: / list · works/new · works/[id] · text
 pocketbase/                  pb_migrations/ = schema · pb_hooks/ = media pipeline (both committed) · binary, pb_data/, .env.dev = local only (ignored)
+deploy/                      cloud-init.yaml (the whole server, one file) + README.md (runbook: launch, DNS, backups, move)
 scripts/                     migrate-images.mjs (bundled images → works, idempotent) · reprocess-images.mjs (run the pipeline over old rows) · seed-dev.mjs (content blocks + 1 test painting)
 AGENTS.md                    this file — orientation + all design decisions (source of truth)
 README.md                    the short human on-ramp: what it is, run it, edit content. Never holds anything this file doesn't
@@ -349,7 +350,8 @@ six months, planned exit to Vultr. Nothing provisioned yet; roadmap under Open. 
   `standard`** (never `unlimited` — load is upload bursts then idle; standard caps the bill).
   ~$14/month all-in (~$8 instance + $3.65 IPv4 + ~$2 disk) ≈ $84 for six months, paid from the
   $100–200 Free-plan credits. PocketBase **`linux_arm64` v0.40.3, pinned**, as a systemd service
-  behind Caddy (Docker) on `api.achin.uk`.
+  behind **Caddy from its official apt repo** (native systemd, not Docker — fewer moving parts on
+  a 1 GB box; Docker is installed only for later services) on `api.achin.uk`.
   **Hard deadline:** the Free plan closes the account six months after creation or at $0
   credits, with a 90-day retention grace. **Month-5 checkpoint:** migrate to Vultr Tokyo
   `vhp-1c-2gb-amd` ($12; ~1 h: copy `pb_data/`, switch DNS) or "Upgrade Plan" to Paid (credits
@@ -386,9 +388,9 @@ six months, planned exit to Vultr. Nothing provisioned yet; roadmap under Open. 
    Bedrock is usable on the plan — if not, upgrade to Paid on day one.
 2. (O) Cloudflare account; add `achin.uk`; nameservers at Gandi → Cloudflare (DNS-only until
    launch). Create the R2 bucket + an API token for backups.
-3. (A) Write `deploy/cloud-init.yaml` + `deploy/README.md` with the exact launch parameters
-   (AMI, instance type, credit mode, SG rules with Cloudflare ranges, EIP). Test the YAML in a
-   local multipass VM first.
+3. (A) **Done 2026-09-08:** `deploy/cloud-init.yaml` + `deploy/README.md` (launch parameters,
+   SG rules with Cloudflare ranges, EIP, first-login checks). Schema-validated; **not yet booted
+   on real hardware** — the first launch (step 4) is the test.
 4. (O) Launch the instance from the console with that user-data; attach the EIP; send the IP.
 5. (A) Push `pb_migrations/` + `pb_hooks/` + local `pb_data/` (182 MB); start the service;
    Caddy site for `api.achin.uk`; Cloudflare A record (proxied); prove `/api/health` over HTTPS.
