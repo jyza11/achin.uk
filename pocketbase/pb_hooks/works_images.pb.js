@@ -7,8 +7,9 @@ onRecordAfterCreateSuccess((e) => {
 	try {
 		lib.processWorkImage(e.app, e.record);
 	} catch (err) {
-		// Never fail the editor's save because of the derivative; log and keep the upload.
-		console.log('[works_images] could not process', e.record.id, String(err));
+		// Never fail the editor's save because of the derivative — but never leave the
+		// full-resolution upload public either, so pull the record back to draft.
+		lib.markFailed(e.app, e.record, err);
 	}
 	e.next();
 }, 'works');
@@ -18,7 +19,7 @@ onRecordAfterUpdateSuccess((e) => {
 	try {
 		lib.processWorkImage(e.app, e.record);
 	} catch (err) {
-		console.log('[works_images] could not process', e.record.id, String(err));
+		lib.markFailed(e.app, e.record, err);
 	}
 	e.next();
 }, 'works');
