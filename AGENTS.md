@@ -125,17 +125,18 @@ yet (only the dev superuser); `contact/article.js` orphaned 中文 essay; `Donat
 2 test rows in `works` (測試作品, test image) to delete before launch; frame mat colour
 (`oklch(0.965 0.012 80)`) awaits the owner's call.
 
-## Next actions (in order)
+## Next actions (in order) — 2026-09-08
 
-1. **Contact form** → Netlify Forms (messages vanish today). Explained to the owner 2026-09-08;
-   awaiting go. Can only be tested once deployed on Netlify.
-2. `users` accounts for Achin + team (dashboard → users → New; set `role`); stop using the dev
-   superuser for content.
-3. **Deployment** (Part 2): pick the VPS, DNS → Cloudflare, ship the test site in the 7–9 Sep
-   window. The static site can launch before the CMS backend is live. Work through
-   Deployment › Open / to-do first — it holds the launch blockers found in review.
-4. SEO pass: homepage `<title>`, meta description, OG tags, `lang` attribute, sitemap, favicon
+1. **CMS in the owner's hands:** `users` accounts for Achin + team (dashboard → users → New;
+   set `role`); stop using the dev superuser. Achin renames the placeholder titles, deletes the
+   2 test rows, fills real contact text — his first real edit is the acceptance test.
+2. **Deployment** (Part 2): pick the VPS, DNS → Cloudflare, ship the test site. Launch window
+   7–9 Sep is slipping — the static site can go live before the backend. Work through
+   Deployment › Open / to-do first (launch blockers from review).
+3. SEO pass: homepage `<title>`, meta description, OG tags, `lang` attribute, sitemap, favicon
    (details in Deployment › Open / to-do).
+4. **Contact:** owner decides the real details, then the form → Netlify Forms (messages vanish
+   today). Deferred 2026-09-08 until the CMS is functional for Achin; explained, design ready.
 5. Retire the Vite-glob fallback data once the CMS is deployed and backed up.
 6. Later: custom bilingual `/admin`; profile page for Achin (own spec; `assets/profile/`);
    CSS design system + admin styling; Business features.
