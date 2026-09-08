@@ -148,9 +148,10 @@ yet (only the dev superuser); `contact/article.js` orphaned 中文 essay; `Donat
    2 test rows, fills real contact text — his first real edit is the acceptance test.
 2. **Owner's click-through of `/admin`** with his own account (upload a phone photo, edit a
    title, edit a text block, delete a test row) — findings become the admin's Open / to-do.
-3. **Deployment** (Part 2): pick the VPS, DNS → Cloudflare, ship the test site. Launch window
-   7–9 Sep is slipping — the static site can go live before the backend. Work through
-   Deployment › Open / to-do first (launch blockers from review).
+3. **Deployment** (Part 2): server chosen 2026-09-08 — AWS `t4g.micro` Tokyo on Free-plan
+   credits, Vultr exit at month 5. Owner starts with roadmap steps 1–2 (AWS + Cloudflare
+   accounts); agent writes `deploy/cloud-init.yaml` in parallel. The static site can go live
+   before the backend. Site blockers under Deployment › Open still apply.
 4. SEO pass: homepage `<title>`, meta description, OG tags, `lang` attribute, sitemap, favicon
    (details in Deployment › Open / to-do).
 5. **Contact:** owner decides the real details, then the form → Netlify Forms (messages vanish
@@ -333,48 +334,75 @@ Cara / Kin.art bundle it only on their own platforms. Composed here from parts.
 
 ## [Platform] Deployment — where things run
 
-**Status:** PLANNED 2026-09-06; launch blockers from the 2026-09-07 review listed under Open.
-Test site today; **launch window 7–9 Sep 2026.** Server not yet chosen. The launch does **not** wait for the CMS: the current static build can go live first and
-PocketBase joins when it's ready.
+**Status:** server chosen **2026-09-08** — AWS EC2 `t4g.micro` in Tokyo on Free-plan credits for
+six months, planned exit to Vultr. Nothing provisioned yet; roadmap under Open. Launch does
+**not** wait for the CMS: the static build can go live first and PocketBase joins when ready.
 
 ### Decisions
 
 - **Frontend:** Netlify, `adapter-netlify` (`edge:false`, `split:false`), deploys from branch
-  `deploy`. Env var `PUBLIC_PB_URL` points the site at the backend.
-- **Backend:** PocketBase on **one** self-hosted Linux VPS (owner has idle Vultr + DigitalOcean —
-  pick the one with more RAM and a current OS; region near Taipei visitors if possible). Runs as
-  a systemd service, pinned version, behind **Caddy** (auto-HTTPS) on a subdomain such as
-  `api.achin.uk`.
+  `deploy`. Env var `PUBLIC_PB_URL` points the site at the backend. **Function region stays
+  US-East** (region choice is a Pro-plan feature): every SSR page pays one US→Tokyo round trip
+  (~180 ms). Accepted for launch; prerender + rebuild-on-change (Open list) removes it later.
+- **Backend host (2026-09-08):** AWS EC2 **`t4g.micro`** (2 vCPU Graviton ARM, 1 GB), region
+  `ap-northeast-1` Tokyo, Ubuntu 24.04 arm64, 20 GB gp3, Elastic IP, **CPU credit mode
+  `standard`** (never `unlimited` — load is upload bursts then idle; standard caps the bill).
+  ~$14/month all-in (~$8 instance + $3.65 IPv4 + ~$2 disk) ≈ $84 for six months, paid from the
+  $100–200 Free-plan credits. PocketBase **`linux_arm64` v0.40.3, pinned**, as a systemd service
+  behind Caddy (Docker) on `api.achin.uk`.
+  **Hard deadline:** the Free plan closes the account six months after creation or at $0
+  credits, with a 90-day retention grace. **Month-5 checkpoint:** migrate to Vultr Tokyo
+  `vhp-1c-2gb-amd` ($12; ~1 h: copy `pb_data/`, switch DNS) or "Upgrade Plan" to Paid (credits
+  still apply). Why AWS over an idle VPS: credits are use-or-lose, it keeps $72 in the owner's
+  pocket, and EC2/IAM/VPC/Bedrock is the CV platform; the migration is cheap by design.
+  Rejected: Contabo (24-month lock-in), Oracle Always Free (reclaims idle instances — exactly
+  this box's profile), GCP/Azure (IPv4 + egress ≈ 2× the price).
+- **Provisioning is code:** `deploy/cloud-init.yaml` (committed) creates the admin user with the
+  owner's key, disables password SSH, adds a 2 GB swapfile, installs ufw + fail2ban +
+  unattended-upgrades + Docker, and installs the PocketBase unit + Caddy compose. A reclaimed or
+  replaced box is rebuilt from that file.
+- **Firewall = AWS Security Group** (primary): 22 from the owner's IP only; 80/443 from
+  Cloudflare IP ranges only — possible because this box serves nothing outside Cloudflare. ufw
+  default-deny stays as defence in depth.
 - **DNS:** Gandi stays registrar; nameservers → **Cloudflare free**, proxy on: CDN cache,
   AI-crawler blocking, origin IP hidden. Switch DNS on launch day; until then the Netlify preview
   URL is the test site.
-- **Hardening before the backend is public:** non-root user, SSH keys only (password auth off),
-  `ufw` default-deny (22 from the owner's IPs; 80/443 from Cloudflare ranges only), `fail2ban`,
-  `unattended-upgrades`. This checklist is deliberate learning, not overhead.
-- **Backups:** nightly cron copies `pb_data/` (SQLite + uploads) off-box (the other VPS or B2),
-  14-day retention, **one restore drill before launch**.
-- **Monitoring:** free uptime ping on PocketBase `/api/health`, alert to the owner's email.
-- **Secrets:** never in the repo — PocketBase admin + SMTP credentials live in the server
+- **Backups:** PocketBase's built-in scheduled backup → **Cloudflare R2** (free: 10 GB, no
+  egress) — **off-AWS on purpose**: an in-AWS bucket dies with the account. Daily, keep 14,
+  **one restore drill before launch**.
+- **Cost guard:** AWS Budgets alarm at $150 credits consumed. The five credit tasks are done in
+  week 1; the RDS instance is terminated the moment its task is complete.
+- **Monitoring:** launch with a free external ping on `/api/health` to the owner's email;
+  self-hosted Uptime Kuma later.
+- **Secrets:** never in the repo — PocketBase admin + SMTP + R2 credentials live in the server
   environment; site-side values in Netlify env.
 
 ### Open / to-do
 
-**Server — facts verified over SSH 2026-09-08 (read-only):** the **Vultr** box is Ubuntu 26.04
-LTS, 1 vCPU, 1.6 GB RAM (1.2 GB free), 37 GB disk free, load ~0. Docker + Compose already run
-another project's stack (Caddy 2 on 80/443 with auto-HTTPS, WordPress, MariaDB — a staging
-site on an sslip.io name, no real domain). fail2ban on; only 22/80/443 open; unattended
-upgrades on; **no backups of any kind.** Leftovers to clean: a host MariaDB on 127.0.0.1:3306
-(unused), nginx installed but stopped, an extra provisioning sudo user, and SSH password auth
-probably still enabled (unconfirmed — needs sudo). **DigitalOcean:** nothing known (plan, region,
-OS) — owner to say. **Recommendation: Vultr**, PocketBase as one more Compose service behind the
-existing Caddy on `api.achin.uk`; it idles at ~20 MB. Connection details stay in the owner's
-`~/.ssh/config`, never here.
+**Server roadmap — (O) owner, (A) agent, in order. Nothing started as of 2026-09-08.**
 
-1. Owner confirms Vultr (or gives the DO facts). 2. Add PocketBase to the Compose stack + Caddy
-site block; move `pb_migrations/`, `pb_hooks/`, and the local `pb_data/` up. 3. Hardening
-leftovers above (password auth off, drop the extra sudo user, remove host MariaDB/nginx).
-4. Nightly off-box backup + one restore drill. 5. Cloudflare account + nameserver move at
-Gandi. 6. Launch-day DNS switch.
+1. (O) AWS account on the Free plan, region Tokyo; MFA on root; an IAM user for daily work. Do
+   the five credit tasks (terminate RDS straight after); set the $150 Budgets alarm. Confirm
+   Bedrock is usable on the plan — if not, upgrade to Paid on day one.
+2. (O) Cloudflare account; add `achin.uk`; nameservers at Gandi → Cloudflare (DNS-only until
+   launch). Create the R2 bucket + an API token for backups.
+3. (A) Write `deploy/cloud-init.yaml` + `deploy/README.md` with the exact launch parameters
+   (AMI, instance type, credit mode, SG rules with Cloudflare ranges, EIP). Test the YAML in a
+   local multipass VM first.
+4. (O) Launch the instance from the console with that user-data; attach the EIP; send the IP.
+5. (A) Push `pb_migrations/` + `pb_hooks/` + local `pb_data/` (182 MB); start the service;
+   Caddy site for `api.achin.uk`; Cloudflare A record (proxied); prove `/api/health` over HTTPS.
+6. (A) Schedule backups to R2. (A+O) Restore drill: pull one backup, run it locally, open the
+   dashboard.
+7. (A) Netlify: `PUBLIC_PB_URL=https://api.achin.uk`; fix `netlify.toml` (headers, `/admin`
+   noindex, Node pin); redeploy; `curl` all six routes.
+8. (O) Create Achin's `users` account. His first real edit is the acceptance test.
+9. (O+A) Launch day: `achin.uk` → Netlify in Cloudflare DNS; external uptime ping on; **put the
+   month-5 date in the calendar.**
+10. (A, after launch) Uptime Kuma; decide prerender + build-hook.
+
+**Exit path:** Vultr Tokyo (account exists). The current Vultr box is a client's staging and is
+not shared; its verified state (2026-09-08) is in git history.
 
 **Site, before launch (found 2026-09-07):**
 - **Nothing is prerendered.** No `prerender` export in `src/`; every route runs through the
