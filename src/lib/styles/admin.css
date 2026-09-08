@@ -232,6 +232,128 @@
 	color: var(--oxblood);
 }
 
+/* ── work form (new / edit) ───────────────────────────────────── */
+
+.admin-form {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	max-width: 640px;
+}
+
+.admin-form-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 16px;
+}
+
+.admin-field {
+	display: flex;
+	flex-direction: column;
+}
+
+.admin-field-full {
+	grid-column: 1 / -1;
+}
+
+.admin-field label,
+.admin-field-label {
+	display: block;
+	font-size: 0.85rem;
+	color: var(--ink-2);
+	margin-bottom: 4px;
+}
+
+.admin-field input[type='text'],
+.admin-field input[type='number'],
+.admin-field input[type='file'],
+.admin-field select,
+.admin-field textarea {
+	padding: 8px 10px;
+	border: 1px solid var(--rule);
+	border-radius: 2px;
+	background: var(--paper);
+	color: var(--ink);
+	font-family: var(--sans);
+	font-size: 1rem;
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.admin-field textarea {
+	resize: vertical;
+	font-family: inherit;
+}
+
+.admin-field input[type='checkbox'],
+.admin-field input[type='radio'] {
+	margin-right: 6px;
+}
+
+.admin-checkbox-label {
+	display: flex;
+	align-items: center;
+	font-size: 0.85rem;
+	color: var(--ink-2);
+}
+
+.admin-radio-group {
+	display: flex;
+	gap: 16px;
+}
+
+.admin-radio-group label {
+	display: flex;
+	align-items: center;
+	font-size: 0.9rem;
+	color: var(--ink);
+	margin-bottom: 0;
+}
+
+.admin-image-preview {
+	display: block;
+	max-width: 100%;
+	max-height: 240px;
+	object-fit: contain;
+	background: var(--paper-2);
+	border: 1px solid var(--rule);
+	margin-bottom: 10px;
+}
+
+.admin-hint {
+	margin: 6px 0 0;
+	font-size: 0.8rem;
+	color: var(--ink-3);
+}
+
+.admin-form .admin-error {
+	margin: 0;
+}
+
+.admin-form-actions {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-top: 8px;
+}
+
+.admin-btn-danger {
+	margin-left: auto;
+	border-color: var(--oxblood);
+	color: var(--oxblood);
+}
+
+.admin-btn-danger:hover {
+	background: var(--oxblood);
+	color: var(--paper);
+}
+
+@media (min-width: 760px) {
+	.admin-form-grid {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
 /* ── mobile: table collapses to stacked rows ──────────────────── */
 
 @media (max-width: 760px) {
@@ -272,4 +394,76 @@
 	.admin-table td.admin-cell-thumb::before {
 		content: none;
 	}
+}
+
+/* ── page text editor (/admin/text) ───────────────────────────── */
+
+.admin-text-hint {
+	margin: -8px 0 20px;
+}
+
+.admin-text-group {
+	margin-bottom: 32px;
+}
+
+.admin-text-group h2 {
+	font-family: var(--serif);
+	font-size: 1rem;
+	font-weight: 600;
+	margin: 0 0 12px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid var(--rule);
+}
+
+.admin-text-cards {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.admin-text-card {
+	max-width: 720px;
+	padding: 16px;
+	border: 1px solid var(--rule);
+	border-radius: 4px;
+}
+
+.admin-text-card-header {
+	display: flex;
+	align-items: baseline;
+	gap: 12px;
+	flex-wrap: wrap;
+	margin-bottom: 10px;
+}
+
+.admin-text-slug {
+	font-family: var(--mono);
+	font-size: 0.8rem;
+	color: var(--ink-2);
+}
+
+.admin-text-card .admin-error {
+	color: var(--oxblood);
+	font-size: 0.85rem;
+	margin: 8px 0 0;
+}
+
+.admin-text-card-actions {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-top: 12px;
+}
+
+.admin-text-saved {
+	color: var(--ink-3);
+	font-size: 0.85rem;
+}
+
+/* Busy state — shared by every admin button */
+.admin-btn:disabled,
+.admin-btn[aria-disabled='true'] {
+	opacity: 0.5;
+	cursor: not-allowed;
+	pointer-events: none;
 }
