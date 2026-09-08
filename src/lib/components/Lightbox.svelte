@@ -102,7 +102,7 @@
 						</div>
 					{:else}
 						<img
-							src={current.src}
+							src={current.hires ?? current.src}
 							alt={current.alt}
 							onerror={() => {
 								imageError = true;

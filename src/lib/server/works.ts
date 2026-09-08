@@ -27,8 +27,11 @@ function bilingual(zh: string, en: string): string {
 function toWork(pb: ReturnType<typeof pbClient>, r: WorkRecord): Work {
 	const title = bilingual(r.title_zh, r.title_en);
 	return {
-		// Width-only thumb = resize, keep aspect, never crop (art direction).
+		// Width-only thumb = resize, keep aspect, never crop (art direction). The stored
+		// `image` is already the 2400px web copy (pb_hooks/works_images.pb.js) — the
+		// grid asks for 1600, the lightbox gets the full web copy.
 		src: pb.files.getURL(r, r.image, { thumb: '1600x0' }),
+		hires: pb.files.getURL(r, r.image),
 		alt: title,
 		title,
 		year: r.year ? String(r.year) : '',
