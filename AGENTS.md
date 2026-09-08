@@ -74,10 +74,11 @@ src/
 │   ├── server/              pb.ts (client, 3s timeout) · works.ts loadWorks() · content.ts loadBlocks() — server-only
 │   ├── text.ts              paragraphs() helper shared by server + components
 │   ├── stores/lightbox.ts   factory store with method API
-│   └── assets/              224 images, 65 MB, in git: gallery/ 75 · sketch/ 81 · 68 loose untriaged (pro.jpg = portrait)
-└── routes/                  / gallery sketch about contact events; /, gallery, sketch, about have +page.server.ts (CMS loads)
+│   └── assets/              triaged 2026-09-08: gallery/ 69 · sketch/ 81 (both migrated to the CMS, kept as fallback) ·
+│                            profile/ 6 (Achin's portrait page — LATER, own spec, not in the CMS) · pro.jpg (current portrait)
+└── routes/                  / gallery sketch about contact events — all have +page.server.ts (CMS loads with fallback)
 pocketbase/                  pb_migrations/ = schema (committed) · pocketbase binary, pb_data/, .env.dev = local only (ignored)
-scripts/seed-dev.mjs         dev seed (one painting + /about blocks)
+scripts/                     migrate-images.mjs (bundled images → works, idempotent via source_file) · seed-dev.mjs (content blocks + 1 test painting)
 AGENTS.md                    this file — orientation + all design decisions (source of truth)
 README.md                    the short human on-ramp: what it is, run it, edit content. Never holds anything this file doesn't
 NOTES.md                     dated small observations
@@ -100,32 +101,37 @@ NOTES.md                     dated small observations
 **Built and verified in browser:** all 6 routes, sidebar + mobile drawer, WorksGrid + Lightbox
 (open/arrows/Escape/focus/scroll-lock), minimal-canvas mode, white palette, Svelte 5, Skeleton
 removed, desktop grid no longer crops (`object-fit: contain`), `check` + `lint` + `build` clean.
-**CMS slice works (2026-09-06):** `/`, `/gallery`, `/sketch`, `/about` load from a local
-PocketBase server-side; one seeded painting and the `/about` text render from the CMS; `/sketch`
-(no CMS rows yet) and any route with the backend down fall back to the bundled images /
-hardcoded text. **The site is a test site** — not yet public; launch window 7–9 Sep 2026.
+**CMS is the content source (2026-09-08):** all six routes load server-side from a local
+PocketBase. `works` holds the full collection — 150 migrated images (gallery 69, sketch 81,
+placeholder titles 未命名/素描 + number for the artist to rename) plus 2 test rows; 14
+`content_blocks` cover the hero, /about, gallery note, contact copy/hours/details, events
+empty state. Any route with the backend down falls back to the bundled images / hardcoded
+text. The owner created a record through the dashboard 2026-09-07 (worked; the two-field
+bilingual title layout was not obvious — input for `/admin`). **Test site** — not yet public;
+launch window 7–9 Sep 2026.
 
-**Known gaps:** the 224 bundled images are still the live content until migrated (iPhone UUID
-names, no metadata); 68 loose files untriaged; the CMS serves the uploaded file at full size on
-its raw URL (the site only requests `?thumb=` — a server-side resize hook is still to do);
-contact info is placeholder and **the contact form is fake**; `contact/article.js` is an orphaned
-中文 essay; `DonationCard` orphaned; the desktop grid's frame mat is a warm near-white
-(`oklch(0.965 0.012 80)`) — owner to confirm it's not "cream".
+**Known gaps:** the raw `image` URL still serves the uploaded file at full size (site requests
+`?thumb=` only) — server-side resize hook to do; contact details are placeholders (owner to
+supply real ones in the dashboard) and **the contact form is fake**; no `users` accounts exist
+yet (only the dev superuser); `contact/article.js` orphaned 中文 essay; `DonationCard` orphaned;
+2 test rows in `works` (測試作品, test image) to delete before launch; frame mat colour
+(`oklch(0.965 0.012 80)`) awaits the owner's call.
 
 ## Next actions (in order)
 
-1. **Achin tries the dashboard** (`http://127.0.0.1:8090/_/` on the owner's Mac, or after
-   deployment on the VPS): upload a real painting, edit `about.quote`/`about.statement`. His
-   feedback shapes the custom `/admin`.
-2. **Deployment** (Part 2): pick the VPS, DNS → Cloudflare, ship the test site in the 7–9 Sep
-   window. The static site can launch before the CMS backend is live.
-3. **Contact form** → Netlify Forms before launch (messages vanish today).
-4. Migration: triage the 68 loose images → script the 224 images into `works` (reuse
-   `scripts/seed-dev.mjs` as the template) → drop the Vite-glob fallback data once complete.
-5. Server-side resize hook (`pb_hooks/`) so originals never leave the private field; then custom
-   `/admin`, SEO pass.
-6. Later: CSS design system + admin UI styling (Tailwind keep/remove decided then); Business
-   features.
+1. **Server-side resize hook** (`pb_hooks/`): on upload, keep the original in the protected
+   field, write a ≤1600px EXIF-stripped sRGB copy to `image`. Owner asked for an explanation
+   before it's built (2026-09-08).
+2. **Contact form** → Netlify Forms (messages vanish today). Same: explain first, then build.
+3. `users` accounts for Achin + team (dashboard → users → New; set `role`); stop using the dev
+   superuser for content.
+4. **Deployment** (Part 2): pick the VPS, DNS → Cloudflare, ship the test site in the 7–9 Sep
+   window. The static site can launch before the CMS backend is live. Reconcile prerendering
+   vs server-side loads before launch (see `NOTES.md` 2026-09-07).
+5. SEO pass: homepage `<title>`, meta description, OG tags, `lang` attribute, sitemap, favicon.
+6. Retire the Vite-glob fallback data once the CMS is deployed and backed up.
+7. Later: custom bilingual `/admin`; profile page for Achin (own spec; `assets/profile/`);
+   CSS design system + admin styling; Business features.
 
 ## Doc rules — every agent, every edit
 
@@ -243,11 +249,13 @@ direction (its rule governs the media pipeline below).
 - Migration blockers: triage the 68 loose files in `src/lib/assets/` (works vs page imagery —
   needs the owner's eyes), then a one-time script: 224 images → PocketBase (originals private +
   web-res public) + seeded metadata rows.
-- **Schema v1 (built):** `works` — title_zh/en, description_zh/en, year, medium, size, sold,
+- **Schema v1.1 (built):** `works` — title_zh/en, description_zh/en, year, medium, size, sold,
   collection (gallery|sketch), sort, status (draft|published), `image` (public, thumbs
-  `400x0`/`1600x0` = width-fit, never crop), `original` (protected file). `content_blocks` —
-  slug (unique), text_zh, text_en, note. Rules: read published/public rows without auth; write
-  requires a `users` login. Superusers (owner) bypass rules.
+  `400x0`/`1600x0` = width-fit, never crop), `original` (protected file), `source_file`
+  (bundled filename the row was migrated from; unique). `content_blocks` — slug (unique),
+  text_zh, text_en, note. `users` — no self-registration (superuser creates accounts), `role`
+  admin|artist|editor. Rules: read published/public rows without auth; write requires a
+  `users` login (`@request.auth.collectionName = "users"`). Superusers bypass rules.
 - **Still to build:** server-side resize hook so the raw `image` URL never exposes full
   resolution; `users` accounts for Achin + team (roles); the custom `/admin`; backup/restore cron
   (Deployment).
