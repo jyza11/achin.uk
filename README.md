@@ -49,7 +49,10 @@ The site works without the CMS running — it falls back to the images bundled i
 
 ## Editing content
 
-Log in to the dashboard and edit two collections:
+Artists and helpers use **`/admin`** on the site (繁體中文): log in with the account the owner
+created for you, then 作品 to add or edit paintings and 頁面文字 to edit page text.
+
+The PocketBase dashboard (English) shows the same data as two collections:
 
 - **works** — one row per painting or sketch: bilingual title and description, year, medium,
   size, sold, `collection` (gallery / sketch), `sort`, `status` (draft / published), `image`.

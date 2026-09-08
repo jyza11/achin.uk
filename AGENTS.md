@@ -76,12 +76,12 @@ src/
 │   ├── server/              pb.ts (client, 3s timeout) · works.ts loadWorks() · content.ts loadBlocks() — server-only
 │   ├── text.ts              paragraphs() helper shared by server + components
 │   ├── pb-browser.ts        browser PocketBase client for /admin (localStorage auth) — never import from server code
-│   ├── admin/labels.ts      繁體中文 labels + pbErrorToZh() shared by all /admin pages
+│   ├── admin/               labels.ts (繁體中文 strings + pbErrorToZh) · WorkForm.svelte (create/edit/delete)
 │   ├── stores/lightbox.ts   factory store with method API
 │   └── assets/              triaged 2026-09-08: gallery/ 69 · sketch/ 81 (both migrated to the CMS, kept as fallback) ·
 │                            profile/ 6 (Achin's portrait page — LATER, own spec, not in the CMS) · pro.jpg (current portrait)
 └── routes/                  / gallery sketch about contact events — all have +page.server.ts (CMS loads with fallback)
-    └── admin/               client-only (ssr=false) 繁體中文 admin: login + works list; works/new, works/[id], text = next slices
+    └── admin/               client-only (ssr=false) 繁體中文 admin: / list · works/new · works/[id] · text
 pocketbase/                  pb_migrations/ = schema · pb_hooks/ = media pipeline (both committed) · binary, pb_data/, .env.dev = local only (ignored)
 scripts/                     migrate-images.mjs (bundled images → works, idempotent) · reprocess-images.mjs (run the pipeline over old rows) · seed-dev.mjs (content blocks + 1 test painting)
 AGENTS.md                    this file — orientation + all design decisions (source of truth)
@@ -123,10 +123,14 @@ non-empty (hardened 2026-09-08 — the marker alone let an artist upload named e
 `sunset_web.jpg` skip the pipeline); if the derivative step fails, the row is set back to
 `draft` and the failure logged, so a full-resolution file is never left public.
 
-**`/admin` slice 1 (2026-09-08):** 繁體中文 login + works list at `/admin` (client-only; login with a
-`users` account; filters 全部/油畫/素描; drafts muted). Verified in browser. Edit form and text
-blocks not built yet — `/admin/works/new`, `/admin/works/[id]`, `/admin/text` are dead links.
-A test editor account exists locally (credentials in `pocketbase/.env.dev`).
+**`/admin` built (2026-09-08):** 繁體中文 admin at `/admin` — client-only, login with a `users`
+account. 作品: list with 全部/油畫/素描 filters, drafts muted; 新增/編輯/刪除 form (image upload
+with the pipeline's 中文 error messages, all fields, status, sold, sort). 頁面文字: every
+`content_blocks` row grouped by page, per-block save, unsaved-changes warning. Verified in the
+browser against the local PocketBase (list, edit, text save); upload-through-the-form and delete
+are covered by the same SDK calls but still need the owner's click-through. A test editor
+account exists locally (credentials in `pocketbase/.env.dev`). Not styled beyond a minimal
+`admin.css`; no roles UI; no `original` download.
 
 **Known gaps:** contact details are placeholders (owner to
 supply real ones in the dashboard) and **the contact form is fake**; no `users` accounts exist
@@ -139,8 +143,8 @@ yet (only the dev superuser); `contact/article.js` orphaned 中文 essay; `Donat
 1. **CMS in the owner's hands:** `users` accounts for Achin + team (dashboard → users → New;
    set `role`); stop using the dev superuser. Achin renames the placeholder titles, deletes the
    2 test rows, fills real contact text — his first real edit is the acceptance test.
-2. **`/admin` slices 2–3:** work form (upload with the pipeline's 中文 error messages, edit,
-   delete, status) and text-block editor. The Mandarin UI the dashboard can never be.
+2. **Owner's click-through of `/admin`** with his own account (upload a phone photo, edit a
+   title, edit a text block, delete a test row) — findings become the admin's Open / to-do.
 3. **Deployment** (Part 2): pick the VPS, DNS → Cloudflare, ship the test site. Launch window
    7–9 Sep is slipping — the static site can go live before the backend. Work through
    Deployment › Open / to-do first (launch blockers from review).
@@ -242,9 +246,8 @@ direction (its rule governs the media pipeline below).
   cron copying the DB file + uploads off-box, plus a tested restore.
 - **Day-1 CMS:** PocketBase's built-in dashboard — the artist edits/uploads immediately, zero
   code. The dashboard is English-only, so the custom 繁體中文 `/admin` started 2026-09-08 (client-only
-  route, `users` login via the SDK, no UI library): slice 1 login + works list built; slices 2–3
-  = work form (upload/edit/delete) and text blocks. Root layout renders no site chrome under
-  `/admin`. Schema v1.3: logged-in `users` can also read drafts (public rule unchanged).
+  route, `users` login via the SDK, no UI library): works list, work form (upload/edit/delete),
+  text-block editor — all built 2026-09-08. Root layout renders no site chrome under `/admin`. Schema v1.3: logged-in `users` can also read drafts (public rule unchanged).
 - **Media pipeline (built 2026-09-08, obeys Art direction):** `pb_hooks/works_images.pb.js` —
   the uploaded file is kept **untouched** in the protected `original` field (token-only
   access); the public `image` becomes the same picture **resized only** to fit 2400×2400
@@ -275,6 +278,10 @@ direction (its rule governs the media pipeline below).
   enforced by collection API rules, not by hiding buttons; an SMTP provider for password resets.
 
 ### Open / to-do
+
+**`/admin` (2026-09-08):** no unsaved-changes guard on the work form (text blocks have one);
+image `<input>` lacks a `<label for>`; roles are not checked anywhere (every `users` row can
+edit everything) — fine for one artist + one helper, revisit if the team grows.
 
 - Migration blockers: triage the 68 loose files in `src/lib/assets/` (works vs page imagery —
   needs the owner's eyes), then a one-time script: 224 images → PocketBase (originals private +
@@ -347,8 +354,22 @@ PocketBase joins when it's ready.
 
 ### Open / to-do
 
-**Server:** 1. Pick the VPS (specs, region). 2. Move the local binary + `pb_data/` to it.
-3. Cloudflare account + nameserver move at Gandi. 4. Restore drill. 5. Launch-day DNS switch.
+**Server — facts verified over SSH 2026-09-08 (read-only):** the **Vultr** box is Ubuntu 26.04
+LTS, 1 vCPU, 1.6 GB RAM (1.2 GB free), 37 GB disk free, load ~0. Docker + Compose already run
+another project's stack (Caddy 2 on 80/443 with auto-HTTPS, WordPress, MariaDB — a staging
+site on an sslip.io name, no real domain). fail2ban on; only 22/80/443 open; unattended
+upgrades on; **no backups of any kind.** Leftovers to clean: a host MariaDB on 127.0.0.1:3306
+(unused), nginx installed but stopped, an extra provisioning sudo user, and SSH password auth
+probably still enabled (unconfirmed — needs sudo). **DigitalOcean:** nothing known (plan, region,
+OS) — owner to say. **Recommendation: Vultr**, PocketBase as one more Compose service behind the
+existing Caddy on `api.achin.uk`; it idles at ~20 MB. Connection details stay in the owner's
+`~/.ssh/config`, never here.
+
+1. Owner confirms Vultr (or gives the DO facts). 2. Add PocketBase to the Compose stack + Caddy
+site block; move `pb_migrations/`, `pb_hooks/`, and the local `pb_data/` up. 3. Hardening
+leftovers above (password auth off, drop the extra sudo user, remove host MariaDB/nginx).
+4. Nightly off-box backup + one restore drill. 5. Cloudflare account + nameserver move at
+Gandi. 6. Launch-day DNS switch.
 
 **Site, before launch (found 2026-09-07):**
 - **Nothing is prerendered.** No `prerender` export in `src/`; every route runs through the
