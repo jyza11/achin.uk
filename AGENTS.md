@@ -1,8 +1,7 @@
 # Achin.uk — artist website (SvelteKit)
 
 Bilingual (中/EN) website for **Achin**, a Taipei painter. **This is the only doc for the app:**
-Part 1 orients you, Part 2 holds every design decision. `CLAUDE.md` just points here; `NOTES.md`
-holds dated small observations. Verified against the repo: **2026-09-06**.
+Part 1 orients you, Part 2 holds every design decision. `CLAUDE.md` just points here. Verified against the repo: **2026-09-08**.
 
 This folder is its own git repo (remote `git@github.com:jyza11/achin.uk.git`, branch
 **`deploy`**, not main; renamed from `Achin-profolio` 2026-09-06). Refer to it as "this repo" or
@@ -83,7 +82,6 @@ pocketbase/                  pb_migrations/ = schema · pb_hooks/ = media pipeli
 scripts/                     migrate-images.mjs (bundled images → works, idempotent) · reprocess-images.mjs (run the pipeline over old rows) · seed-dev.mjs (content blocks + 1 test painting)
 AGENTS.md                    this file — orientation + all design decisions (source of truth)
 README.md                    the short human on-ramp: what it is, run it, edit content. Never holds anything this file doesn't
-NOTES.md                     dated small observations
 ```
 
 ## Conventions — keep these
@@ -129,18 +127,20 @@ yet (only the dev superuser); `contact/article.js` orphaned 中文 essay; `Donat
    awaiting go. Can only be tested once deployed on Netlify.
 2. `users` accounts for Achin + team (dashboard → users → New; set `role`); stop using the dev
    superuser for content.
-4. **Deployment** (Part 2): pick the VPS, DNS → Cloudflare, ship the test site in the 7–9 Sep
-   window. The static site can launch before the CMS backend is live. Reconcile prerendering
-   vs server-side loads before launch (see `NOTES.md` 2026-09-07).
-5. SEO pass: homepage `<title>`, meta description, OG tags, `lang` attribute, sitemap, favicon.
-6. Retire the Vite-glob fallback data once the CMS is deployed and backed up.
-7. Later: custom bilingual `/admin`; profile page for Achin (own spec; `assets/profile/`);
+3. **Deployment** (Part 2): pick the VPS, DNS → Cloudflare, ship the test site in the 7–9 Sep
+   window. The static site can launch before the CMS backend is live. Work through
+   Deployment › Open / to-do first — it holds the launch blockers found in review.
+4. SEO pass: homepage `<title>`, meta description, OG tags, `lang` attribute, sitemap, favicon
+   (details in Deployment › Open / to-do).
+5. Retire the Vite-glob fallback data once the CMS is deployed and backed up.
+6. Later: custom bilingual `/admin`; profile page for Achin (own spec; `assets/profile/`);
    CSS design system + admin styling; Business features.
 
 ## Doc rules — every agent, every edit
 
 - **One file.** Orientation in Part 1, every design decision in Part 2. Never create a separate
-  design file; dated small observations go to `NOTES.md` and are deleted once folded in here.
+  design or notes file. An out-of-scope finding goes as one dated line into the matching
+  section's Open / to-do; git history holds the rest.
 - **Part 2 template, always:** `## [Category] <Title> — <subtitle>` → **Status** line →
   `### Decisions` → `### Open / to-do` → `### Reasoning` (skip unless revisiting). Sections are
   **grouped by category, in dependency order:** `[Guideline]` (rules every other section obeys)
@@ -299,8 +299,8 @@ Cara / Kin.art bundle it only on their own platforms. Composed here from parts.
 
 ## [Platform] Deployment — where things run
 
-**Status:** PLANNED 2026-09-06. Test site today; **launch window 7–9 Sep 2026.** Server not yet
-chosen. The launch does **not** wait for the CMS: the current static build can go live first and
+**Status:** PLANNED 2026-09-06; launch blockers from the 2026-09-07 review listed under Open.
+Test site today; **launch window 7–9 Sep 2026.** Server not yet chosen. The launch does **not** wait for the CMS: the current static build can go live first and
 PocketBase joins when it's ready.
 
 ### Decisions
@@ -325,9 +325,24 @@ PocketBase joins when it's ready.
 
 ### Open / to-do
 
-1. Pick the VPS (specs, region). 2. Run the CMS slice locally, then move the same binary + data
-   to the VPS. 3. Cloudflare account + nameserver move at Gandi. 4. Restore drill. 5. Launch-day
-   DNS switch.
+**Server:** 1. Pick the VPS (specs, region). 2. Move the local binary + `pb_data/` to it.
+3. Cloudflare account + nameserver move at Gandi. 4. Restore drill. 5. Launch-day DNS switch.
+
+**Site, before launch (found 2026-09-07):**
+- **Nothing is prerendered.** No `prerender` export in `src/`; every route runs through the
+  Netlify function on each request. Full prerendering (`export const prerender = true` in a root
+  `+layout.ts`) is faster, cheaper and survives the backend being down — but it conflicts with
+  the CMS rule that pages load from PocketBase at request time. Decide: prerender + rebuild on
+  content change (PocketBase hook → Netlify build hook), or keep server-side loads. Not decided.
+- **`netlify.toml` is generator boilerplate:** `functions = "netlify/functions"` points at a
+  missing dir, no `NODE_VERSION` pin, no headers. GitHub `master` carries a better one
+  (security + cache headers) — take it in the `deploy`→`master` merge, then add a CSP entry for
+  the PocketBase host.
+- **Homepage has no `<title>`** (only route without `<svelte:head>`); no `<meta description>`
+  or OG/Twitter tags anywhere — a shared link shows a blank card on LINE/Instagram/WhatsApp.
+- **`<html lang="en">`** on a Chinese-first site; likely `zh-Hant`. Owner's call (search +
+  screen readers).
+- **`static/favicon.png`** is the SvelteKit default.
 
 ## [Later] Business features — donations, sales, currency
 
