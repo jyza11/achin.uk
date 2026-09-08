@@ -70,14 +70,18 @@ src/
 ├── app.postcss              THE global CSS entry (there is no app.css) → imports portfolio.css + tailwind base/components/utilities
 ├── lib/
 │   ├── styles/portfolio.css design tokens (:root ~line 16) + all site CSS, sections split by ═══ dividers
+│   ├── styles/admin.css     /admin only — minimal, built on the same tokens
 │   ├── components/          WorksGrid, Lightbox, DonationCard (orphaned — unbuilt donation feature, spec ../SUPPORT-README.md)
 │   ├── data/works.ts        Vite glob of bundled assets → galleryWorks / sketchWorks — now the FALLBACK when the CMS is down
 │   ├── server/              pb.ts (client, 3s timeout) · works.ts loadWorks() · content.ts loadBlocks() — server-only
 │   ├── text.ts              paragraphs() helper shared by server + components
+│   ├── pb-browser.ts        browser PocketBase client for /admin (localStorage auth) — never import from server code
+│   ├── admin/labels.ts      繁體中文 labels + pbErrorToZh() shared by all /admin pages
 │   ├── stores/lightbox.ts   factory store with method API
 │   └── assets/              triaged 2026-09-08: gallery/ 69 · sketch/ 81 (both migrated to the CMS, kept as fallback) ·
 │                            profile/ 6 (Achin's portrait page — LATER, own spec, not in the CMS) · pro.jpg (current portrait)
 └── routes/                  / gallery sketch about contact events — all have +page.server.ts (CMS loads with fallback)
+    └── admin/               client-only (ssr=false) 繁體中文 admin: login + works list; works/new, works/[id], text = next slices
 pocketbase/                  pb_migrations/ = schema · pb_hooks/ = media pipeline (both committed) · binary, pb_data/, .env.dev = local only (ignored)
 scripts/                     migrate-images.mjs (bundled images → works, idempotent) · reprocess-images.mjs (run the pipeline over old rows) · seed-dev.mjs (content blocks + 1 test painting)
 AGENTS.md                    this file — orientation + all design decisions (source of truth)
@@ -119,6 +123,11 @@ non-empty (hardened 2026-09-08 — the marker alone let an artist upload named e
 `sunset_web.jpg` skip the pipeline); if the derivative step fails, the row is set back to
 `draft` and the failure logged, so a full-resolution file is never left public.
 
+**`/admin` slice 1 (2026-09-08):** 繁體中文 login + works list at `/admin` (client-only; login with a
+`users` account; filters 全部/油畫/素描; drafts muted). Verified in browser. Edit form and text
+blocks not built yet — `/admin/works/new`, `/admin/works/[id]`, `/admin/text` are dead links.
+A test editor account exists locally (credentials in `pocketbase/.env.dev`).
+
 **Known gaps:** contact details are placeholders (owner to
 supply real ones in the dashboard) and **the contact form is fake**; no `users` accounts exist
 yet (only the dev superuser); `contact/article.js` orphaned 中文 essay; `DonationCard` orphaned;
@@ -130,15 +139,17 @@ yet (only the dev superuser); `contact/article.js` orphaned 中文 essay; `Donat
 1. **CMS in the owner's hands:** `users` accounts for Achin + team (dashboard → users → New;
    set `role`); stop using the dev superuser. Achin renames the placeholder titles, deletes the
    2 test rows, fills real contact text — his first real edit is the acceptance test.
-2. **Deployment** (Part 2): pick the VPS, DNS → Cloudflare, ship the test site. Launch window
+2. **`/admin` slices 2–3:** work form (upload with the pipeline's 中文 error messages, edit,
+   delete, status) and text-block editor. The Mandarin UI the dashboard can never be.
+3. **Deployment** (Part 2): pick the VPS, DNS → Cloudflare, ship the test site. Launch window
    7–9 Sep is slipping — the static site can go live before the backend. Work through
    Deployment › Open / to-do first (launch blockers from review).
-3. SEO pass: homepage `<title>`, meta description, OG tags, `lang` attribute, sitemap, favicon
+4. SEO pass: homepage `<title>`, meta description, OG tags, `lang` attribute, sitemap, favicon
    (details in Deployment › Open / to-do).
-4. **Contact:** owner decides the real details, then the form → Netlify Forms (messages vanish
+5. **Contact:** owner decides the real details, then the form → Netlify Forms (messages vanish
    today). Deferred 2026-09-08 until the CMS is functional for Achin; explained, design ready.
-5. Retire the Vite-glob fallback data once the CMS is deployed and backed up.
-6. Later: custom bilingual `/admin`; profile page for Achin (own spec; `assets/profile/`);
+6. Retire the Vite-glob fallback data once the CMS is deployed and backed up.
+7. Later: profile page for Achin (own spec; `assets/profile/`);
    CSS design system + admin styling; Business features.
 
 ## Doc rules — every agent, every edit
@@ -230,7 +241,10 @@ direction (its rule governs the media pipeline below).
 - **Database: SQLite** (embedded). Postgres only if multi-artist scale arrives. Backup = nightly
   cron copying the DB file + uploads off-box, plus a tested restore.
 - **Day-1 CMS:** PocketBase's built-in dashboard — the artist edits/uploads immediately, zero
-  code. The custom bilingual `/admin` route in SvelteKit is a later phase.
+  code. The dashboard is English-only, so the custom 繁體中文 `/admin` started 2026-09-08 (client-only
+  route, `users` login via the SDK, no UI library): slice 1 login + works list built; slices 2–3
+  = work form (upload/edit/delete) and text blocks. Root layout renders no site chrome under
+  `/admin`. Schema v1.3: logged-in `users` can also read drafts (public rule unchanged).
 - **Media pipeline (built 2026-09-08, obeys Art direction):** `pb_hooks/works_images.pb.js` —
   the uploaded file is kept **untouched** in the protected `original` field (token-only
   access); the public `image` becomes the same picture **resized only** to fit 2400×2400
@@ -351,6 +365,8 @@ PocketBase joins when it's ready.
 - **`<html lang="en">`** on a Chinese-first site; likely `zh-Hant`. Owner's call (search +
   screen readers).
 - **`static/favicon.png`** is the SvelteKit default.
+- **`/admin` `noindex` is client-side only** (ssr off) → add an `X-Robots-Tag: noindex` header
+  for `/admin/*` in `netlify.toml`.
 
 ## [Later] Business features — donations, sales, currency
 
