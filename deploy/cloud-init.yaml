@@ -1,0 +1,208 @@
+#cloud-config
+# achin.uk backend — one file provisions the whole box.
+#
+# Target: AWS EC2 t4g.micro (arm64), Ubuntu Server 24.04 LTS, ap-northeast-1.
+# Paste this as "User data" at launch (see deploy/README.md). Before pasting:
+#   1. replace REPLACE_WITH_YOUR_PUBLIC_KEY with your ed25519 public key (one line)
+# Nothing else in this file is secret. Do not add secrets here — user-data is
+# readable from inside the instance by any process.
+#
+# What it does, in order: users/SSH → swap → packages → config files →
+# Caddy repo + install → Docker → ufw → fail2ban → PocketBase (arm64, sha256
+# verified) as a systemd service on 127.0.0.1:8090 → Caddy reverse proxy.
+
+hostname: achin-api
+fqdn: api.achin.uk
+manage_etc_hosts: true
+timezone: Etc/UTC
+locale: C.UTF-8
+
+# Only this user exists. No default "ubuntu" user, no root login, no passwords.
+# NOPASSWD sudo is deliberate: the SSH key is the auth boundary (key-only SSH,
+# security group limits port 22 to the owner's IP), and agents need
+# non-interactive sudo for rsync/restart. This is the standard cloud-image model.
+users:
+  - name: achin
+    gecos: achin.uk admin
+    groups: [sudo, docker]
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    lock_passwd: true
+    ssh_authorized_keys:
+      - REPLACE_WITH_YOUR_PUBLIC_KEY
+
+ssh_pwauth: false
+disable_root: true
+
+# 1 GB RAM box: 2 GB swap so an image-processing burst never OOM-kills PocketBase.
+swap:
+  filename: /swapfile
+  size: 2G
+  maxsize: 2G
+
+package_update: true
+package_upgrade: true
+packages:
+  - ufw
+  - fail2ban
+  - unattended-upgrades
+  - unzip
+  - curl
+  - ca-certificates
+  - gnupg
+  - apt-transport-https
+  - debian-keyring
+  - debian-archive-keyring
+  - rsync
+  - docker.io
+  - docker-compose-v2
+
+write_files:
+  # --- SSH: keys only, no root, few tries ---------------------------------
+  - path: /etc/ssh/sshd_config.d/60-hardening.conf
+    permissions: "0644"
+    content: |
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+      PermitRootLogin no
+      PubkeyAuthentication yes
+      MaxAuthTries 3
+      LoginGraceTime 30
+      X11Forwarding no
+
+  # --- fail2ban: Ubuntu 24.04 cloud images have no /var/log/auth.log, so the
+  #     sshd jail must read the systemd journal or it fails to start. -------
+  - path: /etc/fail2ban/jail.local
+    permissions: "0644"
+    content: |
+      [DEFAULT]
+      backend = systemd
+      bantime = 1h
+      findtime = 10m
+      maxretry = 5
+
+      [sshd]
+      enabled = true
+
+  # --- unattended-upgrades: security patches + reboot at 20:00 UTC (04:00 Taipei)
+  - path: /etc/apt/apt.conf.d/52-unattended-upgrades-local
+    permissions: "0644"
+    content: |
+      Unattended-Upgrade::Remove-Unused-Dependencies "true";
+      Unattended-Upgrade::Automatic-Reboot "true";
+      Unattended-Upgrade::Automatic-Reboot-Time "20:00";
+
+  # --- PocketBase installer: pinned version, sha256 verified, arm64 ----------
+  - path: /usr/local/sbin/install-pocketbase.sh
+    permissions: "0755"
+    content: |
+      #!/usr/bin/env bash
+      # Installs a pinned PocketBase release to /opt/pocketbase after verifying
+      # its sha256 against the value recorded here (taken from the release's
+      # checksums.txt). To upgrade: change VERSION and SHA256 together, re-run.
+      set -euo pipefail
+      VERSION="0.40.3"
+      SHA256="d5092815259f5bc2dffabf6a71da2168851c8d75c04d6e56f6e7a38c48941c70"
+      ZIP="pocketbase_${VERSION}_linux_arm64.zip"
+      URL="https://github.com/pocketbase/pocketbase/releases/download/v${VERSION}/${ZIP}"
+      tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
+      curl -fsSL -o "$tmp/$ZIP" "$URL"
+      echo "${SHA256}  $tmp/$ZIP" | sha256sum -c -
+      mkdir -p /opt/pocketbase
+      unzip -o -q "$tmp/$ZIP" pocketbase -d /opt/pocketbase
+      chmod 0755 /opt/pocketbase/pocketbase
+      /opt/pocketbase/pocketbase --version
+
+  # --- PocketBase systemd unit: unprivileged user, read-only system, writes only
+  #     under /srv/achin (pb_data, pb_migrations, pb_hooks live there) ---------
+  - path: /etc/systemd/system/pocketbase.service
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=PocketBase — achin.uk CMS
+      After=network-online.target
+      Wants=network-online.target
+
+      [Service]
+      Type=simple
+      User=pocketbase
+      Group=pocketbase
+      WorkingDirectory=/srv/achin
+      ExecStart=/opt/pocketbase/pocketbase serve \
+        --http=127.0.0.1:8090 \
+        --dir=/srv/achin/pb_data \
+        --migrationsDir=/srv/achin/pb_migrations \
+        --hooksDir=/srv/achin/pb_hooks
+      Restart=always
+      RestartSec=5
+      LimitNOFILE=65536
+      NoNewPrivileges=true
+      PrivateTmp=true
+      ProtectSystem=strict
+      ProtectHome=true
+      ReadWritePaths=/srv/achin
+      ProtectKernelTunables=true
+      ProtectKernelModules=true
+      ProtectControlGroups=true
+      RestrictSUIDSGID=true
+      RestrictRealtime=true
+      LockPersonality=true
+
+      [Install]
+      WantedBy=multi-user.target
+
+  # --- Caddy: one global file, every site is a drop-in under /etc/caddy/sites/.
+  #     defer: true → written AFTER the caddy package installs, so the package's
+  #     default Caddyfile does not win over this one. ------------------------
+  - path: /etc/caddy/Caddyfile
+    permissions: "0644"
+    defer: true
+    content: |
+      # Global Caddyfile. Do not put sites here — one file per site in sites/.
+      import /etc/caddy/sites/*.caddy
+
+  - path: /etc/caddy/sites/api.achin.uk.caddy
+    permissions: "0644"
+    defer: true
+    content: |
+      api.achin.uk {
+      	encode gzip
+      	# PocketBase listens on loopback only; Caddy terminates TLS.
+      	reverse_proxy 127.0.0.1:8090
+      }
+
+runcmd:
+  # Caddy from its official apt repository (the documented install path).
+  - curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+  - curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
+  - apt-get update
+  - DEBIAN_FRONTEND=noninteractive apt-get install -y caddy
+  # Docker (Ubuntu packages, arm64) — for later services, not for PocketBase.
+  - systemctl enable --now docker
+  # Firewall: deny in, allow out, open only what Caddy and SSH need. The AWS
+  # security group is the primary control; ufw is defence in depth.
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow 22/tcp
+  - ufw allow 80/tcp
+  - ufw allow 443/tcp
+  - ufw --force enable
+  - systemctl enable --now fail2ban
+  - systemctl restart ssh
+  # PocketBase: system user, data tree, pinned binary, service.
+  - useradd --system --home /srv/achin --shell /usr/sbin/nologin pocketbase || true
+  - mkdir -p /srv/achin/pb_data /srv/achin/pb_migrations /srv/achin/pb_hooks
+  - chown -R pocketbase:pocketbase /srv/achin
+  - chmod 0750 /srv/achin
+  - /usr/local/sbin/install-pocketbase.sh
+  - systemctl daemon-reload
+  - systemctl enable --now pocketbase
+  # Caddy picks up the deferred config files.
+  - mkdir -p /etc/caddy/sites
+  - systemctl enable caddy
+  - systemctl restart caddy
+  # Evidence for the first login.
+  - sleep 3
+  - curl -s -o /dev/null -w 'pocketbase health HTTP %{http_code}\n' http://127.0.0.1:8090/api/health | tee /var/log/achin-provision.log
+
+final_message: "achin-api provisioned in $UPTIME seconds. Next: deploy/README.md › After first boot."
