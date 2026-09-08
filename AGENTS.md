@@ -129,8 +129,11 @@ with the pipeline's 中文 error messages, all fields, status, sold, sort). 頁�
 `content_blocks` row grouped by page, per-block save, unsaved-changes warning. Verified in the
 browser against the local PocketBase (list, edit, text save); upload-through-the-form and delete
 are covered by the same SDK calls but still need the owner's click-through. A test editor
-account exists locally (credentials in `pocketbase/.env.dev`). Not styled beyond a minimal
-`admin.css`; no roles UI; no `original` download.
+account exists locally (credentials in `pocketbase/.env.dev`). **Phone/tablet pass done
+(2026-09-08):** the artist edits on iPhone/iPad — 16 px controls (no Safari zoom), 44 px
+targets, card list below 760 px, sticky save bar with safe-area padding, growing textareas
+(`field-sizing: content`), hover only under `any-hover`. Verified at 375 / 768 / desktop widths
+in the browser pane; not yet on a real iPhone. No roles UI; no `original` download.
 
 **Known gaps:** contact details are placeholders (owner to
 supply real ones in the dashboard) and **the contact form is fake**; no `users` accounts exist
@@ -281,7 +284,9 @@ direction (its rule governs the media pipeline below).
 
 **`/admin` (2026-09-08):** no unsaved-changes guard on the work form (text blocks have one);
 image `<input>` lacks a `<label for>`; roles are not checked anywhere (every `users` row can
-edit everything) — fine for one artist + one helper, revisit if the team grows.
+edit everything) — fine for one artist + one helper, revisit if the team grows. Real-device
+check on the owner's iPhone/iPad still owed (keyboard vs sticky bar, HEIC auto-conversion:
+keep `image/heic` out of the file input's `accept` so iOS converts to JPEG itself).
 
 - Migration blockers: triage the 68 loose files in `src/lib/assets/` (works vs page imagery —
   needs the owner's eyes), then a one-time script: 224 images → PocketBase (originals private +
