@@ -289,6 +289,9 @@ image `<input>` lacks a `<label for>`; roles are not checked anywhere (every `us
 edit everything) — fine for one artist + one helper, revisit if the team grows. Real-device
 check on the owner's iPhone/iPad still owed (keyboard vs sticky bar, HEIC auto-conversion:
 keep `image/heic` out of the file input's `accept` so iOS converts to JPEG itself).
+2026-09-12: `field-sizing: content` (growing textareas in /admin) is Chrome-only — Safari ignores
+it, so on iPhone textareas keep the fixed `min-height`. Harmless; add a JS fallback only if the
+artist complains.
 
 - Migration blockers: triage the 68 loose files in `src/lib/assets/` (works vs page imagery —
   needs the owner's eyes), then a one-time script: 224 images → PocketBase (originals private +
