@@ -45,7 +45,7 @@
 	{/if}
 
 	<div class="gallery-note">
-		<p>{note}</p>
+		<p lang="en">{note}</p>
 	</div>
 
 	<header class="section-head section-head--footer">

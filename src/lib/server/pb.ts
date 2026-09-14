@@ -1,5 +1,7 @@
 import PocketBase from 'pocketbase';
+import { building } from '$app/environment';
 import { env } from '$env/dynamic/public';
+import { env as privateEnv } from '$env/dynamic/private';
 
 // Server-only client. Pages fetch in `+page.server.ts` so crawlers get full HTML
 // (see AGENTS.md › CMS design › SEO rule). No auth: the site reads public rows only.
@@ -26,4 +28,24 @@ export function pbErrorSummary(err: unknown): string {
 	if (code) return `${code} (${PB_URL})`;
 	if (e?.status) return `HTTP ${e.status}: ${e.message ?? ''}`.trim();
 	return e?.message ?? String(err);
+}
+
+/**
+ * Guards `npm run build` (prerendering, see AGENTS.md › Deployment) against silently
+ * shipping stale bundled content when the CMS is unreachable or empty: throws loudly unless
+ * `ALLOW_FALLBACK_BUILD=1` is set, in which case it warns loudly instead and lets the caller
+ * fall back. A no-op outside of `building` — dev server / preview keep the existing silent
+ * fallback, which callers still log themselves.
+ */
+export function guardBuildFallback(what: string, reason: string): void {
+	if (!building) return;
+	if (privateEnv.ALLOW_FALLBACK_BUILD === '1') {
+		console.warn(
+			`[build] ALLOW_FALLBACK_BUILD=1 — building ${what} from the bundled fallback content despite: ${reason}`
+		);
+		return;
+	}
+	throw new Error(
+		`[build] Refusing to prerender ${what}: ${reason}. Set ALLOW_FALLBACK_BUILD=1 to build from the bundled fallback content instead.`
+	);
 }

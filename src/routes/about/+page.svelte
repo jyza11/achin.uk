@@ -38,10 +38,10 @@
 			{/if}
 			{#if statement?.en}
 				{#each paragraphs(statement.en) as para}
-					<p>{para}</p>
+					<p lang="en">{para}</p>
 				{/each}
 			{:else}
-				<p>
+				<p lang="en">
 					A practice built on slow looking. Oil on linen, graphite on paper, and the long hours
 					between — light, weather, and the corners of rooms held still long enough to draw out the
 					hour before the room forgets itself.
@@ -49,10 +49,10 @@
 			{/if}
 			{#if practice?.en}
 				{#each paragraphs(practice.en) as para}
-					<p>{para}</p>
+					<p lang="en">{para}</p>
 				{/each}
 			{:else}
-				<p>
+				<p lang="en">
 					Working from life and from memory. Sittings at the café, drawings in the morning,
 					paintings revisited in the studio after the day has cooled.
 				</p>

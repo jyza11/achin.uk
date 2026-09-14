@@ -1,5 +1,6 @@
 import type { RecordModel } from 'pocketbase';
-import { pbClient, pbErrorSummary, PB_TIMEOUT_MS } from './pb';
+import { building } from '$app/environment';
+import { pbClient, pbErrorSummary, guardBuildFallback, PB_URL, PB_TIMEOUT_MS } from './pb';
 
 export type Block = { zh: string; en: string };
 export type Blocks = Record<string, Block>;
@@ -24,7 +25,11 @@ export async function loadBlocks(slugs: string[]): Promise<Blocks> {
 		for (const r of records) out[r.slug] = { zh: r.text_zh ?? '', en: r.text_en ?? '' };
 		return out;
 	} catch (err) {
-		console.warn(`[content] PocketBase unavailable, using hardcoded text: ${pbErrorSummary(err)}`);
+		const reason = `PocketBase at ${PB_URL} unavailable for "content_blocks": ${pbErrorSummary(err)}`;
+		guardBuildFallback('the "content_blocks" collection', reason);
+		if (!building) {
+			console.warn(`[content] ${reason}, using hardcoded text`);
+		}
 		return {};
 	}
 }

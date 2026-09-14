@@ -1,7 +1,8 @@
 import type { RecordModel } from 'pocketbase';
+import { building } from '$app/environment';
 import type { Work } from '$lib/data/works';
 import { galleryWorks, sketchWorks } from '$lib/data/works';
-import { pbClient, pbErrorSummary, PB_TIMEOUT_MS } from './pb';
+import { pbClient, pbErrorSummary, guardBuildFallback, PB_URL, PB_TIMEOUT_MS } from './pb';
 
 export type WorksCollection = 'gallery' | 'sketch';
 export type WorksSource = 'cms' | 'local';
@@ -49,6 +50,7 @@ function toWork(pb: ReturnType<typeof pbClient>, r: WorkRecord): Work {
 export async function loadWorks(
 	collection: WorksCollection
 ): Promise<{ works: Work[]; source: WorksSource }> {
+	let reason: string;
 	try {
 		const pb = pbClient();
 		const records = await pb.collection('works').getFullList<WorkRecord>({
@@ -59,10 +61,14 @@ export async function loadWorks(
 		if (records.length > 0) {
 			return { works: records.map((r) => toWork(pb, r)), source: 'cms' };
 		}
+		// A live site must not prerender an empty gallery (Art direction / Deployment).
+		reason = `PocketBase at ${PB_URL} is reachable but returned zero published "${collection}" works`;
 	} catch (err) {
-		console.warn(
-			`[works] PocketBase unavailable for "${collection}", using local images: ${pbErrorSummary(err)}`
-		);
+		reason = `PocketBase at ${PB_URL} unavailable for "${collection}" works: ${pbErrorSummary(err)}`;
+	}
+	guardBuildFallback(`the "${collection}" works collection`, reason);
+	if (!building) {
+		console.warn(`[works] ${reason}, using local images`);
 	}
 	return { works: LOCAL[collection], source: 'local' };
 }

@@ -23,9 +23,9 @@
 
 <section class="hero">
 	<div class="hero-text reveal">
-		<div class="hero-eyebrow">{eyebrow}</div>
+		<div class="hero-eyebrow" lang="en">{eyebrow}</div>
 		<h1>The hour <em>before</em> the light forgets the room.</h1>
-		<p class="hero-deck">{deck}</p>
+		<p class="hero-deck" lang="en">{deck}</p>
 		<div class="hero-actions">
 			<a class="btn primary" href="/gallery">View Selected Works <span class="arrow"></span></a>
 			<a class="btn" href="/about">關於 · About</a>
@@ -101,9 +101,9 @@
 				</p>
 			{/if}
 			{#if statement?.en}
-				<p>{statement.en}</p>
+				<p lang="en">{statement.en}</p>
 			{:else}
-				<p>
+				<p lang="en">
 					A practice built on slow looking — light, weather, and the corners of rooms held still
 					long enough to draw out the hour.
 				</p>

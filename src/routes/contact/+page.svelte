@@ -47,10 +47,10 @@
 			<h2>Quiet hours, <em>open door</em>.</h2>
 			{#if intro}
 				{#each paragraphs(intro) as para}
-					<p>{para}</p>
+					<p lang="en">{para}</p>
 				{/each}
 			{:else}
-				<p>
+				<p lang="en">
 					The studio is open by appointment for visitors, collectors, and curators. Acquisitions,
 					commissions, and press inquiries — please write directly.
 				</p>
@@ -73,7 +73,7 @@
 
 		<div class="visit-card">
 			<h3>Studio Achin</h3>
-			<div class="addr">
+			<div class="addr" lang="en">
 				{#if address}
 					{#each address.split('\n') as l}{l}<br />{/each}
 				{:else}

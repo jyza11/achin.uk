@@ -81,7 +81,7 @@
 					onclick={closeMenu}
 				>
 					<span>{item.label}</span>
-					<span class="romaji">{item.romaji}</span>
+					<span class="romaji" lang="en">{item.romaji}</span>
 				</a>
 			{/each}
 		</nav>
