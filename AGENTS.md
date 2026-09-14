@@ -145,9 +145,8 @@ yet (only the dev superuser); `contact/article.js` orphaned 中文 essay; `Donat
 
 ## Next actions (in order) — 2026-09-14; order after step 2 is provisional
 
-1. **Prerender:** research + best-practice discussion with the owner, then the slice
-   (`prerender = true` for public routes, `/admin` opted out, `lang="zh-TW"`, PocketBase →
-   Netlify build hook).
+1. **Prerender + rebuild trigger — built 2026-09-14** (see Deployment › Open). Left: the server
+   env vars and the Netlify build hook, which belong to step 2.
 2. **Deploy** — owner with the VPS session: server, `netlify.toml` from `master`, Cloudflare,
    launch-day DNS. Static site can go live before the backend.
 3. Achin's `users` account; his first edit on his iPhone is the CMS acceptance test.
@@ -241,7 +240,6 @@ pipeline only ever produces a smaller faithful copy.
 
 ### Open / to-do
 
-- `src/app.html` still says `lang="en"` → `zh-TW` (prerender slice).
 - CJK typography pass: 繁體 font stack (PingFang TC · Microsoft JhengHei · Noto Sans TC), line-height, mixed CJK/Latin spacing (`text-autospace` is Chrome-only as of 2026-09).
 
 ## [Platform] CMS design — content, media, data layer
@@ -363,7 +361,8 @@ six months, planned exit to Vultr. Nothing provisioned yet; roadmap under Open. 
 - **Frontend:** Netlify, `adapter-netlify` (`edge:false`, `split:false`), deploys from branch
   `deploy`. Env var `PUBLIC_PB_URL` points the site at the backend. **Function region stays
   US-East** (region choice is a Pro-plan feature): every SSR page pays one US→Tokyo round trip
-  (~180 ms). Accepted for launch; prerender + rebuild-on-change (Open list) removes it later.
+  (~180 ms) — only `/admin` now: the public routes are prerendered (built 2026-09-14) and served
+  from the CDN with no function call.
 - **Backend host (2026-09-08):** AWS EC2 **`t4g.micro`** (2 vCPU Graviton ARM, 1 GB), region
   `ap-northeast-1` Tokyo, Ubuntu 24.04 arm64, 20 GB gp3, Elastic IP, **CPU credit mode
   `standard`** (never `unlimited` — load is upload bursts then idle; standard caps the bill).
@@ -420,24 +419,35 @@ six months, planned exit to Vultr. Nothing provisioned yet; roadmap under Open. 
 8. (O) Create Achin's `users` account. His first real edit is the acceptance test.
 9. (O+A) Launch day: `achin.uk` → Netlify in Cloudflare DNS; external uptime ping on; **put the
    month-5 date in the calendar.**
-10. (A, after launch) Uptime Kuma; decide prerender + build-hook.
+10. (A) Netlify build hook created; `NETLIFY_BUILD_HOOK` in PocketBase's server env (see Open);
+    Uptime Kuma after launch.
 
 **Exit path:** Vultr Tokyo (account exists). The current Vultr box is a client's staging and is
 not shared; its verified state (2026-09-08) is in git history.
 
 **Site, before launch (found 2026-09-07):**
-- **DECIDED 2026-09-14: prerender the six public routes**; `/admin` stays client-only. Content
-  edits reach the site through a rebuild (PocketBase hook → Netlify build hook). Best practice is
-  being researched and discussed with the owner before the slice is written; the owner then
-  deploys with the VPS session. Open until then: build-time fallback when the API is unreachable
-  (fail loudly vs silent fallback), debounce of rebuilds, image URLs on the API host.
+- **Prerender — BUILT 2026-09-14.** `src/routes/+layout.ts` sets `prerender = true`; the six
+  public routes are static HTML at build time, `/admin` stays client-only (its own layout opts
+  out). **Build fails loudly** if PocketBase is unreachable or `works` is empty during the build
+  (`guardBuildFallback` in `src/lib/server/pb.ts`); `ALLOW_FALLBACK_BUILD=1` builds from the
+  bundled fallback instead (first deploy before the backend is public; never leave it set).
+  **Rebuild trigger — BUILT 2026-09-14, live-tested:** `pb_hooks/rebuild.pb.js` marks a state
+  file dirty on any `works`/`content_blocks` write; a cron every minute POSTs to
+  `$NETLIFY_BUILD_HOOK` once the content has been quiet for `REBUILD_QUIET_SECONDS` (default
+  120), keeps the flag on failure and retries, never drops an edit that lands mid-request.
+  Edit → live ≈ quiet period + build (about 3–5 min). Server-side setup owed by the VPS session:
+  set `NETLIFY_BUILD_HOOK` (secret, from Netlify › Build hooks) and optionally
+  `REBUILD_QUIET_SECONDS` in PocketBase's environment; `PUBLIC_PB_URL` on Netlify = the public
+  API URL; make sure the Netlify build machine can reach it. Images stay on the API host behind
+  Cloudflare (decided 2026-09-14; revisit only if first views are slow).
+- **Cache headers for `netlify.toml`** (VPS session): prerendered HTML `Cache-Control:
+  public, max-age=0, must-revalidate`; `/_app/immutable/*` `public, max-age=31536000, immutable`.
 - **`netlify.toml` is generator boilerplate** on `deploy`. GitHub `master` (53 commits behind)
   has the only thing wanted from it: its `netlify.toml` with security + cache headers. Owner's
   decision 2026-09-14: take that file, nothing else from `master`; then add a CSP entry for the
   PocketBase host and `X-Robots-Tag: noindex` for `/admin/*`. Owned by the VPS session.
 - **Homepage has no `<title>`** (only route without `<svelte:head>`); no `<meta description>`
   or OG/Twitter tags anywhere — a shared link shows a blank card on LINE/Instagram/WhatsApp.
-- **`<html lang="en">`** → `zh-TW`, decided 2026-09-14 (see [Guideline] Languages).
 - **`static/favicon.png`** is the SvelteKit default.
 - **`/admin` `noindex` is client-side only** (ssr off) → add an `X-Robots-Tag: noindex` header
   for `/admin/*` in `netlify.toml`.
