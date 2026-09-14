@@ -99,17 +99,30 @@ command is the last thing printed.
    the certificate), then switch the record to **Proxied** and set SSL/TLS mode
    to **Full (strict)**.
 3. **Netlify:** environment variable `PUBLIC_PB_URL=https://api.achin.uk` (no
-   trailing slash), redeploy, open `/gallery` — paintings should come from the
-   CMS, not the bundled fallback.
-4. **Backups → Cloudflare R2** (PocketBase dashboard › Settings › Backups):
+   trailing slash). The six public routes are **prerendered at build time** from
+   the CMS, so the build machine must reach `api.achin.uk` (it does: the record
+   is proxied by Cloudflare, which the security group allows). If the backend is
+   not public yet, set `ALLOW_FALLBACK_BUILD=1` in the site env for that one
+   deploy and **remove it afterwards** — otherwise the build fails on purpose.
+   Redeploy, open `/gallery` — paintings should come from the CMS.
+4. **Rebuild on edit:** Netlify › Site configuration › Build hooks → *Add build
+   hook*, name "PocketBase content change", branch `deploy`. Copy the URL (it is
+   a secret) into the box, then restart the service:
+   ```bash
+   ssh achin-api "sudo sed -i 's#^NETLIFY_BUILD_HOOK=.*#NETLIFY_BUILD_HOOK=<PASTE_URL>#' /etc/pocketbase/env && sudo systemctl restart pocketbase"
+   ```
+   `pb_hooks/rebuild.pb.js` then triggers a Netlify build once content has been
+   quiet for 120 s (`REBUILD_QUIET_SECONDS` in the same file to change). Edit →
+   live ≈ 3–5 min. Test: change a title in the dashboard, watch Netlify › Deploys.
+5. **Backups → Cloudflare R2** (PocketBase dashboard › Settings › Backups):
    S3 endpoint `https://<ACCOUNT_ID>.r2.cloudflarestorage.com`, region `auto`,
    bucket + access key + secret from your R2 token, **force path-style on**.
    Cron `0 19 * * *` (03:00 Taipei), keep 14. Backups leave AWS on purpose: the
    Free-plan account closes at six months and takes its buckets with it.
-5. **Restore drill** (do once, before launch): download a backup zip from the
+6. **Restore drill** (do once, before launch): download a backup zip from the
    dashboard, unzip into a temp `pb_data`, run the local binary against it, open
    `http://127.0.0.1:8090/_/`. If you can see the paintings, the backup works.
-6. **Cost guard:** AWS Budgets alarm at $150 of credits. Calendar entry at
+7. **Cost guard:** AWS Budgets alarm at $150 of credits. Calendar entry at
    **month 5**: migrate (§7) or *Upgrade Plan* to Paid.
 
 ## 6. Day-to-day

@@ -113,6 +113,18 @@ write_files:
       chmod 0755 /opt/pocketbase/pocketbase
       /opt/pocketbase/pocketbase --version
 
+  # --- PocketBase environment: the ONLY place secrets go on this box. Root-only;
+  #     systemd reads it and passes the values to the service. Fill in after boot.
+  - path: /etc/pocketbase/env
+    permissions: "0600"
+    owner: root:root
+    content: |
+      # Netlify build hook URL (Netlify › Site configuration › Build hooks). SECRET.
+      # pb_hooks/rebuild.pb.js POSTs here after content has been quiet for
+      # REBUILD_QUIET_SECONDS (default 120). Leave empty until the hook exists.
+      NETLIFY_BUILD_HOOK=
+      #REBUILD_QUIET_SECONDS=120
+
   # --- PocketBase systemd unit: unprivileged user, read-only system, writes only
   #     under /srv/achin (pb_data, pb_migrations, pb_hooks live there) ---------
   - path: /etc/systemd/system/pocketbase.service
@@ -128,6 +140,7 @@ write_files:
       User=pocketbase
       Group=pocketbase
       WorkingDirectory=/srv/achin
+      EnvironmentFile=-/etc/pocketbase/env
       ExecStart=/opt/pocketbase/pocketbase serve \
         --http=127.0.0.1:8090 \
         --dir=/srv/achin/pb_data \
