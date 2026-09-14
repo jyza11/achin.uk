@@ -1,21 +1,77 @@
-# example netlify.toml
+# Netlify — achin.uk
+# Taken from the `master` branch's version (owner's decision 2026-09-14: that file, nothing
+# else from master), then adapted for prerendering + the PocketBase API host.
+
+# ─── Build ──────────────────────────────────────────────
 [build]
   command = "npm run build"
-  functions = "netlify/functions"
   publish = "build"
+  # adapter-netlify writes its function to .netlify/functions-internal and Netlify discovers
+  # it there; do not set [build].functions — the old value pointed at a missing folder.
 
-  ## Uncomment to use this redirect for Single Page Applications like create-react-app.
-  ## Not needed for static site generators.
-  #[[redirects]]
-  #  from = "/*"
-  #  to = "/index.html"
-  #  status = 200
+[build.environment]
+  # Node 20 reached end-of-life 2026-04; 22 is the current LTS SvelteKit 2 / Vite 5 support.
+  NODE_VERSION = "22"
+  NPM_FLAGS = "--no-audit --no-fund --prefer-offline"
+  # First deploy only, before the backend is public: set ALLOW_FALLBACK_BUILD = "1" in the
+  # Netlify UI (site env), never here — and remove it once api.achin.uk answers.
 
-  ## (optional) Settings for Netlify Dev
-  ## https://github.com/netlify/cli/blob/main/docs/netlify-dev.md#project-detection
-  #[dev]
-  #  command = "yarn start" # Command to start your dev server
-  #  port = 3000 # Port that the dev server will be listening on
-  #  publish = "dist" # Folder with the static content for _redirect file
+# ─── Security headers — every response ──────────────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+    Cross-Origin-Opener-Policy = "same-origin"
+    # Prerendered HTML: always revalidate so a rebuild is visible immediately.
+    # (/_app/immutable/* overrides this below.)
+    Cache-Control = "public, max-age=0, must-revalidate"
+    # CSP. 'unsafe-inline' styles: SvelteKit emits inline style attributes/transitions.
+    # connect-src: /admin talks to PocketBase from the browser; images come from the same host.
+    # Stripe entries kept from master for the parked Business features — harmless until used.
+    Content-Security-Policy = '''
+      default-src 'self';
+      img-src 'self' data: https:;
+      font-src 'self' data: https://fonts.gstatic.com;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      script-src 'self' https://js.stripe.com;
+      connect-src 'self' https://api.achin.uk https://api.stripe.com;
+      frame-src 'self' https://js.stripe.com https://hooks.stripe.com;
+      form-action 'self';
+      base-uri 'self';
+      object-src 'none';
+      upgrade-insecure-requests;
+    '''
 
-  ## more info on configuring this file: https://ntl.fyi/file-based-build-config
+# ─── Cache — performance ────────────────────────────────
+# Hashed build assets: immutable for a year (overrides the /* rule above).
+[[headers]]
+  for = "/_app/immutable/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/favicon.png"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+# ─── /admin: never indexed (its own noindex is client-side only) ──
+[[headers]]
+  for = "/admin"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+# ─── Redirects ──────────────────────────────────────────
+# adapter-netlify rejects [[redirects]] in this file ("Use _redirects instead"), so redirect
+# rules live in _redirects at the repo root — the adapter copies it into the publish dir.
+
+[functions]
+  node_bundler = "esbuild"

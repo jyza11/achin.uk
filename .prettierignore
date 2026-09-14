@@ -5,3 +5,7 @@ yarn.lock
 
 # Docs are hand-maintained; prettier table padding doubles their size
 *.md
+
+# Provisioning files: cloud-init is machine-read YAML with tab-indented Caddyfile blocks —
+# Prettier must not reflow it
+deploy/*.yaml
