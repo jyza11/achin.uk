@@ -1,7 +1,7 @@
 # achin.uk
 
-Website for **Achin**, a painter based in Taipei — paintings, sketches, exhibitions, contact.
-Bilingual (中文 / English). Built with SvelteKit; content is managed in a small self-hosted CMS
+Website for **Achin**, a painter based in New Taipei — paintings, sketches, exhibitions, contact.
+Traditional Chinese (zh-TW) first, English second. Built with SvelteKit; content is managed in a small self-hosted CMS
 (PocketBase) so the artist can upload work and edit text himself.
 
 > Working on this repo with an AI agent, or want the full picture (design decisions, conventions,

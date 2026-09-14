@@ -1,7 +1,8 @@
 # Achin.uk — artist website (SvelteKit)
 
-Bilingual (中/EN) website for **Achin**, a Taipei painter. **This is the only doc for the app:**
-Part 1 orients you, Part 2 holds every design decision. `CLAUDE.md` just points here. Verified against the repo: **2026-09-08**.
+Website for **Achin**, a New Taipei painter. Traditional Chinese (zh-TW) first, English second;
+more languages (JP, FR) later. **This is the only doc for the app:**
+Part 1 orients you, Part 2 holds every design decision. `CLAUDE.md` just points here. Verified against the repo: **2026-09-14**.
 
 This folder is its own git repo (remote `git@github.com:jyza11/achin.uk.git`, branch
 **`deploy`**, not main; renamed from `Achin-profolio` 2026-09-06). Refer to it as "this repo" or
@@ -10,7 +11,7 @@ This folder is its own git repo (remote `git@github.com:jyza11/achin.uk.git`, br
 
 **Contents**
 Part 1 — Orientation: Project rules · Stack · Commands · Folder map · Conventions · State · Next actions · Doc rules
-Part 2 — Design decisions, by category: [Guideline] Art direction · [Platform] CMS design · [Platform] Deployment · [Later] Business features
+Part 2 — Design decisions, by category: [Guideline] Art direction · [Guideline] Languages · [Platform] CMS design · [Platform] Deployment · [Later] Business features
 
 ---
 
@@ -142,24 +143,24 @@ yet (only the dev superuser); `contact/article.js` orphaned 中文 essay; `Donat
 2 test rows in `works` (測試作品, test image) to delete before launch; frame mat colour
 (`oklch(0.965 0.012 80)`) awaits the owner's call.
 
-## Next actions (in order) — 2026-09-08
+## Next actions (in order) — 2026-09-14; order after step 2 is provisional
 
-1. **CMS in the owner's hands:** `users` accounts for Achin + team (dashboard → users → New;
-   set `role`); stop using the dev superuser. Achin renames the placeholder titles, deletes the
-   2 test rows, fills real contact text — his first real edit is the acceptance test.
-2. **Owner's click-through of `/admin`** with his own account (upload a phone photo, edit a
-   title, edit a text block, delete a test row) — findings become the admin's Open / to-do.
-3. **Deployment** (Part 2): server chosen 2026-09-08 — AWS `t4g.micro` Tokyo on Free-plan
-   credits, Vultr exit at month 5. Owner starts with roadmap steps 1–2 (AWS + Cloudflare
-   accounts); agent writes `deploy/cloud-init.yaml` in parallel. The static site can go live
-   before the backend. Site blockers under Deployment › Open still apply.
-4. SEO pass: homepage `<title>`, meta description, OG tags, `lang` attribute, sitemap, favicon
-   (details in Deployment › Open / to-do).
-5. **Contact:** owner decides the real details, then the form → Netlify Forms (messages vanish
-   today). Deferred 2026-09-08 until the CMS is functional for Achin; explained, design ready.
-6. Retire the Vite-glob fallback data once the CMS is deployed and backed up.
-7. Later: profile page for Achin (own spec; `assets/profile/`);
-   CSS design system + admin styling; Business features.
+1. **Prerender:** research + best-practice discussion with the owner, then the slice
+   (`prerender = true` for public routes, `/admin` opted out, `lang="zh-TW"`, PocketBase →
+   Netlify build hook).
+2. **Deploy** — owner with the VPS session: server, `netlify.toml` from `master`, Cloudflare,
+   launch-day DNS. Static site can go live before the backend.
+3. Achin's `users` account; his first edit on his iPhone is the CMS acceptance test.
+4. **Contact:** owner supplies real details; form → Netlify Forms (messages vanish today).
+5. **Styling approach decision** (options researched 2026-09-12: plain CSS + scoped styles +
+   layers recommended; Bits UI only where a widget needs it), then
+6. **Vite 8 upgrade with Tailwind + PurgeCSS + safelist removal** — one slice; fixes 7 of the 8
+   `npm audit` findings (the last, `cookie` low, has no upstream fix).
+7. Component-scoped CSS refactor, one component at a time as touched (Lightbox pilot).
+8. Scroll-snap phone gallery from the design session — adopt/park; its CSS sits uncommitted in
+   `portfolio.css` since 2026-09-12 and must be branched or stashed before any merge.
+9. Retire the Vite-glob fallback data once the CMS is deployed and backed up.
+10. Later: profile page for Achin (own spec; `assets/profile/`); more languages; Business features.
 
 ## Doc rules — every agent, every edit
 
@@ -227,6 +228,21 @@ revisiting the decision.
 Anything applied to the image — a crop, a tint, a texture, an adversarial perturbation — is a
 change to the artwork the artist didn't make. Protection tools are therefore opt-in, and the
 pipeline only ever produces a smaller faithful copy.
+
+## [Guideline] Languages — zh-TW first, English second
+
+**Status:** decided by the owner 2026-09-14.
+
+### Decisions
+
+- **Primary language is Traditional Chinese as used in Taiwan; tag `zh-TW`** everywhere: `<html lang="zh-TW">`, later `hreflang` and route names. Set in the prerender slice.
+- **English stays as the second text on the same page** (many visitors are bilingual): `title_en`, `description_en`, `text_en`; English spans carry `lang="en"`.
+- **Later:** a pure-English version and more languages (JP, FR) through CSS + templates and per-language routes. Not designed; the current `_zh` / `_en` columns will need a per-language scheme then.
+
+### Open / to-do
+
+- `src/app.html` still says `lang="en"` → `zh-TW` (prerender slice).
+- CJK typography pass: 繁體 font stack (PingFang TC · Microsoft JhengHei · Noto Sans TC), line-height, mixed CJK/Latin spacing (`text-autospace` is Chrome-only as of 2026-09).
 
 ## [Platform] CMS design — content, media, data layer
 
@@ -410,19 +426,18 @@ six months, planned exit to Vultr. Nothing provisioned yet; roadmap under Open. 
 not shared; its verified state (2026-09-08) is in git history.
 
 **Site, before launch (found 2026-09-07):**
-- **Nothing is prerendered.** No `prerender` export in `src/`; every route runs through the
-  Netlify function on each request. Full prerendering (`export const prerender = true` in a root
-  `+layout.ts`) is faster, cheaper and survives the backend being down — but it conflicts with
-  the CMS rule that pages load from PocketBase at request time. Decide: prerender + rebuild on
-  content change (PocketBase hook → Netlify build hook), or keep server-side loads. Not decided.
-- **`netlify.toml` is generator boilerplate:** `functions = "netlify/functions"` points at a
-  missing dir, no `NODE_VERSION` pin, no headers. GitHub `master` carries a better one
-  (security + cache headers) — take it in the `deploy`→`master` merge, then add a CSP entry for
-  the PocketBase host.
+- **DECIDED 2026-09-14: prerender the six public routes**; `/admin` stays client-only. Content
+  edits reach the site through a rebuild (PocketBase hook → Netlify build hook). Best practice is
+  being researched and discussed with the owner before the slice is written; the owner then
+  deploys with the VPS session. Open until then: build-time fallback when the API is unreachable
+  (fail loudly vs silent fallback), debounce of rebuilds, image URLs on the API host.
+- **`netlify.toml` is generator boilerplate** on `deploy`. GitHub `master` (53 commits behind)
+  has the only thing wanted from it: its `netlify.toml` with security + cache headers. Owner's
+  decision 2026-09-14: take that file, nothing else from `master`; then add a CSP entry for the
+  PocketBase host and `X-Robots-Tag: noindex` for `/admin/*`. Owned by the VPS session.
 - **Homepage has no `<title>`** (only route without `<svelte:head>`); no `<meta description>`
   or OG/Twitter tags anywhere — a shared link shows a blank card on LINE/Instagram/WhatsApp.
-- **`<html lang="en">`** on a Chinese-first site; likely `zh-Hant`. Owner's call (search +
-  screen readers).
+- **`<html lang="en">`** → `zh-TW`, decided 2026-09-14 (see [Guideline] Languages).
 - **`static/favicon.png`** is the SvelteKit default.
 - **`/admin` `noindex` is client-side only** (ssr off) → add an `X-Robots-Tag: noindex` header
   for `/admin/*` in `netlify.toml`.
