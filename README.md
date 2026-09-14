@@ -30,12 +30,14 @@ release's `checksums.txt`, and put the binary at `pocketbase/pocketbase`. Then:
 
 ```bash
 ./pocketbase/pocketbase superuser upsert you@example.com <password> --dir=./pocketbase/pb_data
+# NETLIFY_BUILD_HOOK=...        optional: Netlify build hook URL — content edits trigger a rebuild when set
+# REBUILD_QUIET_SECONDS=120     optional: seconds of no edits before the rebuild fires (default 120)
 ./pocketbase/pocketbase serve --http=127.0.0.1:8090 --dir=./pocketbase/pb_data --migrationsDir=./pocketbase/pb_migrations --hooksDir=./pocketbase/pb_hooks
 ```
 
 Dashboard: <http://127.0.0.1:8090/_/>. Collections are created automatically from
 `pocketbase/pb_migrations/` on first start; `pocketbase/pb_hooks/` holds the image pipeline
-(originals kept private, a 2400 px web copy served to the site).
+(originals kept private, a 2400 px web copy served to the site) and the Netlify rebuild trigger.
 
 **Site.** In a second terminal:
 
