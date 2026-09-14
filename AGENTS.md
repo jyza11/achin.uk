@@ -85,6 +85,7 @@ src/
     └── admin/               client-only (ssr=false) 繁體中文 admin: / list · works/new · works/[id] · text
 pocketbase/                  pb_migrations/ = schema · pb_hooks/ = media pipeline (both committed) · binary, pb_data/, .env.dev = local only (ignored)
 deploy/                      cloud-init.yaml (the whole server, one file) + README.md (runbook: launch, DNS, backups, move)
+_redirects                   Netlify redirect rules (adapter-netlify forbids them in netlify.toml)
 scripts/                     migrate-images.mjs (bundled images → works, idempotent) · reprocess-images.mjs (run the pipeline over old rows) · seed-dev.mjs (content blocks + 1 test painting)
 AGENTS.md                    this file — orientation + all design decisions (source of truth)
 README.md                    the short human on-ramp: what it is, run it, edit content. Never holds anything this file doesn't
@@ -414,13 +415,14 @@ six months, planned exit to Vultr. Nothing provisioned yet; roadmap under Open. 
    Caddy site for `api.achin.uk`; Cloudflare A record (proxied); prove `/api/health` over HTTPS.
 6. (A) Schedule backups to R2. (A+O) Restore drill: pull one backup, run it locally, open the
    dashboard.
-7. (A) Netlify: `PUBLIC_PB_URL=https://api.achin.uk`; fix `netlify.toml` (headers, `/admin`
-   noindex, Node pin); redeploy; `curl` all six routes.
+7. (A) Netlify: `PUBLIC_PB_URL=https://api.achin.uk` in the site env; redeploy; `curl` all six
+   routes. (`netlify.toml` **done 2026-09-14** — see below.)
 8. (O) Create Achin's `users` account. His first real edit is the acceptance test.
 9. (O+A) Launch day: `achin.uk` → Netlify in Cloudflare DNS; external uptime ping on; **put the
    month-5 date in the calendar.**
-10. (A) Netlify build hook created; `NETLIFY_BUILD_HOOK` in PocketBase's server env (see Open);
-    Uptime Kuma after launch.
+10. (O) Netlify › Build hooks → create "PocketBase content change" on `deploy`; (A) install its
+    URL in `/etc/pocketbase/env` on the box (`deploy/README.md` §5.4 — plumbing **done
+    2026-09-14**, value empty until the hook exists). Uptime Kuma after launch.
 
 **Exit path:** Vultr Tokyo (account exists). The current Vultr box is a client's staging and is
 not shared; its verified state (2026-09-08) is in git history.
@@ -440,17 +442,17 @@ not shared; its verified state (2026-09-08) is in git history.
   `REBUILD_QUIET_SECONDS` in PocketBase's environment; `PUBLIC_PB_URL` on Netlify = the public
   API URL; make sure the Netlify build machine can reach it. Images stay on the API host behind
   Cloudflare (decided 2026-09-14; revisit only if first views are slow).
-- **Cache headers for `netlify.toml`** (VPS session): prerendered HTML `Cache-Control:
-  public, max-age=0, must-revalidate`; `/_app/immutable/*` `public, max-age=31536000, immutable`.
-- **`netlify.toml` is generator boilerplate** on `deploy`. GitHub `master` (53 commits behind)
-  has the only thing wanted from it: its `netlify.toml` with security + cache headers. Owner's
-  decision 2026-09-14: take that file, nothing else from `master`; then add a CSP entry for the
-  PocketBase host and `X-Robots-Tag: noindex` for `/admin/*`. Owned by the VPS session.
+- **`netlify.toml` — DONE 2026-09-14** (VPS session): master's file taken, nothing else from
+  `master`; CSP `connect-src` includes `api.achin.uk` + Google Fonts origins; `X-Robots-Tag:
+  noindex` on `/admin` and `/admin/*`; HTML `max-age=0, must-revalidate`, `/_app/immutable/*`
+  immutable; `NODE_VERSION` 22 (20 is EOL). **Found by the build:** adapter-netlify rejects
+  `[[redirects]]` in `netlify.toml` — master's file would have failed every deploy; the rules
+  live in `_redirects` at the repo root. `ALLOW_FALLBACK_BUILD` is set in the Netlify UI for
+  the first deploy only, never in the file.
 - **Homepage has no `<title>`** (only route without `<svelte:head>`); no `<meta description>`
   or OG/Twitter tags anywhere — a shared link shows a blank card on LINE/Instagram/WhatsApp.
 - **`static/favicon.png`** is the SvelteKit default.
-- **`/admin` `noindex` is client-side only** (ssr off) → add an `X-Robots-Tag: noindex` header
-  for `/admin/*` in `netlify.toml`.
+- ~~`/admin` `noindex` header~~ — done 2026-09-14 in `netlify.toml`.
 
 ## [Later] Business features — donations, sales, currency
 
