@@ -73,20 +73,21 @@ src/
 │   ├── styles/portfolio.css design tokens (:root ~line 16) + all site CSS, sections split by ═══ dividers
 │   ├── styles/admin.css     /admin only — minimal, built on the same tokens
 │   ├── components/          WorksGrid, Lightbox, DonationCard (orphaned — unbuilt donation feature, spec ../SUPPORT-README.md)
-│   ├── data/works.ts        Vite glob of bundled assets → galleryWorks / sketchWorks — now the FALLBACK when the CMS is down
+│   ├── data/works.ts        the `Work` type only
+│   ├── content/             COMMITTED SNAPSHOT of published content (works.json, blocks.json, meta.json, images/<id>.jpg web copies) — read by `server/content-snapshot.ts`; the fallback when the CMS is unreachable; regenerate with `npm run export-content`
 │   ├── server/              pb.ts (client, 3s timeout) · works.ts loadWorks() · content.ts loadBlocks() — server-only
 │   ├── text.ts              paragraphs() helper shared by server + components
 │   ├── pb-browser.ts        browser PocketBase client for /admin (localStorage auth) — never import from server code
 │   ├── admin/               labels.ts (繁體中文 strings + pbErrorToZh) · WorkForm.svelte (create/edit/delete)
 │   ├── stores/lightbox.ts   factory store with method API
-│   └── assets/              triaged 2026-09-08: gallery/ 69 · sketch/ 81 (both migrated to the CMS, kept as fallback) ·
+│   └── assets/              triaged 2026-09-08: gallery/ 69 · sketch/ 81 (both migrated to the CMS; NO LONGER USED by the site since 2026-09-15 — delete pending the owner, 16 files carry GPS) ·
 │                            profile/ 6 (Achin's portrait page — LATER, own spec, not in the CMS) · pro.jpg (current portrait)
 └── routes/                  / gallery sketch about contact events — all have +page.server.ts (CMS loads with fallback)
     └── admin/               client-only (ssr=false) 繁體中文 admin: / list · works/new · works/[id] · text
 pocketbase/                  pb_migrations/ = schema · pb_hooks/ = media pipeline (both committed) · binary, pb_data/, .env.dev = local only (ignored)
 deploy/                      cloud-init.yaml (the whole server, one file) + README.md (runbook: launch, DNS, backups, move)
 _redirects                   Netlify redirect rules (adapter-netlify forbids them in netlify.toml)
-scripts/                     migrate-images.mjs (bundled images → works, idempotent) · reprocess-images.mjs (run the pipeline over old rows) · seed-dev.mjs (content blocks + 1 test painting)
+scripts/                     export-content.mjs (CMS → src/lib/content snapshot, idempotent) · migrate-images.mjs (bundled images → works, idempotent) · reprocess-images.mjs (run the pipeline over old rows) · seed-dev.mjs (content blocks + 1 test painting)
 AGENTS.md                    this file — orientation + all design decisions (source of truth)
 README.md                    the short human on-ramp: what it is, run it, edit content. Never holds anything this file doesn't
 ```
@@ -99,7 +100,7 @@ README.md                    the short human on-ramp: what it is, run it, edit c
 - **Exactly one `<Lightbox />`, in `+layout.svelte`.** Open it via `lightboxStore.open(works, i)`. Its bookkeeping vars (`prevOpen`, `previouslyFocused`, `savedOverflow`) are plain `let`s on purpose — as `$state` the effect's own writes broke the close transition.
 - **Escape stacking:** Lightbox listens in capture phase + `stopImmediatePropagation`, so one Escape closes one layer (lightbox before mobile menu).
 - **Mobile ≤768px:** works grid is a CSS scroll-snap swipe gallery; lightbox is suppressed (`matchMedia` gate in `WorksGrid`). `/gallery` and `/sketch` add `body.minimal-canvas` (chrome-less, no pull hint — artist's choice).
-- **`works.ts`:** keep the defensive URL/metadata parsing and the `console.warn` when a glob yields zero works.
+- **Content snapshot:** after content changes that must survive a backend outage, run `npm run export-content` and commit `src/lib/content/`. Never hand-edit it; never put `original` files in it (web copies only — the repo is public).
 - **Bilingual markup:** `<span>中文</span> <span class="romaji">English</span>`; `navItems` in `+layout.svelte` is the route source of truth.
 - **Before commit:** `npm run check && npm run build`. Commit here, on `deploy`.
 
@@ -112,8 +113,8 @@ removed, desktop grid no longer crops (`object-fit: contain`), `check` + `lint` 
 PocketBase. `works` holds the full collection — 150 migrated images (gallery 69, sketch 81,
 placeholder titles 未命名/素描 + number for the artist to rename) plus 2 test rows; 14
 `content_blocks` cover the hero, /about, gallery note, contact copy/hours/details, events
-empty state. Any route with the backend down falls back to the bundled images / hardcoded
-text. The owner created a record through the dashboard 2026-09-07 (worked; the two-field
+empty state. Any route with the backend down falls back to the committed snapshot in `src/lib/content/`
+(2026-09-15), then to hardcoded text for missing slugs. The owner created a record through the dashboard 2026-09-07 (worked; the two-field
 bilingual title layout was not obvious — input for `/admin`). **Test site** — not yet public;
 launch window 7–9 Sep 2026.
 
@@ -159,7 +160,8 @@ yet (only the dev superuser); `contact/article.js` orphaned 中文 essay; `Donat
 7. Component-scoped CSS refactor, one component at a time as touched (Lightbox pilot).
 8. Scroll-snap phone gallery from the design session — adopt/park; its CSS sits uncommitted in
    `portfolio.css` since 2026-09-12 and must be branched or stashed before any merge.
-9. Retire the Vite-glob fallback data once the CMS is deployed and backed up.
+9. **Owner:** delete `src/lib/assets/gallery/` + `sketch/` (unused since 2026-09-15; 16 files carry GPS
+   in a public repo). Removing them from git *history* needs a force-push rewrite — separate decision.
 10. Later: profile page for Achin (own spec; `assets/profile/`); more languages; Business features.
 
 ## Doc rules — every agent, every edit
@@ -299,6 +301,11 @@ direction (its rule governs the media pipeline below).
 
 ### Open / to-do
 
+**Content found by the snapshot export (2026-09-15):** byte-identical duplicates — 素描 033 = 素描 081
+and 素描 043 = 素描 068 (likely uploaded twice in triage; owner/Achin to delete one of each); the 2
+test rows (測試作品, test image) sort first in /gallery until deleted. Re-run `npm run
+export-content` after cleaning up.
+
 **`/admin` (2026-09-08):** no unsaved-changes guard on the work form (text blocks have one);
 image `<input>` lacks a `<label for>`; roles are not checked anywhere (every `users` row can
 edit everything) — fine for one artist + one helper, revisit if the team grows. Real-device
@@ -430,11 +437,13 @@ not shared; its verified state (2026-09-08) is in git history.
 **Site, before launch (found 2026-09-07):**
 - **Prerender — BUILT 2026-09-14.** `src/routes/+layout.ts` sets `prerender = true`; the six
   public routes are static HTML at build time, `/admin` stays client-only (its own layout opts
-  out). **Build fails loudly** if PocketBase is unreachable or `works` is empty during the build
-  (`guardBuildFallback` in `src/lib/server/pb.ts`); `ALLOW_FALLBACK_BUILD=1` builds from the
-  bundled fallback instead (first deploy before the backend is public; never leave it set).
-  **Rebuild trigger — BUILT 2026-09-14, live-tested:** `pb_hooks/rebuild.pb.js` marks a state
-  file dirty on any `works`/`content_blocks` write; a cron every minute POSTs to
+  out). **Build fallback (2026-09-15):** if PocketBase is unreachable or `works` is empty during
+  the build, it warns loudly and builds from the committed snapshot in `src/lib/content/`
+  (export date printed); an empty snapshot always fails. **`REQUIRE_CMS_BUILD=1`** makes any CMS
+  failure fatal — set it in Netlify once `api.achin.uk` is public so a stale snapshot never
+  ships silently. The site can therefore deploy before the backend exists, with real content.
+  **Rebuild trigger — BUILT 2026-09-14, live-tested:** `pb_hooks/rebuild.pb.js` records a last-change
+  time on any `works`/`content_blocks` write (cron records built-at; separate files, no race); a cron every minute POSTs to
   `$NETLIFY_BUILD_HOOK` once the content has been quiet for `REBUILD_QUIET_SECONDS` (default
   120), keeps the flag on failure and retries, never drops an edit that lands mid-request.
   Edit → live ≈ quiet period + build (about 3–5 min). Server-side setup owed by the VPS session:
@@ -447,8 +456,8 @@ not shared; its verified state (2026-09-08) is in git history.
   noindex` on `/admin` and `/admin/*`; HTML `max-age=0, must-revalidate`, `/_app/immutable/*`
   immutable; `NODE_VERSION` 22 (20 is EOL). **Found by the build:** adapter-netlify rejects
   `[[redirects]]` in `netlify.toml` — master's file would have failed every deploy; the rules
-  live in `_redirects` at the repo root. `ALLOW_FALLBACK_BUILD` is set in the Netlify UI for
-  the first deploy only, never in the file.
+  live in `_redirects` at the repo root. `REQUIRE_CMS_BUILD=1` goes in the Netlify UI once the
+  API is public, never in the file (replaces `ALLOW_FALLBACK_BUILD`, 2026-09-15).
 - **Homepage has no `<title>`** (only route without `<svelte:head>`); no `<meta description>`
   or OG/Twitter tags anywhere — a shared link shows a blank card on LINE/Instagram/WhatsApp.
 - **`static/favicon.png`** is the SvelteKit default.
