@@ -1,12 +1,26 @@
-<!DOCTYPE html>
-<html lang="en" class="bg-white dark:bg-black" data-theme="custom-theme">
+<!doctype html>
+<!--
+	`dark:bg-black` removed 2026-08-30. This is a white-canvas design with
+	near-black ink; there is no dark theme. Skeleton's dark variant is
+	class-based, so the utility was dormant — but any future `.dark` class on
+	<html> would have turned the page black under near-black text. The white
+	canvas now lives on `html body` in portfolio.css; `bg-white` here is just
+	a belt-and-braces paint for the area outside the body box.
+-->
+<html lang="zh-TW" class="bg-white">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap"
+		/>
 		%sveltekit.head%
 	</head>
-	<body data-sveltekit-preload-data="hover" data-theme="custom-theme">
-		<div style="display: contents" class="h-full overflow-hidden">%sveltekit.body%</div>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">%sveltekit.body%</div>
 	</body>
 </html>

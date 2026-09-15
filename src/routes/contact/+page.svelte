@@ -1,156 +1,166 @@
-<!-- src/routes/blog/+page.svelte -->
-<script>
-    import { onMount } from 'svelte';
-    import articleContent from './article.js'; // Import from local file
-    
-    let shortText = '';
-    let isLoading = true;
-    
-    // Extract first paragraph or limit words for preview
-    function getShortText(fullText, wordLimit = 50) {
-      const words = fullText.split(' ');
-      if (words.length <= wordLimit) return fullText;
-      return words.slice(0, wordLimit).join(' ') + '...';
-    }
-    
-    onMount(() => {
-      // Process the article content
-      shortText = getShortText(articleContent.content);
-      isLoading = false;
-    });
-  </script>
-  
-  <svelte:head>
-    <title>Blog - {articleContent.title}</title>
-    <meta name="description" content={shortText} />
-  </svelte:head>
-  <div  flex flex-col items-center>
-<!-- Debug your custom CSS setup -->
-<div class="p-4" data-theme="custom-theme">
-    <h2>Custom CSS Debug</h2>
-    
-    <!-- Test 1: Basic Tailwind (should always work) -->
-    <div class="bg-blue-500 text-white p-2 mb-4 rounded">
-      ✓ If BLUE: Tailwind base classes work
-    </div>
-    
-    <!-- Test 2: Check if CSS custom properties exist -->
-    <div id="custom-vars-test" class="mb-4 p-2 border">
-      CSS Custom Properties test...
-    </div>
-    
-    <!-- Test 3: Manual color testing with CSS variables -->
-    <div style="background: var(--color-primary-500, red); color: white;" class="p-2 mb-2">
-      If RED: --color-primary-500 missing | If other color: CSS vars work
-    </div>
-    
-    <div style="color: var(--color-primary-500, red);" class="p-2 mb-2">
-      This text should be primary color (or red if missing)
-    </div>
-    
-    <!-- Test 4: Check what stylesheets are loaded -->
-    <div id="stylesheet-info" class="mb-4 p-2 bg-gray-100 text-xs">
-      Loaded stylesheets...
-    </div>
-    
-    <!-- Test 5: Try Skeleton utility classes -->
-    <div class="space-y-2">
-      <p class="text-primary-500">text-primary-500 test</p>
-      <p class="text-secondary-500">text-secondary-500 test</p>
-      <button class="btn variant-filled-primary">Skeleton button test</button>
-    </div>
-  </div>
-  
-  <script>
-    import { onMount } from 'svelte';
-    
-    onMount(() => {
-      // Test CSS custom properties
-      const customVarsDiv = document.getElementById('custom-vars-test');
-      const root = getComputedStyle(document.documentElement);
-      
-      const testVars = [
-        'color-primary-50',
-        'color-primary-500', 
-        'color-primary-900',
-        'color-secondary-500',
-        'color-surface-500',
-        'theme-font-family-base',
-        'theme-rounded-base'
-      ];
-      
-      let varsResults = '<strong>CSS Custom Properties:</strong><br>';
-      testVars.forEach(varName => {
-        const value = root.getPropertyValue(`--${varName}`);
-        const status = value ? '✓' : '✗';
-        varsResults += `${status} --${varName}: <code>${value || 'MISSING'}</code><br>`;
-      });
-      
-      customVarsDiv.innerHTML = varsResults;
-      
-      // Check loaded stylesheets
-      const stylesheetDiv = document.getElementById('stylesheet-info');
-      const stylesheets = Array.from(document.styleSheets);
-      
-      let stylesheetInfo = '<strong>Loaded Stylesheets:</strong><br>';
-      stylesheets.forEach((sheet, index) => {
-        try {
-          const href = sheet.href || 'inline styles';
-          stylesheetInfo += `${index + 1}. ${href}<br>`;
-        } catch (e) {
-          stylesheetInfo += `${index + 1}. [blocked by CORS]<br>`;
-        }
-      });
-      
-      stylesheetDiv.innerHTML = stylesheetInfo;
-    });
-  </script>
-  <main class="card preset-filled-surface-100-900 
-  border-[1px] border-surface-200-800 card-hover divide-surface-200-800 block 
-  max-w-md divide-y overflow-hidden">
-    <header class="space-y-4 p-4">
-      <h1>{articleContent.title}</h1>
-      {#if articleContent.author}
-        <p class="author">By {articleContent.author}</p>
-      {/if}
-      {#if articleContent.publishDate}
-        <time class="publish-date">{articleContent.publishDate}</time>
-      {/if}
-    </header>
-    
-    <article class="space-y-4 p-4">
-      {#if isLoading}
-        <p class="loading">讀取中...</p>
-      {:else}
-        <p class="article-preview">{shortText}</p>
-        
-        <!-- Optional: Show full content toggle -->
-        <button 
-          class="card p-4 preset-filled-error-500-500 "
-          on:click={() => {
-            // Toggle between short and full content
-            if (shortText.includes('...')) {
-              shortText = articleContent.content;
-            } else {
-              shortText = getShortText(articleContent.content);
-            }
-          }}
-        >
-          {shortText.includes('...') ? '繼續閱讀' : 'Show Less'}
-        </button>
-      {/if}
-    </article>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Standard Colors -->
-        <div class="bg-primary-900 text-primary-contrast-500">
-          <p class="text-center p-4">Standard Colors</p>
-        </div>
-        <!-- Color Pairings -->
-        <div class="bg-secondary-200-800 text-secondary-contrast-200-800">
-          <p class="text-center p-4">Color Pairings</p>
-        </div>
-      </div>
-  </main>
-  
-  </div>
-  <!-- No custom styles needed - using Skeleton + Tailwind utility classes -->
+<script lang="ts">
+	import { paragraphs } from '$lib/text';
+
+	// Contact copy + details come from CMS content_blocks (fallback: the hardcoded text below).
+	// `contact.hours` is one line per row, "label | value", e.g. "Mon · Tue | 10—18h".
+	let { data } = $props();
+	const b = $derived(data.blocks);
+	const intro = $derived(b['contact.intro']?.en);
+	const hours = $derived(
+		(b['contact.hours']?.en ?? '')
+			.split('\n')
+			.map((l) => l.split('|').map((s) => s.trim()))
+			.filter((r) => r.length === 2 && r[0])
+	);
+	const address = $derived(b['contact.address']?.en);
+	const contactEmail = $derived(b['contact.email']?.en || 'studio@achin.example');
+	const press = $derived(b['contact.press']?.en || 'press@achin.example');
+	const instagram = $derived(b['contact.instagram']?.en || '@achin.studio');
+
+	let name = $state('');
+	let email = $state('');
+	let message = $state('');
+	let submitted = $state(false);
+
+	function handleSubmit(event: SubmitEvent) {
+		event.preventDefault();
+		// TODO: wire to your backend (Netlify Forms / Formspree / etc.)
+		submitted = true;
+	}
+</script>
+
+<svelte:head>
+	<title>合作 · Contact — Achin</title>
+</svelte:head>
+
+<section class="band visit-band">
+	<header class="section-head">
+		<div>
+			<span class="section-num">合作 · Contact</span>
+			<h1 class="section-title">Studio <em>visits</em></h1>
+		</div>
+		<div class="section-aside">By appointment</div>
+	</header>
+
+	<div class="visit">
+		<div class="visit-text">
+			<h2>Quiet hours, <em>open door</em>.</h2>
+			{#if intro}
+				{#each paragraphs(intro) as para}
+					<p lang="en">{para}</p>
+				{/each}
+			{:else}
+				<p lang="en">
+					The studio is open by appointment for visitors, collectors, and curators. Acquisitions,
+					commissions, and press inquiries — please write directly.
+				</p>
+			{/if}
+			<div class="hours">
+				{#if hours.length > 0}
+					{#each hours as [label, value]}
+						<div class="hours-row" class:closed={/request|closed|休/i.test(value)}>
+							<span>{label}</span><span>{value}</span>
+						</div>
+					{/each}
+				{:else}
+					<div class="hours-row"><span>Mon · Tue</span><span>10—18h</span></div>
+					<div class="hours-row"><span>Wed · Thu</span><span>10—18h</span></div>
+					<div class="hours-row"><span>Fri</span><span>12—19h</span></div>
+					<div class="hours-row closed"><span>Sat · Sun</span><span>By request</span></div>
+				{/if}
+			</div>
+		</div>
+
+		<div class="visit-card">
+			<h3>Studio Achin</h3>
+			<div class="addr" lang="en">
+				{#if address}
+					{#each address.split('\n') as l}{l}<br />{/each}
+				{:else}
+					Taipei · Studio<br />
+					By appointment
+				{/if}
+			</div>
+			<div class="row"><span class="k">Email</span><span class="v">{contactEmail}</span></div>
+			<div class="row"><span class="k">Press</span><span class="v">{press}</span></div>
+			<div class="row"><span class="k">Instagram</span><span class="v">{instagram}</span></div>
+
+			{#if !submitted}
+				<form class="contact-form" onsubmit={handleSubmit}>
+					<label class="field">
+						<span class="field-label">Name</span>
+						<input type="text" bind:value={name} required autocomplete="name" />
+					</label>
+					<label class="field">
+						<span class="field-label">Email</span>
+						<input type="email" bind:value={email} required autocomplete="email" />
+					</label>
+					<label class="field">
+						<span class="field-label">Message</span>
+						<textarea bind:value={message} required rows="4"></textarea>
+					</label>
+					<button type="submit" class="btn primary">
+						Send <span class="arrow"></span>
+					</button>
+				</form>
+			{:else}
+				<p class="thanks">
+					Thank you — your note has been received. A reply will follow within a few days.
+				</p>
+			{/if}
+		</div>
+	</div>
+</section>
+
+<style>
+	.contact-form {
+		margin-top: 28px;
+		padding-top: 24px;
+		border-top: 1px solid var(--rule-soft);
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
+	}
+	.field {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	.field-label {
+		font-family: var(--mono);
+		font-size: 10px;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--ink-3);
+	}
+	.field input,
+	.field textarea {
+		background: transparent;
+		border: 0;
+		border-bottom: 1px solid var(--rule);
+		padding: 6px 0;
+		font-family: var(--serif);
+		font-size: 16px;
+		color: var(--ink);
+		outline: none;
+		transition: border-color 0.2s ease;
+	}
+	.field input:focus,
+	.field textarea:focus {
+		border-bottom-color: var(--oxblood);
+	}
+	.field textarea {
+		resize: vertical;
+		font-family: var(--serif);
+		line-height: 1.55;
+	}
+	.thanks {
+		margin-top: 28px;
+		padding-top: 24px;
+		border-top: 1px solid var(--rule-soft);
+		font-family: var(--serif);
+		font-style: italic;
+		font-size: 17px;
+		color: var(--oxblood-ink);
+	}
+</style>

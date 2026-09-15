@@ -20,11 +20,11 @@ Thumbs.db
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# Netlify — ignore build artifacts but keep the site link
-.netlify/*
+# Local Netlify folder
+.netlify
+.claude/
 
-# ignore node env
-.npmrc
-.nvmrc 
-
-
+# PocketBase: binary + runtime data stay local; pb_migrations/ is the schema and IS committed
+pocketbase/pocketbase
+pocketbase/pb_data/
+pocketbase/.env*

@@ -1,197 +1,118 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
-	// Dynamically import all images from the gallery folder
-	const imageModules = import.meta.glob('$lib/assets/gallery/*.{png,jpg,jpeg,gif,webp,svg}', {
-		eager: true,
-		as: 'url'
-	});
-	
-	// Convert the modules object to a clean array
-	const galleryImages = Object.entries(imageModules).map(([path, url]) => {
-		// Extract filename without extension for alt text
-		const filename = path.split('/').pop().split('.')[0];
-		const cleanName = filename.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-		
-		return {
-			src: url,
-			alt: cleanName,
-			filename: filename
-		};
-	});
-	
-	let selectedImage = null;
-	let isLoading = true;
-	let imageError = false;
-	
-	// Function to get a random image
-	function getRandomImage() {
-		const randomIndex = Math.floor(Math.random() * galleryImages.length);
-		return galleryImages[randomIndex];
-	}
-	
-	// Function to load a new random image
-	function loadRandomImage() {
-		isLoading = true;
-		imageError = false;
-		selectedImage = getRandomImage();
-	}
-	
-	// Handle image load success
-	function handleImageLoad() {
-		isLoading = false;
-	}
-	
-	// Handle image load error
-	function handleImageError() {
-		isLoading = false;
-		imageError = true;
-	}
-	
-	// Load initial random image on component mount
+	import WorksGrid from '$lib/components/WorksGrid.svelte';
+
+	// Works come from PocketBase via +page.server.ts (server-side, so crawlers get
+	// full HTML); `data.source` is 'local' when the backend was unreachable.
+	let { data } = $props();
+	let galleryWorks = $derived(data.works);
+	const note = $derived(
+		data.blocks['gallery.note']?.en ||
+			'A selection of recent oil paintings — each on linen unless noted. Tap any painting on desktop for a lightbox; on mobile, swipe up on a painting to see its details.'
+	);
+
+	// Minimal-canvas mode: adds `body.minimal-canvas` while this route is
+	// mounted; removed on navigation away. All the visual overrides (white
+	// background, no frames, no hairlines, no paper grain, no pull-hint,
+	// hidden footer) live under that class in portfolio.css so any other
+	// art-viewing route (e.g. /sketch) can opt in the same way — one line.
 	onMount(() => {
-		loadRandomImage();
+		document.body.classList.add('minimal-canvas');
+		return () => document.body.classList.remove('minimal-canvas');
 	});
 </script>
 
-<div class="gallery-container">
-	<!-- Logo Section -->
-	
-	<!-- Gallery Section -->
-	<div class="gallery-section">
-		{#if isLoading}
-			<div class="skeleton-loader" aria-label="Loading image...">
-				<div class="skeleton-shimmer"></div>
-			</div>
-		{/if}
-		
-		{#if selectedImage && !imageError}
-			<img
-				src={selectedImage.src}
-				alt={selectedImage.alt}
-				class="gallery-image"
-				class:hidden={isLoading}
-				on:load={handleImageLoad}
-				on:error={handleImageError}
-			/>
-		{/if}
-		
-		{#if imageError}
-			<div class="error-state">
-				<p>Failed to load image</p>
-				<button on:click={loadRandomImage} class="retry-btn">
-					Try Another Image
-				</button>
-			</div>
-		{/if}
-		
-		<button 
-			on:click={loadRandomImage} 
-			class="random-btn"
-			disabled={isLoading}
-		>
-			{isLoading ? 'Loading...' : 'Show Random Image'}
-		</button>
+<svelte:head>
+	<title>油畫 · Paintings — Achin</title>
+</svelte:head>
+
+<!--
+	Editorial reading order per artist's brief:
+	  1. Artwork first (WorksGrid — image only, no title above)
+	  2. Text description (the .gallery-note paragraph)
+	  3. Title header last (.section-head--footer — reads as a closing colophon,
+	     not a lead-in)
+
+	The user lands on the paintings; the section title only appears after they've
+	seen and read past the work. On mobile the WorksGrid fills 100dvh, so the
+	description + header are revealed by scrolling the page down past the gallery.
+-->
+<section class="band">
+	{#if galleryWorks.length === 0}
+		<p class="empty">No works to show yet. Publish a painting in the CMS to populate this page.</p>
+	{:else}
+		<WorksGrid works={galleryWorks} />
+	{/if}
+
+	<div class="gallery-note">
+		<p lang="en">{note}</p>
 	</div>
-</div>
+
+	<header class="section-head section-head--footer">
+		<div>
+			<span class="section-num">油畫 · Paintings</span>
+			<h1 class="section-title">Selected <em>works</em></h1>
+		</div>
+		<div class="section-aside">
+			{galleryWorks.length}
+			{galleryWorks.length === 1 ? 'work' : 'works'} · Oil on linen
+		</div>
+	</header>
+</section>
 
 <style>
-	.gallery-container {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 2rem;
-		max-width: 800px;
-		margin: 0 auto;
-		padding: 1rem;
+	/* Override the global .band's default top padding (96px desktop / 56px
+	   mobile). It was there for a lead-in section-head — with the header
+	   moved to the bottom of this page there is no lead-in element, so the
+	   top padding becomes empty white space above the paintings. Zero it
+	   here; keep bottom padding for space after the closing header. Svelte
+	   scopes this rule via a hash class, giving it higher specificity than
+	   the global `section.band` in portfolio.css. */
+	section.band {
+		padding-top: 0;
 	}
-	
-	.logo-section {
+
+	/* Kill the cream placeholder background on the img element itself.
+	   `.work .frame img` in portfolio.css sets `background: oklch(0.93 …)`
+	   as a load-state colour; it also shows in the letterbox strips when
+	   object-fit:contain leaves space around a painting. Anchored to the
+	   body.minimal-canvas class so this only fires on the gallery route. */
+	:global(body.minimal-canvas .work .frame img) {
+		background: transparent;
+	}
+
+	.empty {
+		font-family: var(--serif);
+		font-style: italic;
+		color: var(--ink-3);
+		text-align: center;
+		padding: 80px 0;
+	}
+
+	.gallery-note {
+		max-width: 56ch;
+		margin: 48px auto 24px; /* the 48px top margin replaces the border-top separator */
+		padding: 0;
 		text-align: center;
 	}
-	
-	.logo-image {
-		max-width: 200px;
-		height: auto;
-		border-radius: 8px;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+	.gallery-note p {
+		font-family: var(--serif);
+		font-style: italic;
+		font-size: 18px;
+		line-height: 1.6;
+		color: var(--ink-2);
+		margin: 0;
+		text-wrap: pretty;
 	}
-	
-	.gallery-section {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 1rem;
-		width: 100%;
-	}
-	
-	.gallery-image {
-		max-width: 100%;
-		height: auto;
-	}
-	
-	.gallery-image.hidden {
-		opacity: 0;
-	}
-	
-	.skeleton-loader {
-		width: 100%;
-		max-width: 600px;
-		height: 400px;
-		background: #f0f0f0;
-		border-radius: 8px;
-		position: relative;
-		overflow: hidden;
-	}
-	
-	.skeleton-shimmer {
-		position: absolute;
-		top: 0;
-		left: -100%;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(
-			90deg,
-			transparent,
-			rgba(255, 255, 255, 0.6),
-			transparent
-		);
-		animation: shimmer 1.5s infinite;
-	}
-	
-	@keyframes shimmer {
-		0% {
-			left: -100%;
+
+	@media (max-width: 768px) {
+		.gallery-note {
+			margin: 32px 18px 20px;
+			padding: 20px 0;
 		}
-		100% {
-			left: 100%;
+		.gallery-note p {
+			font-size: 16px;
 		}
-	}
-	
-	.error-state {
-		text-align: center;
-		padding: 2rem;
-		color: #666;
-	}
-	
-	.retry-btn,
-	.random-btn {
-		background: #d8dce1;
-		color: white;
-		border: none;
-		padding: 0.5rem 1rem;
-		border-radius: 4px;
-		cursor: pointer;
-		font-size: 1rem;
-		transition: background-color 0.2s ease;
-	}
-	
-	.retry-btn:hover,
-	.random-btn:hover:not(:disabled) {
-		background: #3b3f42;
-	}
-	
-	.random-btn:disabled {
-		background: #6c757d;
-		cursor: not-allowed;
 	}
 </style>

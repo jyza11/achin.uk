@@ -1,0 +1,58 @@
+{
+  "about.practice": {
+    "zh": "",
+    "en": "Working from life and from memory. Sittings at the café, drawings in the morning, paintings revisited in the studio after the day has cooled."
+  },
+  "about.quote": {
+    "zh": "藝術源於生活的的美感",
+    "en": ""
+  },
+  "about.statement": {
+    "zh": "",
+    "en": "A practice built on slow looking. Oil on linen, graphite on paper, and the long hours between — light, weather, and the corners of rooms held still long enough to draw out the hour before the room forgets itself."
+  },
+  "contact.address": {
+    "zh": "",
+    "en": "New Taipei · Studio\nBy appointment"
+  },
+  "contact.email": {
+    "zh": "",
+    "en": "studio@achin.example"
+  },
+  "contact.hours": {
+    "zh": "",
+    "en": "Mon · Tue | 10—18h\nWed · Thu | 10—18h\nFri | 12—19h\nSat · Sun | By request"
+  },
+  "contact.instagram": {
+    "zh": "",
+    "en": "@achin.studio"
+  },
+  "contact.intro": {
+    "zh": "",
+    "en": "The studio is open by appointment for visitors, collectors, and curators. Acquisitions, commissions, and press inquiries — please write directly."
+  },
+  "contact.press": {
+    "zh": "",
+    "en": "press@achin.example"
+  },
+  "events.empty_deck": {
+    "zh": "",
+    "en": "Exhibition listings will appear here as they're scheduled. For studio visits and press inquiries in the meantime, see"
+  },
+  "events.empty_line": {
+    "zh": "展覽 · Coming soon",
+    "en": ""
+  },
+  "gallery.note": {
+    "zh": "",
+    "en": "A selection of recent oil paintings — each on linen unless noted. Tap any painting on desktop for a lightbox; on mobile, swipe up on a painting to see its details."
+  },
+  "home.hero_deck": {
+    "zh": "",
+    "en": "Oil on linen — slow, considered surfaces of weather, water, and interior thresholds. Painted from life, then revisited from memory."
+  },
+  "home.hero_eyebrow": {
+    "zh": "",
+    "en": "Painter · New Taipei"
+  }
+}
