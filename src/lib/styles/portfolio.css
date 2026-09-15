@@ -964,19 +964,25 @@ section.band {
    WorksGrid.svelte — on mobile the swipe view IS the detail view. If you
    change this breakpoint, keep the JS matchMedia in sync.
    ────────────────────────────────────────────────────────────────────── */
-@media (max-width: 768px) {
-	/* The mobile gallery is NOT a full 100dvh tall: the sticky topbar and
-	   .pf-main's top padding sit above it and push it down the page. Sizing
-	   the panels to a raw 100dvh made them overhang the fold by exactly that
-	   offset, so the centred painting rendered low with dead space under the
-	   wordmark. --gallery-vh is the real visible height; use it for every
-	   full-screen panel below instead of 100dvh. */
-	:root {
-		--pf-topbar-h: 72px;
-		--pf-main-pad-top: 16px;
-		--gallery-vh: calc(100dvh - var(--pf-topbar-h));
-	}
+/* The mobile gallery is NOT a full 100dvh tall: the sticky topbar and
+   .pf-main's top padding sit above it and push it down the page. Sizing
+   the panels to a raw 100dvh made them overhang the fold by exactly that
+   offset, so the centred painting rendered low with dead space under the
+   wordmark. --gallery-vh is the real visible height; use it for every
+   full-screen panel below instead of 100dvh.
 
+   Declared OUTSIDE the media query on purpose. A custom property defined
+   only inside a query does not exist above the breakpoint, so any rule out
+   there that references it computes to an invalid value and is dropped
+   silently — the hardest kind of CSS bug to trace. Defining them globally
+   costs nothing; only the mobile rules below actually consume them. */
+:root {
+	--pf-topbar-h: 72px;
+	--pf-main-pad-top: 16px;
+	--gallery-vh: calc(100dvh - var(--pf-topbar-h));
+}
+
+@media (max-width: 768px) {
 	/* Pin the topbar to the height --pf-topbar-h claims, so the maths above
 	   stays true if the wordmark or menu button ever changes size. */
 	.pf-topbar-mobile {
@@ -1009,14 +1015,14 @@ section.band {
 		overflow-y: hidden;
 		scroll-snap-type: x mandatory;
 		scroll-behavior: smooth;
-		-webkit-overflow-scrolling: touch;
 		scrollbar-width: none;
-		/* Trap horizontal overscroll (no accidental browser-back gesture on first
-       painting), but allow vertical overscroll to bubble up so the user can
-       scroll the page past the 100dvh gallery to see the description + header
-       that follow. */
+		/* X axis only. This element scrolls horizontally, so trapping its
+		   overscroll stops a swipe past the first/last painting from firing
+		   the browser's back gesture. There is deliberately NO Y rule here:
+		   overflow-y is hidden, so this element never scrolls vertically and
+		   has no vertical overscroll to govern. The Y behaviour that matters
+		   is on .work below, which is the element that actually scrolls. */
 		overscroll-behavior-x: contain;
-		overscroll-behavior-y: auto;
 	}
 	.works::-webkit-scrollbar {
 		display: none;
@@ -1034,6 +1040,12 @@ section.band {
 		scroll-snap-stop: always;
 		scroll-snap-type: y mandatory;
 		scroll-behavior: smooth;
+		/* This IS the element that scrolls on Y (image panel ↔ details panel).
+		   `auto` is the CSS default, declared explicitly so the intent is not
+		   lost: when the user hits the end of this card's vertical scroll the
+		   gesture must bubble to the page, so they can keep scrolling past the
+		   gallery to the description and title below it. */
+		overscroll-behavior-y: auto;
 		position: relative;
 		background: var(--paper);
 		cursor: default;
@@ -1048,10 +1060,14 @@ section.band {
 	} /* undo desktop hover-lift */
 
 	/* IMAGE PANEL — first vertical snap point of the painting.
-     Padding tuned aggressively small on mobile so the painting fills as much
-     of the viewport as possible. The remaining 4px sides preserve just enough
-     of the cream-mat aesthetic to signal a museum-style passe-partout; the
-     44px bottom leaves room for the pull-hint pill without cramping it. */
+	   Padding is kept minimal so the painting fills as much of the viewport
+	   as possible; the 44px bottom reserves room for the pull-hint pill.
+
+	   These are the NON-minimal-canvas values. On /gallery the
+	   body.minimal-canvas block at the end of this file overrides padding to 0
+	   and removes the hairline, so that route renders edge-to-edge with no
+	   border. What is written here is what any mobile route that does NOT opt
+	   into minimal-canvas will show. */
 	.work .frame,
 	.work[data-shape] .frame {
 		height: var(--gallery-vh);
@@ -1064,17 +1080,41 @@ section.band {
 		align-items: center;
 		justify-content: center;
 		background: var(--paper);
-		box-shadow: inset 0 0 0 1px oklch(0.88 0.02 80);
+		box-shadow: inset 0 0 0 1px var(--rule);
 		transform: none;
 		box-sizing: border-box;
 	}
 	.work .frame img {
-		object-fit: contain; /* preserve painting's aspect on mobile */
-		max-height: calc(
-			var(--gallery-vh) - 52px
-		); /* padding top+bottom — image can fill nearly full height */
-		width: auto;
+		object-fit: contain; /* preserve painting's aspect — never crop art */
+
+		/* width/height stay at 100% (inherited from the desktop rule) ON PURPOSE.
+		   Do NOT "tidy" them to auto.
+
+		   The <img> is loading="lazy". An unloaded lazy image with auto sizing
+		   has no intrinsic dimensions, so its box is 0x0 — it can never
+		   intersect the viewport, so the lazy loader never fires, so it never
+		   gets dimensions. Deadlock: the whole gallery renders blank. This was
+		   introduced and caught in the browser on 2026-09-12; measured 0 of 69
+		   images loaded, 0 network requests, every box 0x0.
+
+		   A definite box breaks the cycle. The cost is that the element is the
+		   full panel while object-fit letterboxes the picture inside it, so the
+		   box is larger than what it shows. That is the correct trade: a
+		   slightly dishonest box beats no image at all.
+
+		   The real fix is intrinsic dimensions. If width/height are ever stored
+		   on the work record at upload, set `aspect-ratio` here and auto sizing
+		   becomes safe — the box is then definite before load AND wraps the
+		   painting exactly. Until then, leave this alone. */
+		width: 100%;
+		height: 100%;
+
+		/* Resolve against .frame's CONTENT box — .frame has a definite height
+		   and box-sizing: border-box, so the percentage already excludes its
+		   padding. (Was `calc(var(--gallery-vh) - 52px)`, a hand-summed number
+		   that silently desynced whenever that padding changed.) */
 		max-width: 100%;
+		max-height: 100%;
 		margin: 0 auto;
 		background: transparent;
 	}
@@ -1249,9 +1289,13 @@ body.minimal-canvas .section-head--footer {
 	}
 	/* With padding zeroed the image can now fill the frame edge-to-edge
      (still object-fit: contain, so aspect is preserved — no cropping). */
+	/* Padding is 0 in this mode, so .frame's content box IS the whole panel and
+	   100% already means "as large as the panel allows". Percentages are used
+	   rather than --gallery-vh/100vw so this stays correct on its own if the
+	   padding above ever comes back. */
 	body.minimal-canvas .work .frame img {
-		max-height: var(--gallery-vh);
-		max-width: 100vw;
+		max-height: 100%;
+		max-width: 100%;
 	}
 }
 
