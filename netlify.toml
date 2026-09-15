@@ -54,10 +54,12 @@
 # and no Cache-Control on /* either (it would also land on the immutable files).
 # Prerendered HTML: Netlify's default (browsers revalidate; the CDN is purged on every
 # deploy) is exactly what a rebuilt static site needs.
+# Header name in lowercase on purpose: the adapter writes `cache-control` into build/_headers,
+# and Netlify warns when the same header name appears in two different cases anywhere.
 [[headers]]
   for = "/favicon.png"
   [headers.values]
-    Cache-Control = "public, max-age=604800"
+    cache-control = "public, max-age=604800"
 
 # ─── /admin: never indexed (its own robots meta is client-side only) ──
 # /admin is served by the Netlify function; after the first deploy confirm with
