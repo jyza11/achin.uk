@@ -101,10 +101,12 @@ command is the last thing printed.
 3. **Netlify:** environment variable `PUBLIC_PB_URL=https://api.achin.uk` (no
    trailing slash). The six public routes are **prerendered at build time** from
    the CMS, so the build machine must reach `api.achin.uk` (it does: the record
-   is proxied by Cloudflare, which the security group allows). If the backend is
-   not public yet, set `ALLOW_FALLBACK_BUILD=1` in the site env for that one
-   deploy and **remove it afterwards** — otherwise the build fails on purpose.
-   Redeploy, open `/gallery` — paintings should come from the CMS.
+   is proxied by Cloudflare, which the security group allows). **No flag is
+   needed for the first deploy** — if the CMS is unreachable the build warns and
+   uses the committed snapshot in `src/lib/content/`. Once the API is public, add
+   `REQUIRE_CMS_BUILD=1` to the site env so any CMS failure fails the build
+   instead of silently shipping a stale snapshot. Redeploy, open `/gallery` —
+   paintings should come from the CMS.
 4. **Rebuild on edit:** Netlify › Site configuration › Build hooks → *Add build
    hook*, name "PocketBase content change", branch `deploy`. Copy the URL (it is
    a secret) into the box, then restart the service:

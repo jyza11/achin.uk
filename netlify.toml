@@ -13,8 +13,10 @@
   # Node 20 reached end-of-life 2026-04; 22 is the current LTS SvelteKit 2 / Vite 5 support.
   NODE_VERSION = "22"
   NPM_FLAGS = "--no-audit --no-fund --prefer-offline"
-  # First deploy only, before the backend is public: set ALLOW_FALLBACK_BUILD = "1" in the
-  # Netlify UI (site env), never here — and remove it once api.achin.uk answers.
+  # No flag is needed for the first deploy: if the CMS is unreachable the build warns and uses
+  # the committed snapshot in src/lib/content/. Once api.achin.uk is public, set
+  # REQUIRE_CMS_BUILD = "1" in the Netlify UI (site env, never here) so a stale snapshot can
+  # never ship silently.
 
 # ─── Security headers — every response ──────────────────
 [[headers]]
