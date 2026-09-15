@@ -31,21 +31,21 @@ export function pbErrorSummary(err: unknown): string {
 }
 
 /**
- * Guards `npm run build` (prerendering, see AGENTS.md › Deployment) against silently
- * shipping stale bundled content when the CMS is unreachable or empty: throws loudly unless
- * `ALLOW_FALLBACK_BUILD=1` is set, in which case it warns loudly instead and lets the caller
- * fall back. A no-op outside of `building` — dev server / preview keep the existing silent
- * fallback, which callers still log themselves.
+ * Guards `npm run build` (prerendering, see AGENTS.md › Deployment) against silently shipping
+ * a stale committed snapshot when the CMS is unreachable or empty: once `REQUIRE_CMS_BUILD=1`
+ * is set (production, once the API is public), it throws loudly instead of falling back; until
+ * then it warns loudly and lets the caller fall back to the snapshot exported at `exportedAt`.
+ * A no-op outside of `building` — dev server / preview keep the existing silent fallback, which
+ * callers still log themselves.
  */
-export function guardBuildFallback(what: string, reason: string): void {
+export function guardBuildFallback(what: string, reason: string, exportedAt: string): void {
 	if (!building) return;
-	if (privateEnv.ALLOW_FALLBACK_BUILD === '1') {
-		console.warn(
-			`[build] ALLOW_FALLBACK_BUILD=1 — building ${what} from the bundled fallback content despite: ${reason}`
+	if (privateEnv.REQUIRE_CMS_BUILD === '1') {
+		throw new Error(
+			`[build] Refusing to prerender ${what}: ${reason}. REQUIRE_CMS_BUILD=1 forbids falling back to the committed content snapshot.`
 		);
-		return;
 	}
-	throw new Error(
-		`[build] Refusing to prerender ${what}: ${reason}. Set ALLOW_FALLBACK_BUILD=1 to build from the bundled fallback content instead.`
+	console.warn(
+		`[build] CMS unreachable — building ${what} from the committed snapshot exported ${exportedAt}: ${reason}`
 	);
 }

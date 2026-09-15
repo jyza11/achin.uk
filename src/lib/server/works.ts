@@ -1,11 +1,11 @@
 import type { RecordModel } from 'pocketbase';
 import { building } from '$app/environment';
 import type { Work } from '$lib/data/works';
-import { galleryWorks, sketchWorks } from '$lib/data/works';
+import { snapshotWorks, snapshotMeta } from './content-snapshot';
 import { pbClient, pbErrorSummary, guardBuildFallback, PB_URL, PB_TIMEOUT_MS } from './pb';
 
 export type WorksCollection = 'gallery' | 'sketch';
-export type WorksSource = 'cms' | 'local';
+export type WorksSource = 'cms' | 'snapshot';
 
 type WorkRecord = RecordModel & {
 	title_zh: string;
@@ -17,8 +17,6 @@ type WorkRecord = RecordModel & {
 	sort: number | null;
 	image: string;
 };
-
-const LOCAL: Record<WorksCollection, Work[]> = { gallery: galleryWorks, sketch: sketchWorks };
 
 function bilingual(zh: string, en: string): string {
 	if (zh && en) return `${zh} · ${en}`;
@@ -43,9 +41,9 @@ function toWork(pb: ReturnType<typeof pbClient>, r: WorkRecord): Work {
 }
 
 /**
- * Published works for one collection, from PocketBase. If the backend is
- * unreachable, slow, or empty, falls back to the images bundled in the repo
- * so the site never renders blank. `source` tells the page which one it got.
+ * Published works for one collection, from PocketBase. If the backend is unreachable, slow, or
+ * empty, falls back to the committed content snapshot (`$lib/server/content-snapshot.ts`, see AGENTS.md ›
+ * Deployment) so the site never renders blank. `source` tells the page which one it got.
  */
 export async function loadWorks(
 	collection: WorksCollection
@@ -66,9 +64,19 @@ export async function loadWorks(
 	} catch (err) {
 		reason = `PocketBase at ${PB_URL} unavailable for "${collection}" works: ${pbErrorSummary(err)}`;
 	}
-	guardBuildFallback(`the "${collection}" works collection`, reason);
-	if (!building) {
-		console.warn(`[works] ${reason}, using local images`);
+	guardBuildFallback(`the "${collection}" works collection`, reason, snapshotMeta.exported_at);
+	const works = snapshotWorks(collection);
+	if (building && works.length === 0) {
+		// Never prerender an empty gallery, even from the snapshot itself.
+		throw new Error(
+			`[build] Refusing to prerender the "${collection}" works collection: ${reason}, and the ` +
+				`committed snapshot (exported ${snapshotMeta.exported_at}) has zero works for it either.`
+		);
 	}
-	return { works: LOCAL[collection], source: 'local' };
+	if (!building) {
+		console.warn(
+			`[works] ${reason}, using the committed snapshot (exported ${snapshotMeta.exported_at})`
+		);
+	}
+	return { works, source: 'snapshot' };
 }
