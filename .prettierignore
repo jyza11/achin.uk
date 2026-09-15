@@ -2,3 +2,13 @@
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+
+# Docs are hand-maintained; prettier table padding doubles their size
+*.md
+
+# Provisioning files: cloud-init is machine-read YAML with tab-indented Caddyfile blocks —
+# Prettier must not reflow it
+deploy/*.yaml
+
+# Generated content snapshot — written by scripts/export-content.mjs, not hand-formatted
+src/lib/content/*.json

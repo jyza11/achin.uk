@@ -1,0 +1,6 @@
+# Netlify redirects (adapter-netlify does not allow [[redirects]] in netlify.toml).
+# Never serve source maps.
+/*.js.map   /404   404!
+/*.css.map  /404   404!
+# Canonical host — enable on launch day once DNS is final:
+# https://www.achin.uk/*   https://achin.uk/:splat   301!
