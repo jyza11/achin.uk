@@ -28,3 +28,6 @@ vite.config.ts.timestamp-*
 pocketbase/pocketbase
 pocketbase/pb_data/
 pocketbase/.env*
+
+# Private review workspace (council prompts, witness briefs, round outputs) — never commit; the repo is public
+council/
