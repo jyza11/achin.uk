@@ -5,7 +5,7 @@ more languages (JP, FR) later. **This is the only doc for the app:**
 Part 1 orients you, Part 2 holds every design decision. `CLAUDE.md` just points here. Verified against the repo: **2026-09-14**.
 
 This folder is its own git repo (remote `git@github.com:jyza11/achin.uk.git`, branch
-**`deploy`**, not main; renamed from `Achin-profolio` 2026-09-06). Refer to it as "this repo" or
+**`master`** — Netlify's production branch (verified from live headers 2026-10-22; `deploy` is behind); renamed from `Achin-profolio` 2026-09-06). Refer to it as "this repo" or
 "the app", never by folder name. Deploys to Netlify. The parent folder `../` is a separate repo of frozen design reference — read
 `../AGENTS.md` only if you need it.
 
@@ -83,7 +83,9 @@ src/
 │   └── assets/              triaged 2026-09-08: gallery/ 69 · sketch/ 81 (both migrated to the CMS; NO LONGER USED by the site since 2026-09-15 — delete pending the owner, 16 files carry GPS) ·
 │                            profile/ 6 (Achin's portrait page — LATER, own spec, not in the CMS) · pro.jpg (current portrait)
 └── routes/                  / gallery sketch about contact events — all have +page.server.ts (CMS loads with fallback)
-    └── admin/               client-only (ssr=false) 繁體中文 admin: / list · works/new · works/[id] · text
+    ├── admin/               client-only (ssr=false) 繁體中文 admin: / list · works/new · works/[id] · text
+    └── q/[code]/            +server.ts, not prerendered: printed QR codes → 302 to a target in $lib/qr.ts (unknown → /).
+                             Never rename or delete a printed code — change its target. Scan counter planned here.
 pocketbase/                  pb_migrations/ = schema · pb_hooks/ = media pipeline (both committed) · binary, pb_data/, .env.dev = local only (ignored)
 deploy/                      cloud-init.yaml (the whole server, one file) + README.md (runbook: launch, DNS, backups, move)
 _redirects                   Netlify redirect rules (adapter-netlify forbids them in netlify.toml)
@@ -367,7 +369,7 @@ six months, planned exit to Vultr. Nothing provisioned yet; roadmap under Open. 
 ### Decisions
 
 - **Frontend:** Netlify, `adapter-netlify` (`edge:false`, `split:false`), deploys from branch
-  `deploy`. Env var `PUBLIC_PB_URL` points the site at the backend. **Function region stays
+  `master` (verified 2026-10-22). Env var `PUBLIC_PB_URL` points the site at the backend. **Function region stays
   US-East** (region choice is a Pro-plan feature): every SSR page pays one US→Tokyo round trip
   (~180 ms) — only `/admin` now: the public routes are prerendered (built 2026-09-14) and served
   from the CDN with no function call.
