@@ -1,32 +1,59 @@
 <script lang="ts">
-	import { paragraphs } from '$lib/text';
+	import BiText from '$lib/components/BiText.svelte';
+	import { bi } from '$lib/text';
 
-	// Contact copy + details come from CMS content_blocks (fallback: the hardcoded text below).
-	// `contact.hours` is one line per row, "label | value", e.g. "Mon · Tue | 10—18h".
+	// Contact copy + details come from CMS content_blocks (fallback: the 2026-10-24 text below).
+	// The paintings hang at Hacha, Achin's restaurant in Tamsui — there is no studio.
+	// `contact.hours` is one line per row, "label | value"; the 中文 and English rows pair by
+	// line number (label from each language, value from English, else 中文).
+	// Email and Instagram rows render only when the block has a value — no placeholders on a
+	// live site. The fake contact form was removed 2026-10-24 (it dropped every message);
+	// a real form (Netlify Forms) is a later slice.
 	let { data } = $props();
 	const b = $derived(data.blocks);
-	const intro = $derived(b['contact.intro']?.en);
-	const hours = $derived(
-		(b['contact.hours']?.en ?? '')
+	const title = $derived(bi(b['contact.title'], { zh: '來看畫', en: 'See the paintings' }));
+	const headline = $derived(
+		bi(b['contact.headline'], {
+			zh: '來淡水，看原作。',
+			en: 'Come to Tamsui and see the originals.'
+		})
+	);
+	const intro = $derived(
+		bi(b['contact.intro'], {
+			zh: '張忠晉的原作展示於他在淡水經營的餐廳 Hacha。營業時間內歡迎來看畫。',
+			en: "Achin's original paintings hang at Hacha, the restaurant he runs in Tamsui. Drop in during opening hours to see them."
+		})
+	);
+	const hoursText = $derived(
+		bi(b['contact.hours'], { zh: '每日 | 12:30–21:00', en: 'Daily | 12:30–21:00' })
+	);
+	const address = $derived(
+		bi(b['contact.address'], {
+			zh: 'Hacha 黑客茶舖\n新北市淡水區北新路117-2號',
+			en: 'Hacha\nNo. 117-2, Beixin Rd, Tamsui, New Taipei'
+		})
+	);
+	const contactEmail = $derived((b['contact.email']?.en || b['contact.email']?.zh || '').trim());
+	const instagram = $derived(
+		(b['contact.instagram']?.en || b['contact.instagram']?.zh || '').trim()
+	);
+
+	function rows(text: string): string[][] {
+		return text
 			.split('\n')
 			.map((l) => l.split('|').map((s) => s.trim()))
-			.filter((r) => r.length === 2 && r[0])
-	);
-	const address = $derived(b['contact.address']?.en);
-	const contactEmail = $derived(b['contact.email']?.en || 'studio@achin.example');
-	const press = $derived(b['contact.press']?.en || 'press@achin.example');
-	const instagram = $derived(b['contact.instagram']?.en || '@achin.studio');
-
-	let name = $state('');
-	let email = $state('');
-	let message = $state('');
-	let submitted = $state(false);
-
-	function handleSubmit(event: SubmitEvent) {
-		event.preventDefault();
-		// TODO: wire to your backend (Netlify Forms / Formspree / etc.)
-		submitted = true;
+			.filter((r) => r.length === 2 && r[0]);
 	}
+	const hours = $derived.by(() => {
+		const zh = rows(hoursText.zh);
+		const en = rows(hoursText.en);
+		return Array.from({ length: Math.max(zh.length, en.length) }, (_, i) => ({
+			zh: zh[i]?.[0] ?? '',
+			en: en[i]?.[0] ?? '',
+			value: en[i]?.[1] ?? zh[i]?.[1] ?? ''
+		}));
+	});
+	const lines = (text: string) => text.split('\n').filter((l) => l.trim());
 </script>
 
 <svelte:head>
@@ -37,130 +64,53 @@
 	<header class="section-head">
 		<div>
 			<span class="section-num">合作 · Contact</span>
-			<h1 class="section-title">Studio <em>visits</em></h1>
+			<h1 class="section-title">{title.zh}<span class="title-en" lang="en">{title.en}</span></h1>
 		</div>
-		<div class="section-aside">By appointment</div>
+		<div class="section-aside">淡水 · <span lang="en">Tamsui</span></div>
 	</header>
 
 	<div class="visit">
 		<div class="visit-text">
-			<h2>Quiet hours, <em>open door</em>.</h2>
-			{#if intro}
-				{#each paragraphs(intro) as para}
-					<p lang="en">{para}</p>
-				{/each}
-			{:else}
-				<p lang="en">
-					The studio is open by appointment for visitors, collectors, and curators. Acquisitions,
-					commissions, and press inquiries — please write directly.
-				</p>
-			{/if}
+			<h2>{headline.zh}<span class="title-en" lang="en">{headline.en}</span></h2>
+			<BiText text={intro} />
 			<div class="hours">
-				{#if hours.length > 0}
-					{#each hours as [label, value]}
-						<div class="hours-row" class:closed={/request|closed|休/i.test(value)}>
-							<span>{label}</span><span>{value}</span>
-						</div>
-					{/each}
-				{:else}
-					<div class="hours-row"><span>Mon · Tue</span><span>10—18h</span></div>
-					<div class="hours-row"><span>Wed · Thu</span><span>10—18h</span></div>
-					<div class="hours-row"><span>Fri</span><span>12—19h</span></div>
-					<div class="hours-row closed"><span>Sat · Sun</span><span>By request</span></div>
-				{/if}
+				{#each hours as row}
+					<div class="hours-row" class:closed={/request|closed|休/i.test(row.value)}>
+						<span
+							>{row.zh}{#if row.en}&nbsp;<span lang="en">{row.en}</span>{/if}</span
+						>
+						<span>{row.value}</span>
+					</div>
+				{/each}
 			</div>
 		</div>
 
 		<div class="visit-card">
-			<h3>Studio Achin</h3>
-			<div class="addr" lang="en">
-				{#if address}
-					{#each address.split('\n') as l}{l}<br />{/each}
-				{:else}
-					Taipei · Studio<br />
-					By appointment
+			<h3>地址 · <span lang="en">Address</span></h3>
+			<div class="addr">
+				{#each lines(address.zh) as l}{l}<br />{/each}
+				{#if address.en}
+					<span lang="en"
+						>{#each lines(address.en) as l}{l}<br />{/each}</span
+					>
 				{/if}
 			</div>
-			<div class="row"><span class="k">Email</span><span class="v">{contactEmail}</span></div>
-			<div class="row"><span class="k">Press</span><span class="v">{press}</span></div>
-			<div class="row"><span class="k">Instagram</span><span class="v">{instagram}</span></div>
-
-			{#if !submitted}
-				<form class="contact-form" onsubmit={handleSubmit}>
-					<label class="field">
-						<span class="field-label">Name</span>
-						<input type="text" bind:value={name} required autocomplete="name" />
-					</label>
-					<label class="field">
-						<span class="field-label">Email</span>
-						<input type="email" bind:value={email} required autocomplete="email" />
-					</label>
-					<label class="field">
-						<span class="field-label">Message</span>
-						<textarea bind:value={message} required rows="4"></textarea>
-					</label>
-					<button type="submit" class="btn primary">
-						Send <span class="arrow"></span>
-					</button>
-				</form>
-			{:else}
-				<p class="thanks">
-					Thank you — your note has been received. A reply will follow within a few days.
-				</p>
+			{#if contactEmail}
+				<div class="row">
+					<span class="k">Email</span>
+					<span class="v"><a href="mailto:{contactEmail}">{contactEmail}</a></span>
+				</div>
+			{/if}
+			{#if instagram}
+				<div class="row">
+					<span class="k">Instagram</span>
+					<span class="v">
+						<a href="https://www.instagram.com/{instagram.replace(/^@/, '')}/" rel="noopener"
+							>{instagram}</a
+						>
+					</span>
+				</div>
 			{/if}
 		</div>
 	</div>
 </section>
-
-<style>
-	.contact-form {
-		margin-top: 28px;
-		padding-top: 24px;
-		border-top: 1px solid var(--rule-soft);
-		display: flex;
-		flex-direction: column;
-		gap: 18px;
-	}
-	.field {
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-	}
-	.field-label {
-		font-family: var(--mono);
-		font-size: 10px;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
-		color: var(--ink-3);
-	}
-	.field input,
-	.field textarea {
-		background: transparent;
-		border: 0;
-		border-bottom: 1px solid var(--rule);
-		padding: 6px 0;
-		font-family: var(--serif);
-		font-size: 16px;
-		color: var(--ink);
-		outline: none;
-		transition: border-color 0.2s ease;
-	}
-	.field input:focus,
-	.field textarea:focus {
-		border-bottom-color: var(--oxblood);
-	}
-	.field textarea {
-		resize: vertical;
-		font-family: var(--serif);
-		line-height: 1.55;
-	}
-	.thanks {
-		margin-top: 28px;
-		padding-top: 24px;
-		border-top: 1px solid var(--rule-soft);
-		font-family: var(--serif);
-		font-style: italic;
-		font-size: 17px;
-		color: var(--oxblood-ink);
-	}
-</style>

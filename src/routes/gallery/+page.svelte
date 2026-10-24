@@ -1,14 +1,18 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import WorksGrid from '$lib/components/WorksGrid.svelte';
+	import BiText from '$lib/components/BiText.svelte';
+	import { bi } from '$lib/text';
 
 	// Works come from PocketBase via +page.server.ts (server-side, so crawlers get
 	// full HTML); `data.source` is 'local' when the backend was unreachable.
 	let { data } = $props();
 	let galleryWorks = $derived(data.works);
 	const note = $derived(
-		data.blocks['gallery.note']?.en ||
-			'A selection of recent oil paintings — each on linen unless noted. Tap any painting on desktop for a lightbox; on mobile, swipe up on a painting to see its details.'
+		bi(data.blocks['gallery.note'], {
+			zh: '油畫與壓克力作品。原作多數展示於淡水 Hacha。',
+			en: 'Oil and acrylic paintings. Most of the originals hang at Hacha in Tamsui.'
+		})
 	);
 
 	// Minimal-canvas mode: adds `body.minimal-canvas` while this route is
@@ -45,17 +49,17 @@
 	{/if}
 
 	<div class="gallery-note">
-		<p lang="en">{note}</p>
+		<BiText text={note} />
 	</div>
 
 	<header class="section-head section-head--footer">
 		<div>
 			<span class="section-num">油畫 · Paintings</span>
-			<h1 class="section-title">Selected <em>works</em></h1>
+			<h1 class="section-title">油畫作品<span class="title-en" lang="en">Selected works</span></h1>
 		</div>
 		<div class="section-aside">
-			{galleryWorks.length}
-			{galleryWorks.length === 1 ? 'work' : 'works'} · Oil on linen
+			{galleryWorks.length} 件 · 油畫 · 壓克力 ·
+			<span lang="en">{galleryWorks.length === 1 ? 'work' : 'works'} · Oil · Acrylic</span>
 		</div>
 	</header>
 </section>
@@ -96,7 +100,7 @@
 		text-align: center;
 	}
 
-	.gallery-note p {
+	.gallery-note :global(p) {
 		font-family: var(--serif);
 		font-style: italic;
 		font-size: 18px;
@@ -105,14 +109,22 @@
 		margin: 0;
 		text-wrap: pretty;
 	}
+	.gallery-note :global(.bi-en) {
+		font-size: 16px;
+		color: var(--ink-3);
+		margin-top: 8px;
+	}
 
 	@media (max-width: 768px) {
 		.gallery-note {
 			margin: 32px 18px 20px;
 			padding: 20px 0;
 		}
-		.gallery-note p {
+		.gallery-note :global(p) {
 			font-size: 16px;
+		}
+		.gallery-note :global(.bi-en) {
+			font-size: 14px;
 		}
 	}
 </style>

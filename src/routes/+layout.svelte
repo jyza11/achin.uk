@@ -70,7 +70,7 @@
 	<!-- Sidebar — fixed on desktop, slides in on mobile -->
 	<aside class="pf-sidebar" class:open={menuOpen}>
 		<a href="/" class="pf-sidebar-wordmark" onclick={closeMenu}>Achin</a>
-		<span class="pf-sidebar-tag">Painter · Studio</span>
+		<span class="pf-sidebar-tag">畫家 · 淡水 <span lang="en">Painter · Tamsui</span></span>
 
 		<nav class="pf-sidebar-nav" id="primary-nav" aria-label="Primary">
 			<div class="pf-sidebar-section">Index</div>
@@ -88,7 +88,7 @@
 
 		<div class="pf-sidebar-foot">
 			© Achin {new Date().getFullYear()}<br />
-			Studio · Taipei
+			淡水 · <span lang="en">Tamsui</span>
 		</div>
 	</aside>
 
@@ -100,7 +100,9 @@
 
 		<footer class="pf-footer">
 			<div>© Achin {new Date().getFullYear()} · All works copyright the artist</div>
-			<div class="right">By appointment · Taipei</div>
+			<div class="right">
+				原作展示於淡水 Hacha · <span lang="en">Originals on view at Hacha, Tamsui</span>
+			</div>
 		</footer>
 	</div>
 

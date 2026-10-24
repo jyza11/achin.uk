@@ -22,11 +22,14 @@
 	<header class="section-head">
 		<div>
 			<span class="section-num">素描 · Sketches</span>
-			<h1 class="section-title">Drawings <em>and studies</em></h1>
+			<h1 class="section-title">
+				素描習作<span class="title-en" lang="en">Drawings and studies</span>
+			</h1>
 		</div>
 		<div class="section-aside">
 			{sketchWorks.length}
-			{sketchWorks.length === 1 ? 'sketch' : 'sketches'} · Graphite on paper
+			件 · 鉛筆 · 紙 ·
+			<span lang="en">{sketchWorks.length === 1 ? 'sketch' : 'sketches'} · Pencil on paper</span>
 		</div>
 	</header>
 

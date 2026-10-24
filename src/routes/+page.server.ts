@@ -6,7 +6,14 @@ import { loadBlocks } from '$lib/server/content';
 export const load: PageServerLoad = async () => {
 	const [gallery, blocks] = await Promise.all([
 		loadWorks('gallery'),
-		loadBlocks(['home.hero_eyebrow', 'home.hero_deck', 'about.quote', 'about.statement'])
+		loadBlocks([
+			'home.hero_eyebrow',
+			'home.headline',
+			'home.hero_deck',
+			'home.notes_title',
+			'about.quote',
+			'about.statement'
+		])
 	]);
 	return { ...gallery, blocks };
 };

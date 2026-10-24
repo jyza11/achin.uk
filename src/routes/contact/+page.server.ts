@@ -3,11 +3,12 @@ import { loadBlocks } from '$lib/server/content';
 
 // Each block falls back to the hardcoded text in +page.svelte.
 const SLUGS = [
+	'contact.title',
+	'contact.headline',
 	'contact.intro',
 	'contact.hours',
 	'contact.address',
 	'contact.email',
-	'contact.press',
 	'contact.instagram'
 ];
 
