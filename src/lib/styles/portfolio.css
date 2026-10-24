@@ -367,6 +367,56 @@ section.band {
 	}
 }
 
+/* ─────────────────────── ART ROUTES (/gallery, /sketch) ─────────────────────── */
+/* Shared reading order (artist's brief): works first → note → title last as a
+   closing colophon (.section-head--footer). With no lead-in header, the global
+   .band top padding would only be empty space above the art, so it is zeroed. */
+section.band.art-band {
+	padding-top: 0;
+}
+
+.art-note {
+	max-width: 56ch;
+	margin: 48px auto 24px; /* the 48px top margin replaces a border-top separator */
+	padding: 0;
+	text-align: center;
+}
+.art-note p {
+	font-family: var(--serif);
+	font-style: italic;
+	font-size: 18px;
+	line-height: 1.6;
+	color: var(--ink-2);
+	margin: 0;
+	text-wrap: pretty;
+}
+.art-note .bi-en {
+	font-size: 16px;
+	color: var(--ink-3);
+	margin-top: 8px;
+}
+
+.art-empty {
+	font-family: var(--serif);
+	font-style: italic;
+	color: var(--ink-3);
+	text-align: center;
+	padding: 80px 0;
+}
+
+@media (max-width: 768px) {
+	.art-note {
+		margin: 32px 18px 20px;
+		padding: 20px 0;
+	}
+	.art-note p {
+		font-size: 16px;
+	}
+	.art-note .bi-en {
+		font-size: 14px;
+	}
+}
+
 /* ─────────────────────── HERO (home page) ─────────────────────── */
 .hero {
 	max-width: 1200px;
