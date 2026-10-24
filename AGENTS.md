@@ -263,13 +263,20 @@ and every fallback string in page code.
 
 ### Decisions
 
-- **Name:** 中文 = **張忠晉**, English = **Achin** (chosen for online recognition). His earlier
-  English name "Andy" appears only inside the old café name, never as his name.
+- **Name (changed 2026-10-24):** never the full Chinese name anywhere on the site. zh-TW first:
+  中文 text **阿晉（Achin）** on first mention, then 阿晉; captions and alt text "阿晉 Achin"; English
+  text **Achin**, "Achin (阿晉)" on first mention. Traditional 晉, not 晋. Wordmark (sidebar + phone
+  topbar), footers and every tab title read **阿晉 Achin** (owner's pick W2, 2026-10-24). "Andy" (his
+  old English name) is not used.
 - **Place:** the paintings hang at his restaurant in Tamsui — in 中文 always **黑客茶舖**, in
   English **Hacha**. There is no studio and no "by appointment". English calls it a restaurant.
 - **Voice:** high-end, a man with taste, enjoys life, a little mysterious. Short sentences; no
   template poetry, no invented facts.
-- **Quotes:** only his own words go in quote form (`about.quote`, `home.headline` come from him).
+- **Quotes:** only his own words go in quote form — `home.quote` 「繪畫不是描摹現實…」 and
+  `about.quote` 「將自己放進畫布…」 (both from Achin, 2026-10-24).
+- **Home (owner's picks 2026-10-24):** headline H2 「將自己\n放進畫布。」 (a line break typed in the
+  CMS sets the 中文 wrap — `.hero h1` is `white-space: pre-line`); deck D2 「無師自通的台灣畫家…」;
+  tab title T1 「阿晉 Achin｜台灣當代畫家 · Contemporary painter, Taiwan」.
   Someone else's reading of him is never presented as his quote.
 - **Sales:** prices on request (價格請洽詢); no prices on the site.
 - **Where text lives:** CMS `content_blocks` (Achin edits in 頁面文字); page code keeps the same
@@ -282,7 +289,12 @@ and every fallback string in page code.
 
 ### Open / to-do
 
-- **v5 text (committed 2026-10-24; facts still to confirm with Achin):** `about.statement` (cafés Ella →
+- **Achin's own text (2026-10-24) replaced v5** on /about: title 從牆面塗鴉到心靈重塑, bio (two
+  paragraphs), `about.practice_title` 核心美學與風格語彙 + `about.practice` (masters, Psychological Cubism,
+  Artificial Realism & Semiotics, Color Dynamics). `BiText headings`: in a multi-line paragraph the
+  first line is a small heading. English translated by the agent; three small 中文 fixes noted in
+  `drafts/site-text.md`. The v5 facts below are no longer on the site:
+- ~~v5 text~~ (superseded): `about.statement` (cafés Ella →
   安迪艾倫咖啡小館 → 黑客茶舖, 1996 murals in house paint, Picasso copies, mentor 淦哥 = "Brother
   Kan", 2005 decision, first original work 2008), `about.practice` (his statement: painting as a
   trance, stages, body as calligraphy stroke / building block), `home.hero_deck`. Home shows the
@@ -295,6 +307,7 @@ and every fallback string in page code.
   Owner's call.
 - The home hero image is Achin's portrait (captioned 畫家 · Artist, not "featured painting"); a
   painting would suit the slot better — Achin's choice.
+- Home hero signature (above the portrait) stays "Achin" text for now — 阿晉 in the serif font looked wrong (2026-10-24); ask Achin for his own signature (question 18 in the draft).
 - Contact: email `aeicafe@gmail.com`, Instagram `@achin.tw` (2026-10-24); rows hide whenever a block is emptied.
 - **`/contact` (2026-10-24, owner's v7):** 拜訪預約 · Book a visit — see the originals at 黑客茶舖, meet
   Achin and hear the meaning behind the work; collecting / commissions / collaborations, prices on
