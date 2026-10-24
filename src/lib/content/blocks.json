@@ -1,58 +1,78 @@
 {
+  "about.cta": {
+    "zh": "原作展示於淡水 Hacha。",
+    "en": "The original paintings hang at Hacha in Tamsui."
+  },
   "about.practice": {
-    "zh": "",
-    "en": "Working from life and from memory. Sittings at the café, drawings in the morning, paintings revisited in the studio after the day has cooled."
+    "zh": "他向心中最好的畫家學習，米羅、畢卡索、康丁斯基都在其中，再把學到的化成自己的語言。",
+    "en": "He learns from the painters he thinks are the best, Miró, Picasso and Kandinsky among them, and turns what he learns into a language of his own."
   },
   "about.quote": {
-    "zh": "藝術源於生活的的美感",
-    "en": ""
+    "zh": "我總是追求最好的。",
+    "en": "I always go for the best."
   },
   "about.statement": {
-    "zh": "",
-    "en": "A practice built on slow looking. Oil on linen, graphite on paper, and the long hours between — light, weather, and the corners of rooms held still long enough to draw out the hour before the room forgets itself."
+    "zh": "張忠晉生於高雄，年輕時北上台北打拼，後來到淡水開餐廳。等待新店裝潢的那段日子，他拿起畫筆，想為自己的店畫幾幅畫，從此沒有停下。他完全自學，畫過素描、壓克力，現在以油畫為主。一個為生活工作的生意人，透過繪畫抒發自己。",
+    "en": "Achin was born in Kaohsiung and moved north to Taipei as a young man to make his way. Later he opened a restaurant in Tamsui. While he waited for it to be fitted out, he began painting to decorate its walls, and he never stopped. He is self-taught. He has worked in pencil and acrylic, and today he paints mostly in oil. A businessman who works for a living and paints to express himself."
+  },
+  "about.title": {
+    "zh": "關於張忠晉",
+    "en": "About Achin"
   },
   "contact.address": {
-    "zh": "",
-    "en": "New Taipei · Studio\nBy appointment"
+    "zh": "Hacha 黑客茶舖\n新北市淡水區北新路117-2號",
+    "en": "Hacha\nNo. 117-2, Beixin Rd, Tamsui, New Taipei"
   },
   "contact.email": {
     "zh": "",
-    "en": "studio@achin.example"
+    "en": ""
+  },
+  "contact.headline": {
+    "zh": "來淡水，看原作。",
+    "en": "Come to Tamsui and see the originals."
   },
   "contact.hours": {
-    "zh": "",
-    "en": "Mon · Tue | 10—18h\nWed · Thu | 10—18h\nFri | 12—19h\nSat · Sun | By request"
+    "zh": "每日 | 12:30–21:00",
+    "en": "Daily | 12:30–21:00"
   },
   "contact.instagram": {
     "zh": "",
-    "en": "@achin.studio"
-  },
-  "contact.intro": {
-    "zh": "",
-    "en": "The studio is open by appointment for visitors, collectors, and curators. Acquisitions, commissions, and press inquiries — please write directly."
-  },
-  "contact.press": {
-    "zh": "",
-    "en": "press@achin.example"
-  },
-  "events.empty_deck": {
-    "zh": "",
-    "en": "Exhibition listings will appear here as they're scheduled. For studio visits and press inquiries in the meantime, see"
-  },
-  "events.empty_line": {
-    "zh": "展覽 · Coming soon",
     "en": ""
   },
+  "contact.intro": {
+    "zh": "張忠晉的原作展示於他在淡水經營的餐廳 Hacha。營業時間內歡迎來看畫。收藏、委託或合作，歡迎洽詢；價格請洽詢。",
+    "en": "Achin's original paintings hang at Hacha, the restaurant he runs in Tamsui. Drop in during opening hours to see them. For purchases, commissions or collaborations, please ask. Prices on request."
+  },
+  "contact.title": {
+    "zh": "來看畫",
+    "en": "See the paintings"
+  },
+  "events.empty_deck": {
+    "zh": "展覽消息將在此公布。在那之前，原作可在淡水 Hacha 看到，詳見",
+    "en": "Exhibitions will be listed here. Until then, the originals can be seen at Hacha in Tamsui. See"
+  },
+  "events.empty_line": {
+    "zh": "展覽 · 即將公布",
+    "en": "Exhibitions · Coming soon"
+  },
   "gallery.note": {
-    "zh": "",
-    "en": "A selection of recent oil paintings — each on linen unless noted. Tap any painting on desktop for a lightbox; on mobile, swipe up on a painting to see its details."
+    "zh": "油畫與壓克力作品。原作多數展示於淡水 Hacha。",
+    "en": "Oil and acrylic paintings. Most of the originals hang at Hacha in Tamsui."
+  },
+  "home.headline": {
+    "zh": "我生來就是要享受人生的。",
+    "en": "I was born to enjoy life."
   },
   "home.hero_deck": {
-    "zh": "",
-    "en": "Oil on linen — slow, considered surfaces of weather, water, and interior thresholds. Painted from life, then revisited from memory."
+    "zh": "淡水的生意人，自學的畫家。手、梯子、十字與面孔，在他的畫裡一再出現。",
+    "en": "A Tamsui businessman and a self-taught painter. Hands, ladders, crosses and faces return again and again in his work."
   },
   "home.hero_eyebrow": {
-    "zh": "",
-    "en": "Painter · New Taipei"
+    "zh": "畫家 · 淡水",
+    "en": "Painter · Tamsui"
+  },
+  "home.notes_title": {
+    "zh": "他說",
+    "en": "In his words"
   }
 }

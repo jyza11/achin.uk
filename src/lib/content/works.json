@@ -1,20 +1,5 @@
 [
   {
-    "id": "8slkwi0ni4lirr8",
-    "collection": "gallery",
-    "sort": 0,
-    "title_zh": "test image 測試圖片",
-    "title_en": "",
-    "description_zh": "",
-    "description_en": "",
-    "year": null,
-    "medium": "",
-    "size": "",
-    "sold": false,
-    "image": "8slkwi0ni4lirr8.jpg",
-    "source_image": "23011553686ok_t1yb55wdoy_web_e0bhirixy4.jpg"
-  },
-  {
     "id": "ureesh293yum73t",
     "collection": "gallery",
     "sort": 1,
@@ -28,21 +13,6 @@
     "sold": false,
     "image": "ureesh293yum73t.jpg",
     "source_image": "044_c0_bb6_2362_4_b12_83_c2_6147_b333_bb48_6dgkxqiuef_web_6zewiys3kp.jpg"
-  },
-  {
-    "id": "7i6f17p98kvvhiz",
-    "collection": "gallery",
-    "sort": 1,
-    "title_zh": "測試作品",
-    "title_en": "Seed painting (edited via /admin)",
-    "description_zh": "這是 CMS 測試用的作品說明。",
-    "description_en": "Placeholder description for the CMS slice.",
-    "year": 2025,
-    "medium": "Oil on linen",
-    "size": "",
-    "sold": false,
-    "image": "7i6f17p98kvvhiz.jpg",
-    "source_image": "044_c0_bb6_2362_4_b12_83_c2_6147_b333_bb48_mhpp357dsw_web_kug11l1fby.jpg"
   },
   {
     "id": "mych2rggzm4llwd",
