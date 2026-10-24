@@ -2,7 +2,7 @@
 
 Website for **Achin**, a New Taipei painter. Traditional Chinese (zh-TW) first, English second;
 more languages (JP, FR) later. **This is the only doc for the app:**
-Part 1 orients you, Part 2 holds every design decision. `CLAUDE.md` just points here. Verified against the repo: **2026-09-14**.
+Part 1 orients you, Part 2 holds every design decision. `CLAUDE.md` just points here. Verified against the repo: **2026-10-24**.
 
 This folder is its own git repo (remote `git@github.com:jyza11/achin.uk.git`, branch
 **`master`** — Netlify's production branch (verified from live headers 2026-10-22; `deploy` is behind); renamed from `Achin-profolio` 2026-09-06). Refer to it as "this repo" or
@@ -72,7 +72,7 @@ src/
 ├── lib/
 │   ├── styles/portfolio.css design tokens (:root ~line 16) + all site CSS, sections split by ═══ dividers
 │   ├── styles/admin.css     /admin only — minimal, built on the same tokens
-│   ├── components/          WorksGrid, Lightbox, DonationCard (orphaned — unbuilt donation feature, spec ../SUPPORT-README.md)
+│   ├── components/          WorksGrid, Lightbox, BiText (中文 paragraphs then English), DonationCard (orphaned — unbuilt donation feature, spec ../SUPPORT-README.md)
 │   ├── data/works.ts        the `Work` type only
 │   ├── content/             COMMITTED SNAPSHOT of published content (works.json, blocks.json, meta.json, images/<id>.jpg web copies) — read by `server/content-snapshot.ts`; the fallback when the CMS is unreachable; regenerate with `npm run export-content`
 │   ├── server/              pb.ts (client, 3s timeout) · works.ts loadWorks() · content.ts loadBlocks() — server-only
@@ -113,9 +113,11 @@ README.md                    the short human on-ramp: what it is, run it, edit c
 removed, desktop grid no longer crops (`object-fit: contain`), `check` + `lint` + `build` clean.
 **CMS is the content source (2026-09-08):** all six routes load server-side from a local
 PocketBase. `works` holds the full collection — 150 migrated images (gallery 69, sketch 81,
-placeholder titles 未命名/素描 + number for the artist to rename) plus 2 test rows; 14
-`content_blocks` cover the hero, /about, gallery note, contact copy/hours/details, events
-empty state. Any route with the backend down falls back to the committed snapshot in `src/lib/content/`
+placeholder titles 未命名/素描 + number for the artist to rename; the 2 test rows were deleted
+2026-10-24 → 149). 19 `content_blocks` hold all page prose. **Real artist text since 2026-10-24**
+(owner interview; private draft + questions for Achin in git-ignored `drafts/site-text.md`):
+every page shows 中文 first, English second (`bi()` in `$lib/text.ts` + `BiText.svelte`);
+the paintings hang at Hacha, Achin's restaurant in Tamsui — no studio, no appointments. Any route with the backend down falls back to the committed snapshot in `src/lib/content/`
 (2026-09-15), then to hardcoded text for missing slugs. The owner created a record through the dashboard 2026-09-07 (worked; the two-field
 bilingual title layout was not obvious — input for `/admin`). **Test site** — not yet public;
 launch window 7–9 Sep 2026.
@@ -141,10 +143,12 @@ targets, card list below 760 px, sticky save bar with safe-area padding, growing
 (`field-sizing: content`), hover only under `any-hover`. Verified at 375 / 768 / desktop widths
 in the browser pane; not yet on a real iPhone. No roles UI; no `original` download.
 
-**Known gaps:** contact details are placeholders (owner to
-supply real ones in the dashboard) and **the contact form is fake**; no `users` accounts exist
+**Known gaps:** Achin's own email + Instagram not yet supplied (`contact.email` /
+`contact.instagram` are empty, so their rows are hidden); no contact form (the fake one was
+removed 2026-10-24); no `users` accounts exist
 yet (only the dev superuser); `contact/article.js` orphaned 中文 essay; `DonationCard` orphaned;
-2 test rows in `works` (測試作品, test image) to delete before launch; frame mat colour
+every migrated work's `medium` says "Oil on linen" (migration default — wrong for acrylic;
+Achin to supply real titles/medium/size/year); frame mat colour
 (`oklch(0.965 0.012 80)`) awaits the owner's call.
 
 ## Next actions (in order) — 2026-09-14; order after step 2 is provisional
@@ -154,7 +158,7 @@ yet (only the dev superuser); `contact/article.js` orphaned 中文 essay; `Donat
 2. **Deploy** — owner with the VPS session: server, `netlify.toml` from `master`, Cloudflare,
    launch-day DNS. Static site can go live before the backend.
 3. Achin's `users` account; his first edit on his iPhone is the CMS acceptance test.
-4. **Contact:** owner supplies real details; form → Netlify Forms (messages vanish today).
+4. **Contact:** Achin supplies his email + Instagram (fill the blocks, re-export); a real form → Netlify Forms.
 5. **Styling approach decision** (options researched 2026-09-12: plain CSS + scoped styles +
    layers recommended; Bits UI only where a widget needs it), then
 6. **Vite 8 upgrade with Tailwind + PurgeCSS + safelist removal** — one slice; fixes 7 of the 8
@@ -304,9 +308,11 @@ direction (its rule governs the media pipeline below).
 ### Open / to-do
 
 **Content found by the snapshot export (2026-09-15):** byte-identical duplicates — 素描 033 = 素描 081
-and 素描 043 = 素描 068 (likely uploaded twice in triage; owner/Achin to delete one of each); the 2
-test rows (測試作品, test image) sort first in /gallery until deleted. Re-run `npm run
-export-content` after cleaning up.
+and 素描 043 = 素描 068 (likely uploaded twice in triage; owner/Achin to delete one of each). Re-run
+`npm run export-content` after cleaning up.
+**2026-10-24:** many more works look like two photos of one piece (not byte-identical): almost every
+sketch is a pair, and paintings 未命名 at /gallery positions 13/14 and 45/46 (order after the
+test-row deletion). Achin to pick one photo each. Gallery 29 is a pencil drawing filed under paintings.
 
 **`/admin` (2026-09-08):** no unsaved-changes guard on the work form (text blocks have one);
 image `<input>` lacks a `<label for>`; roles are not checked anywhere (every `users` row can
