@@ -11,21 +11,21 @@
 	// a real form (Netlify Forms) is a later slice.
 	let { data } = $props();
 	const b = $derived(data.blocks);
-	const title = $derived(bi(b['contact.title'], { zh: '賞畫', en: 'See the paintings' }));
+	const title = $derived(bi(b['contact.title'], { zh: '拜訪預約', en: 'Book a visit' }));
 	const headline = $derived(
 		bi(b['contact.headline'], {
-			zh: '來淡水，看原作。',
-			en: 'Come to Tamsui and see the originals.'
+			zh: '來淡水，感受原作。',
+			en: 'Come to Tamsui and experience the originals.'
 		})
 	);
 	const intro = $derived(
 		bi(b['contact.intro'], {
-			zh: '張忠晉的原作展示於他在淡水經營的餐廳黑客茶舖。營業時間內歡迎來看畫。',
-			en: "Achin's original paintings hang at Hacha, the restaurant he runs in Tamsui. Drop in during opening hours to see them."
+			zh: '張忠晉的原作展示於他在淡水經營的餐廳黑客茶舖。營業時間內歡迎來看畫。拜訪張忠晉本人，聊聊他創作背後的意義，收藏、委託或合作，歡迎洽詢（價格另議）。',
+			en: "Achin's original paintings hang at Hacha, the restaurant he runs in Tamsui, and you are welcome to see them during opening hours. Visit Achin in person and talk with him about the meaning behind his work. For collecting, commissions or collaborations, please get in touch. Prices on request."
 		})
 	);
 	const hoursText = $derived(
-		bi(b['contact.hours'], { zh: '每日 | 12:30–21:00', en: 'Daily | 12:30–21:00' })
+		bi(b['contact.hours'], { zh: '黑客茶舖 每日 | 12:30–21:00', en: 'Hacha, daily | 12:30–21:00' })
 	);
 	const address = $derived(
 		bi(b['contact.address'], {
@@ -86,15 +86,7 @@
 		</div>
 
 		<div class="visit-card">
-			<h3>地址 · <span lang="en">Address</span></h3>
-			<div class="addr">
-				{#each lines(address.zh) as l}{l}<br />{/each}
-				{#if address.en}
-					<span lang="en"
-						>{#each lines(address.en) as l}{l}<br />{/each}</span
-					>
-				{/if}
-			</div>
+			<h3>聯絡 · <span lang="en">Contact</span></h3>
 			{#if contactEmail}
 				<div class="row">
 					<span class="k">Email</span>
@@ -111,6 +103,22 @@
 					</span>
 				</div>
 			{/if}
+			<h3 class="addr-head">地址 · <span lang="en">Address</span></h3>
+			<div class="addr">
+				{#each lines(address.zh) as l}{l}<br />{/each}
+				{#if address.en}
+					<span lang="en"
+						>{#each lines(address.en) as l}{l}<br />{/each}</span
+					>
+				{/if}
+			</div>
 		</div>
 	</div>
 </section>
+
+<style>
+	/* Second heading in the card: the address follows the contact rows. */
+	.addr-head {
+		margin-top: 28px;
+	}
+</style>

@@ -706,6 +706,8 @@ section.band.art-band {
 	margin: 0 0 20px;
 	letter-spacing: -0.01em;
 	color: var(--ink);
+	/* even lines, so a 中文 headline never leaves one character (e.g. 「作。」) alone */
+	text-wrap: balance;
 }
 .visit-text h2 em {
 	font-style: italic;

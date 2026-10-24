@@ -2,7 +2,7 @@
 	import WorksGrid from '$lib/components/WorksGrid.svelte';
 	import BiText from '$lib/components/BiText.svelte';
 	import profilePic from '$lib/assets/pro.jpg';
-	import { bi } from '$lib/text';
+	import { bi, paragraphs } from '$lib/text';
 
 	// Works + text blocks come from PocketBase via +page.server.ts (with local fallback).
 	let { data } = $props();
@@ -17,8 +17,8 @@
 	);
 	const deck = $derived(
 		bi(b['home.hero_deck'], {
-			zh: '淡水的生意人，自學的畫家。手、梯子、十字與面孔，在他的畫裡一再出現。',
-			en: 'A Tamsui businessman and a self-taught painter. Hands, ladders, crosses and faces return again and again in his work.'
+			zh: '淡水的生意人，自學的畫家。手、梯子、十字與面孔，在他的畫裡一再出現。對他來說，畫畫像起乩：先有一份心情，再讓畫面自己說話。',
+			en: 'A Tamsui businessman and a self-taught painter. Hands, ladders, crosses and faces return again and again in his work. For him, painting is close to a trance: first comes a mood, then the picture speaks for itself.'
 		})
 	);
 	const notesTitle = $derived(bi(b['home.notes_title'], { zh: '他說', en: 'In his words' }));
@@ -31,6 +31,11 @@
 			en: 'Achin was born in Kaohsiung, moved north to Taipei as a young man, and later opened a restaurant in Tamsui.'
 		})
 	);
+	// Home shows only the bio's first paragraph; the full story is on /about.
+	const statementLead = $derived({
+		zh: paragraphs(statement.zh)[0] ?? '',
+		en: paragraphs(statement.en)[0] ?? ''
+	});
 </script>
 
 <section class="hero">
@@ -93,7 +98,7 @@
 			<p class="pq">
 				{quote.zh}{#if quote.en}<span class="title-en" lang="en">{quote.en}</span>{/if}
 			</p>
-			<BiText text={statement} />
+			<BiText text={statementLead} />
 			<div class="statement-meta">
 				<div><span class="k">出生 · Born</span><span class="v">高雄 · Kaohsiung</span></div>
 				<div><span class="k">現居 · Based</span><span class="v">淡水 · Tamsui</span></div>
