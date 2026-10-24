@@ -31,3 +31,6 @@ pocketbase/.env*
 
 # Private review workspace (council prompts, witness briefs, round outputs) — never commit; the repo is public
 council/
+
+# Content drafts from interviews (private notes about the artist) — never commit; the repo is public
+drafts/
