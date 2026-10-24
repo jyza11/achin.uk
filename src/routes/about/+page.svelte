@@ -25,7 +25,7 @@
 	);
 	const cta = $derived(
 		bi(b['about.cta'], {
-			zh: '原作展示於淡水 Hacha。',
+			zh: '原作展示於淡水黑客茶舖。',
 			en: 'The original paintings hang at Hacha in Tamsui.'
 		})
 	);

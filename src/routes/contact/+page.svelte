@@ -11,7 +11,7 @@
 	// a real form (Netlify Forms) is a later slice.
 	let { data } = $props();
 	const b = $derived(data.blocks);
-	const title = $derived(bi(b['contact.title'], { zh: '來看畫', en: 'See the paintings' }));
+	const title = $derived(bi(b['contact.title'], { zh: '賞畫', en: 'See the paintings' }));
 	const headline = $derived(
 		bi(b['contact.headline'], {
 			zh: '來淡水，看原作。',
@@ -20,7 +20,7 @@
 	);
 	const intro = $derived(
 		bi(b['contact.intro'], {
-			zh: '張忠晉的原作展示於他在淡水經營的餐廳 Hacha。營業時間內歡迎來看畫。',
+			zh: '張忠晉的原作展示於他在淡水經營的餐廳黑客茶舖。營業時間內歡迎來看畫。',
 			en: "Achin's original paintings hang at Hacha, the restaurant he runs in Tamsui. Drop in during opening hours to see them."
 		})
 	);
@@ -29,7 +29,7 @@
 	);
 	const address = $derived(
 		bi(b['contact.address'], {
-			zh: 'Hacha 黑客茶舖\n新北市淡水區北新路117-2號',
+			zh: '黑客茶舖\n新北市淡水區北新路117-2號',
 			en: 'Hacha\nNo. 117-2, Beixin Rd, Tamsui, New Taipei'
 		})
 	);

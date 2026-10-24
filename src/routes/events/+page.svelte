@@ -9,7 +9,7 @@
 	// The deck ends in a link to /contact, so each language's text ends where the link begins.
 	const deck = $derived(
 		bi(data.blocks['events.empty_deck'], {
-			zh: '展覽消息將在此公布。在那之前，原作可在淡水 Hacha 看到，詳見',
+			zh: '展覽消息將在此公布。在那之前，原作可在淡水黑客茶舖看到，詳見',
 			en: 'Exhibitions will be listed here. Until then, the originals can be seen at Hacha in Tamsui. See'
 		})
 	);

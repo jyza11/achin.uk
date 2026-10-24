@@ -101,7 +101,7 @@
 		<footer class="pf-footer">
 			<div>© Achin {new Date().getFullYear()} · All works copyright the artist</div>
 			<div class="right">
-				原作展示於淡水 Hacha · <span lang="en">Originals on view at Hacha, Tamsui</span>
+				原作展示於淡水黑客茶舖 · <span lang="en">Originals on view at Hacha, Tamsui</span>
 			</div>
 		</footer>
 	</div>

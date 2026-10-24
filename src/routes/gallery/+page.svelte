@@ -10,8 +10,8 @@
 	let galleryWorks = $derived(data.works);
 	const note = $derived(
 		bi(data.blocks['gallery.note'], {
-			zh: '油畫與壓克力作品。原作多數展示於淡水 Hacha。',
-			en: 'Oil and acrylic paintings. Most of the originals hang at Hacha in Tamsui.'
+			zh: '原作多數展示於淡水黑客茶舖。',
+			en: 'Most of the originals hang at Hacha in Tamsui.'
 		})
 	);
 

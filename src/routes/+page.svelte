@@ -13,7 +13,7 @@
 		bi(b['home.hero_eyebrow'], { zh: '畫家 · 淡水', en: 'Painter · Tamsui' })
 	);
 	const headline = $derived(
-		bi(b['home.headline'], { zh: '我生來就是要享受人生的。', en: 'I was born to enjoy life.' })
+		bi(b['home.headline'], { zh: '人生來就是要享受人生的。', en: 'We are born to enjoy life.' })
 	);
 	const deck = $derived(
 		bi(b['home.hero_deck'], {
