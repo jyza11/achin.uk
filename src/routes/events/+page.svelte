@@ -16,7 +16,7 @@
 </script>
 
 <svelte:head>
-	<title>展覽 · Exhibitions — Achin</title>
+	<title>展覽 · Exhibitions — 阿晉 Achin</title>
 </svelte:head>
 
 <section class="band">

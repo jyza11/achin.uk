@@ -17,7 +17,7 @@
 </script>
 
 <svelte:head>
-	<title>{status} · Achin</title>
+	<title>{status} · 阿晉 Achin</title>
 	<meta name="robots" content="noindex" />
 </svelte:head>
 

@@ -27,7 +27,7 @@
 </script>
 
 <svelte:head>
-	<title>油畫 · Paintings — Achin</title>
+	<title>油畫 · Paintings — 阿晉 Achin</title>
 </svelte:head>
 
 <!--

@@ -6,6 +6,7 @@ const ABOUT_SLUGS = [
 	'about.title',
 	'about.quote',
 	'about.statement',
+	'about.practice_title',
 	'about.practice',
 	'about.cta'
 ] as const;

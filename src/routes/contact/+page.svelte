@@ -20,7 +20,7 @@
 	);
 	const intro = $derived(
 		bi(b['contact.intro'], {
-			zh: '張忠晉的原作展示於他在淡水經營的餐廳黑客茶舖。營業時間內歡迎來看畫。拜訪張忠晉本人，聊聊他創作背後的意義，收藏、委託或合作，歡迎洽詢（價格另議）。',
+			zh: '阿晉（Achin）的原作展示於他在淡水經營的餐廳黑客茶舖。營業時間內歡迎來看畫。拜訪阿晉本人，聊聊他創作背後的意義，收藏、委託或合作，歡迎洽詢（價格另議）。',
 			en: "Achin's original paintings hang at Hacha, the restaurant he runs in Tamsui, and you are welcome to see them during opening hours. Visit Achin in person and talk with him about the meaning behind his work. For collecting, commissions or collaborations, please get in touch. Prices on request."
 		})
 	);
@@ -57,7 +57,7 @@
 </script>
 
 <svelte:head>
-	<title>合作 · Contact — Achin</title>
+	<title>合作 · Contact — 阿晉 Achin</title>
 </svelte:head>
 
 <section class="band">

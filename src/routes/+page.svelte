@@ -13,22 +13,25 @@
 		bi(b['home.hero_eyebrow'], { zh: '畫家 · 淡水', en: 'Painter · Tamsui' })
 	);
 	const headline = $derived(
-		bi(b['home.headline'], { zh: '人生來就是要享受人生的。', en: 'We are born to enjoy life.' })
+		bi(b['home.headline'], { zh: '將自己\n放進畫布。', en: 'I put myself into the canvas.' })
 	);
 	const deck = $derived(
 		bi(b['home.hero_deck'], {
-			zh: '淡水的生意人，自學的畫家。手、梯子、十字與面孔，在他的畫裡一再出現。對他來說，畫畫像起乩：先有一份心情，再讓畫面自己說話。',
-			en: 'A Tamsui businessman and a self-taught painter. Hands, ladders, crosses and faces return again and again in his work. For him, painting is close to a trance: first comes a mood, then the picture speaks for itself.'
+			zh: '無師自通的台灣畫家。以油畫將人體、符號與色彩，如積木般重新拼貼。',
+			en: 'A self-taught Taiwanese painter who, in oil, pieces bodies, signs and colours back together like building blocks.'
 		})
 	);
 	const notesTitle = $derived(bi(b['home.notes_title'], { zh: '他說', en: 'In his words' }));
 	const quote = $derived(
-		bi(b['about.quote'], { zh: '我總是追求最好的。', en: 'I always go for the best.' })
+		bi(b['home.quote'], {
+			zh: '繪畫不是描摹現實，而是描繪人造事物的真實展現。',
+			en: 'Painting is not copying reality. It is showing man-made things as they truly are.'
+		})
 	);
 	const statement = $derived(
 		bi(b['about.statement'], {
-			zh: '張忠晉生於高雄，年輕時北上台北打拼，後來到淡水開餐廳。',
-			en: 'Achin was born in Kaohsiung, moved north to Taipei as a young man, and later opened a restaurant in Tamsui.'
+			zh: '阿晉（Achin）出身台灣高雄，1996 年第一家店開張時，拿起油漆刷把店裡的牆壁一面面畫滿，開啟了無師自通的創作之路。',
+			en: 'Achin (阿晉) comes from Kaohsiung, Taiwan. When his first shop opened in 1996, he picked up a house-painting brush and filled its walls one by one, setting out on his path as a self-taught artist.'
 		})
 	);
 	// Home shows only the bio's first paragraph; the full story is on /about.
@@ -37,6 +40,10 @@
 		en: paragraphs(statement.en)[0] ?? ''
 	});
 </script>
+
+<svelte:head>
+	<title>阿晉 Achin｜台灣當代畫家 · Contemporary painter, Taiwan</title>
+</svelte:head>
 
 <section class="hero">
 	<div class="hero-text reveal">
@@ -50,11 +57,11 @@
 	</div>
 	<div class="hero-canvas">
 		<div class="slot">
-			<img src={profilePic} alt="張忠晉 Achin" style="width:100%;height:100%;object-fit:cover;" />
+			<img src={profilePic} alt="阿晉 Achin" style="width:100%;height:100%;object-fit:cover;" />
 		</div>
 		<div class="hero-caption">
 			<span>畫家 · Artist</span>
-			<span class="title">張忠晉 · Achin</span>
+			<span class="title">阿晉 Achin</span>
 			<span>淡水 · Tamsui</span>
 		</div>
 		<span class="signature">Achin</span>
@@ -92,7 +99,7 @@
 	</header>
 	<div class="statement">
 		<div class="statement-portrait">
-			<img src={profilePic} alt="張忠晉 Achin" style="width:100%;height:100%;object-fit:cover;" />
+			<img src={profilePic} alt="阿晉 Achin" style="width:100%;height:100%;object-fit:cover;" />
 		</div>
 		<div>
 			<p class="pq">

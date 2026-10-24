@@ -21,7 +21,7 @@
 </script>
 
 <svelte:head>
-	<title>素描 · Sketches — Achin</title>
+	<title>素描 · Sketches — 阿晉 Achin</title>
 </svelte:head>
 
 <!-- Same reading order as /gallery (portfolio.css › ART ROUTES): works → note → title last. -->

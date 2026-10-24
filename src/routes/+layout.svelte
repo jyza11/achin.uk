@@ -45,7 +45,7 @@
 {:else}
 	<!-- Mobile topbar — only renders on mobile (CSS controls display) -->
 	<header class="pf-topbar-mobile">
-		<a href="/" class="pf-wordmark-small" onclick={closeMenu}>Achin</a>
+		<a href="/" class="pf-wordmark-small" onclick={closeMenu}>阿晉 <span lang="en">Achin</span></a>
 		<button
 			class="pf-menu-btn"
 			class:open={menuOpen}
@@ -69,7 +69,8 @@
 
 	<!-- Sidebar — fixed on desktop, slides in on mobile -->
 	<aside class="pf-sidebar" class:open={menuOpen}>
-		<a href="/" class="pf-sidebar-wordmark" onclick={closeMenu}>Achin</a>
+		<a href="/" class="pf-sidebar-wordmark" onclick={closeMenu}>阿晉 <span lang="en">Achin</span></a
+		>
 		<span class="pf-sidebar-tag">畫家 · 淡水 <span lang="en">Painter · Tamsui</span></span>
 
 		<nav class="pf-sidebar-nav" id="primary-nav" aria-label="Primary">
@@ -87,7 +88,7 @@
 		</nav>
 
 		<div class="pf-sidebar-foot">
-			© Achin {new Date().getFullYear()}<br />
+			© 阿晉 Achin {new Date().getFullYear()}<br />
 			淡水 · <span lang="en">Tamsui</span>
 		</div>
 	</aside>
@@ -99,7 +100,7 @@
 		</main>
 
 		<footer class="pf-footer">
-			<div>© Achin {new Date().getFullYear()} · All works copyright the artist</div>
+			<div>© 阿晉 Achin {new Date().getFullYear()} · All works copyright the artist</div>
 			<div class="right">
 				原作展示於淡水黑客茶舖 · <span lang="en">Originals on view at Hacha, Tamsui</span>
 			</div>
