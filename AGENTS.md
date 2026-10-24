@@ -217,6 +217,9 @@ revisiting the decision.
 - **Minimal chrome on art routes** — `/gallery` and `/sketch` use `body.minimal-canvas`: no
   sidebar/topbar borders, no footer, no frame mat, no pull-hint pill on mobile (artist's choice —
   discoverability traded for stillness).
+- **Art-route reading order** (2026-10-24, both routes): works first → note → title last as a
+  closing colophon (`.section-head--footer`). Shared CSS in `portfolio.css` › ART ROUTES
+  (`.art-band`, `.art-note`, `.art-empty`).
 - **Image pipeline may only:** resize keeping aspect, strip metadata, convert to sRGB. Never
   crop, sharpen, filter, or watermark visibly.
 - **No Glaze / Nightshade by default** — they perturb the image. Per-image opt-in only; only the
@@ -226,6 +229,8 @@ revisiting the decision.
 
 ### Open / to-do
 
+- **2026-10-24:** `/sketch` loads a `sketch.note` block but no row exists — the note stays hidden
+  until the artist's own words are added (create the row, then edit it in 頁面文字). No fallback copy by design.
 - **Fixed 2026-09-06:** the desktop grid used `object-fit: cover` (cropped every painting); now
   `contain` — the cell keeps its editorial `aspect-ratio`, the painting sits whole inside it,
   letterboxed by the frame mat. Mobile was already `contain`.
