@@ -144,8 +144,7 @@ targets, card list below 760 px, sticky save bar with safe-area padding, growing
 (`field-sizing: content`), hover only under `any-hover`. Verified at 375 / 768 / desktop widths
 in the browser pane; not yet on a real iPhone. No roles UI; no `original` download.
 
-**Known gaps:** Achin's own email + Instagram not yet supplied (`contact.email` /
-`contact.instagram` are empty, so their rows are hidden); no contact form (the fake one was
+**Known gaps:** no contact form (the fake one was
 removed 2026-10-24); no `users` accounts exist
 yet (only the dev superuser); `contact/article.js` orphaned 中文 essay; `DonationCard` orphaned;
 every migrated work's `medium` says "Oil on linen" (migration default — wrong for acrylic;
@@ -159,7 +158,7 @@ Achin to supply real titles/medium/size/year); frame mat colour
 2. **Deploy** — owner with the VPS session: server, `netlify.toml` from `master`, Cloudflare,
    launch-day DNS. Static site can go live before the backend.
 3. Achin's `users` account; his first edit on his iPhone is the CMS acceptance test.
-4. **Contact:** Achin supplies his email + Instagram (fill the blocks, re-export); a real form → Netlify Forms.
+4. **Contact form** → Netlify Forms (email `aeicafe@gmail.com` + Instagram `@achin.tw` set 2026-10-24).
 5. **Styling approach decision** (options researched 2026-09-12: plain CSS + scoped styles +
    layers recommended; Bits UI only where a widget needs it), then
 6. **Vite 8 upgrade with Tailwind + PurgeCSS + safelist removal** — one slice; fixes 7 of the 8
@@ -283,7 +282,7 @@ and every fallback string in page code.
 
 ### Open / to-do
 
-- **v5 text (2026-10-24, local, awaiting the owner's check):** `about.statement` (cafés Ella →
+- **v5 text (committed 2026-10-24; facts still to confirm with Achin):** `about.statement` (cafés Ella →
   安迪艾倫咖啡小館 → 黑客茶舖, 1996 murals in house paint, Picasso copies, mentor 淦哥 = "Brother
   Kan", 2005 decision, first original work 2008), `about.practice` (his statement: painting as a
   trance, stages, body as calligraphy stroke / building block), `home.hero_deck`. Home shows the
@@ -296,7 +295,10 @@ and every fallback string in page code.
   Owner's call.
 - The home hero image is Achin's portrait (captioned 畫家 · Artist, not "featured painting"); a
   painting would suit the slot better — Achin's choice.
-- Achin's email + Instagram pending (rows hidden while empty).
+- Contact: email `aeicafe@gmail.com`, Instagram `@achin.tw` (2026-10-24); rows hide whenever a block is emptied.
+- **`/contact` (2026-10-24, owner's v7):** 拜訪預約 · Book a visit — see the originals at 黑客茶舖, meet
+  Achin and hear the meaning behind the work; collecting / commissions / collaborations, prices on
+  request. Contact rows (email, Instagram) above the address in the card.
 
 ## [Guideline] Languages — zh-TW first, English second
 
