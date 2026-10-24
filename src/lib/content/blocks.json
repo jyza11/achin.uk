@@ -1,6 +1,6 @@
 {
   "about.cta": {
-    "zh": "原作展示於淡水 Hacha。",
+    "zh": "原作展示於淡水黑客茶舖。",
     "en": "The original paintings hang at Hacha in Tamsui."
   },
   "about.practice": {
@@ -20,7 +20,7 @@
     "en": "About Achin"
   },
   "contact.address": {
-    "zh": "Hacha 黑客茶舖\n新北市淡水區北新路117-2號",
+    "zh": "黑客茶舖\n新北市淡水區北新路117-2號",
     "en": "Hacha\nNo. 117-2, Beixin Rd, Tamsui, New Taipei"
   },
   "contact.email": {
@@ -40,15 +40,15 @@
     "en": ""
   },
   "contact.intro": {
-    "zh": "張忠晉的原作展示於他在淡水經營的餐廳 Hacha。營業時間內歡迎來看畫。收藏、委託或合作，歡迎洽詢；價格請洽詢。",
+    "zh": "張忠晉的原作展示於他在淡水經營的餐廳黑客茶舖。營業時間內歡迎來看畫。收藏、委託或合作，歡迎洽詢；價格請洽詢。",
     "en": "Achin's original paintings hang at Hacha, the restaurant he runs in Tamsui. Drop in during opening hours to see them. For purchases, commissions or collaborations, please ask. Prices on request."
   },
   "contact.title": {
-    "zh": "來看畫",
+    "zh": "賞畫",
     "en": "See the paintings"
   },
   "events.empty_deck": {
-    "zh": "展覽消息將在此公布。在那之前，原作可在淡水 Hacha 看到，詳見",
+    "zh": "展覽消息將在此公布。在那之前，原作可在淡水黑客茶舖看到，詳見",
     "en": "Exhibitions will be listed here. Until then, the originals can be seen at Hacha in Tamsui. See"
   },
   "events.empty_line": {
@@ -56,12 +56,12 @@
     "en": "Exhibitions · Coming soon"
   },
   "gallery.note": {
-    "zh": "油畫與壓克力作品。原作多數展示於淡水 Hacha。",
-    "en": "Oil and acrylic paintings. Most of the originals hang at Hacha in Tamsui."
+    "zh": "原作多數展示於淡水黑客茶舖。",
+    "en": "Most of the originals hang at Hacha in Tamsui."
   },
   "home.headline": {
-    "zh": "我生來就是要享受人生的。",
-    "en": "I was born to enjoy life."
+    "zh": "人生來就是要享受人生的。",
+    "en": "We are born to enjoy life."
   },
   "home.hero_deck": {
     "zh": "淡水的生意人，自學的畫家。手、梯子、十字與面孔，在他的畫裡一再出現。",
