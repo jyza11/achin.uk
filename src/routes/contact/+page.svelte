@@ -60,7 +60,7 @@
 	<title>合作 · Contact — Achin</title>
 </svelte:head>
 
-<section class="band visit-band">
+<section class="band">
 	<header class="section-head">
 		<div>
 			<span class="section-num">合作 · Contact</span>

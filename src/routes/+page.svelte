@@ -31,13 +31,6 @@
 			en: 'Achin was born in Kaohsiung, moved north to Taipei as a young man, and later opened a restaurant in Tamsui.'
 		})
 	);
-
-	const tickerPhrases = [
-		'油畫 · Paintings',
-		'素描 · Sketches',
-		'展覽 · Exhibitions',
-		'淡水 · Tamsui'
-	];
 </script>
 
 <section class="hero">
@@ -63,14 +56,6 @@
 	</div>
 </section>
 
-<div class="ticker">
-	<div class="ticker-track">
-		{#each [...tickerPhrases, ...tickerPhrases, ...tickerPhrases] as phrase}
-			<span>{phrase}</span>
-		{/each}
-	</div>
-</div>
-
 <section class="band">
 	<header class="section-head">
 		<div>
@@ -90,7 +75,7 @@
 	{/if}
 </section>
 
-<section class="band statement-band">
+<section class="band">
 	<header class="section-head">
 		<div>
 			<span class="section-num">02 · 關於 · About</span>

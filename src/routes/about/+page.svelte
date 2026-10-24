@@ -35,7 +35,7 @@
 	<title>關於 · About — Achin</title>
 </svelte:head>
 
-<section class="band statement-band">
+<section class="band">
 	<header class="section-head">
 		<div>
 			<span class="section-num">關於 · About</span>
