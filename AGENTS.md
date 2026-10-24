@@ -104,7 +104,7 @@ README.md                    the short human on-ramp: what it is, run it, edit c
 - **Mobile ≤768px:** works grid is a CSS scroll-snap swipe gallery; lightbox is suppressed (`matchMedia` gate in `WorksGrid`). `/gallery` and `/sketch` add `body.minimal-canvas` (chrome-less, no pull hint — artist's choice).
 - **Content snapshot:** after content changes that must survive a backend outage, run `npm run export-content` and commit `src/lib/content/`. Never hand-edit it; never put `original` files in it (web copies only — the repo is public).
 - **Bilingual markup:** `<span>中文</span> <span class="romaji">English</span>`; `navItems` in `+layout.svelte` is the route source of truth.
-- **Before commit:** `npm run check && npm run build`. Commit here, on `deploy`.
+- **Before commit:** `npm run check && npm run lint && npm run build`. Commit here, on `master`.
 
 ## State — 2026-09-06
 
@@ -207,7 +207,12 @@ revisiting the decision.
 - **The rule: show each painting as it is.** No crops, no edits, no filters, no overlays, nothing
   that tints or alters the artwork. The site is a white wall; the work is the only colour.
 - **White canvas** (2026-08-30): `--paper: #ffffff`, warm near-whites for bands; never cream or
-  beige, never cold grey, no darkening/multiply overlay, no paper grain.
+  beige, never cold grey, no darkening/multiply overlay, no paper grain. **Every page is white
+  (2026-10-24):** the dark `--ink` statement band (`/` section 02 + `/about`), the grey
+  `.visit-band` box on `/contact` and the home ticker are gone. The site footer stays dark.
+- **Text floor 11 px** (2026-10-24) for any label that carries 中文 (sidebar tag/foot, hero
+  caption, section aside, statement meta, footer) — Chinese glyphs blur below that. Contrast:
+  every text on all six routes ≥ 5.5:1 (AA), scanned 2026-10-24.
 - **One accent** — `--oxblood`. Everything else neutral.
 - **Minimal chrome on art routes** — `/gallery` and `/sketch` use `body.minimal-canvas`: no
   sidebar/topbar borders, no footer, no frame mat, no pull-hint pill on mobile (artist's choice —
@@ -227,6 +232,9 @@ revisiting the decision.
 - **To confirm with the owner:** the desktop frame mat (`.work .frame`, `portfolio.css` ≈ line
   834) is a warm near-white `oklch(0.965 0.012 80)` with a warm inset border. Not white. Keep as
   "mat" or flatten to `--paper`?
+- **Found 2026-10-24:** home section asides "A small preview · See all on /gallery" and
+  "Continued on /about" are English-only and print a URL path — break 中文-first; make them
+  bilingual links (copy is the owner's call).
 - **Missing:** text in Achin's own words on the style and mood he wants (references, dislikes,
   how the work should sit on the page). Needs a short interview. Until then, the rules above
   are the guideline.
