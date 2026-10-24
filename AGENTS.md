@@ -11,7 +11,7 @@ This folder is its own git repo (remote `git@github.com:jyza11/achin.uk.git`, br
 
 **Contents**
 Part 1 — Orientation: Project rules · Stack · Commands · Folder map · Conventions · State · Next actions · Doc rules
-Part 2 — Design decisions, by category: [Guideline] Art direction · [Guideline] Languages · [Platform] CMS design · [Platform] Deployment · [Later] Business features
+Part 2 — Design decisions, by category: [Guideline] Art direction · [Guideline] Text & voice · [Guideline] Languages · [Platform] CMS design · [Platform] Deployment · [Later] Business features
 
 ---
 
@@ -117,7 +117,8 @@ placeholder titles 未命名/素描 + number for the artist to rename; the 2 tes
 2026-10-24 → 149). 19 `content_blocks` hold all page prose. **Real artist text since 2026-10-24**
 (owner interview; private draft + questions for Achin in git-ignored `drafts/site-text.md`):
 every page shows 中文 first, English second (`bi()` in `$lib/text.ts` + `BiText.svelte`);
-the paintings hang at Hacha, Achin's restaurant in Tamsui — no studio, no appointments. Any route with the backend down falls back to the committed snapshot in `src/lib/content/`
+the paintings hang at 黑客茶舖 (Hacha), Achin's restaurant in Tamsui — no studio, no appointments.
+Rules for any page text: Part 2 › Text & voice. Any route with the backend down falls back to the committed snapshot in `src/lib/content/`
 (2026-09-15), then to hardcoded text for missing slugs. The owner created a record through the dashboard 2026-09-07 (worked; the two-field
 bilingual title layout was not obvious — input for `/admin`). **Test site** — not yet public;
 launch window 7–9 Sep 2026.
@@ -164,8 +165,8 @@ Achin to supply real titles/medium/size/year); frame mat colour
 6. **Vite 8 upgrade with Tailwind + PurgeCSS + safelist removal** — one slice; fixes 7 of the 8
    `npm audit` findings (the last, `cookie` low, has no upstream fix).
 7. Component-scoped CSS refactor, one component at a time as touched (Lightbox pilot).
-8. Scroll-snap phone gallery from the design session — adopt/park; its CSS sits uncommitted in
-   `portfolio.css` since 2026-09-12 and must be branched or stashed before any merge.
+8. Phone gallery design — choose B / C / D (Art direction › Open). The 2026-09-12 "uncommitted
+   CSS" warning is stale: tree clean 2026-10-24, mobile CSS last fixed in `b694ec8` (2026-09-15).
 9. **Owner:** delete `src/lib/assets/gallery/` + `sketch/` (unused since 2026-09-15; 16 files carry GPS
    in a public repo). Removing them from git *history* needs a force-push rewrite — separate decision.
 10. Later: profile page for Achin (own spec; `assets/profile/`); more languages; Business features.
@@ -240,15 +241,62 @@ revisiting the decision.
 - **Found 2026-10-24:** home section asides "A small preview · See all on /gallery" and
   "Continued on /about" are English-only and print a URL path — break 中文-first; make them
   bilingual links (copy is the owner's call).
-- **Missing:** text in Achin's own words on the style and mood he wants (references, dislikes,
-  how the work should sit on the page). Needs a short interview. Until then, the rules above
-  are the guideline.
+- **Phone gallery options (designed 2026-09-11, re-measured 2026-10-23 at 375×812):** a portrait
+  painting fills 497 of 740 px (≈33 % empty white); no swipe hint on `/gallery` (artist's choice);
+  70 works = up to 69 swipes, no overview, no per-painting URL. **B** (recommended): 2-column
+  thumbnail sheet (`?thumb=400x0`) → tap opens today's full-screen swipe at that work; fixes
+  navigation and first-load weight. **C:** one column, caption always under each painting — best
+  for screen readers/SEO, loses the stillness. **D:** today's view + thumbnail strip + `07 / 70`
+  counter + caption in the empty space — smallest change, adds chrome the artist removed. Not decided.
+- **Missing:** Achin's own view on how the work should sit on the page (references, dislikes).
+  His voice and story are now covered (Text & voice); this art-direction part is still open.
 
 ### Reasoning
 
 Anything applied to the image — a crop, a tint, a texture, an adversarial perturbation — is a
 change to the artwork the artist didn't make. Protection tools are therefore opt-in, and the
 pipeline only ever produces a smaller faithful copy.
+
+## [Guideline] Text & voice — who Achin is on the page
+
+**Status:** owner interview 2026-10-24 + Achin's old blog (2007–2011). Governs every content block
+and every fallback string in page code.
+
+### Decisions
+
+- **Name:** 中文 = **張忠晉**, English = **Achin** (chosen for online recognition). His earlier
+  English name "Andy" appears only inside the old café name, never as his name.
+- **Place:** the paintings hang at his restaurant in Tamsui — in 中文 always **黑客茶舖**, in
+  English **Hacha**. There is no studio and no "by appointment". English calls it a restaurant.
+- **Voice:** high-end, a man with taste, enjoys life, a little mysterious. Short sentences; no
+  template poetry, no invented facts.
+- **Quotes:** only his own words go in quote form (`about.quote`, `home.headline` come from him).
+  Someone else's reading of him is never presented as his quote.
+- **Sales:** prices on request (價格請洽詢); no prices on the site.
+- **Where text lives:** CMS `content_blocks` (Achin edits in 頁面文字); page code keeps the same
+  text as fallback via `bi()`. The sidebar tag and footer are fixed bilingual labels in
+  `+layout.svelte` — a root server load would also run under `/admin`.
+- **Sources:** private interview notes, current draft and the open questions for Achin live in
+  git-ignored `drafts/site-text.md` (never commit — public repo). His old blog
+  (`aeicafeplace.blogspot.com`, `aeicafebefore.blogspot.com`; his own writing, CC BY-NC-ND 2.5 TW)
+  holds his story, his artist statement and titled early works.
+
+### Open / to-do
+
+- **v5 text (2026-10-24, local, awaiting the owner's check):** `about.statement` (cafés Ella →
+  安迪艾倫咖啡小館 → 黑客茶舖, 1996 murals in house paint, Picasso copies, mentor 淦哥 = "Brother
+  Kan", 2005 decision, first original work 2008), `about.practice` (his statement: painting as a
+  trance, stages, body as calligraphy stroke / building block), `home.hero_deck`. Home shows the
+  bio's first paragraph only. To confirm: café places and dates, "Brother Kan", whether today's
+  style is a new stage.
+- **Early works 2007–2011 are not on the site** (old blog: 暗夜之吻, 無極而太極, 婆娑之洋，美麗之島,
+  祭天, 審判前的華爾茲, 瀕死的香格里拉 — 116.5 × 91 cm oil on canvas — and a 2010 series). Achin
+  uploads them through the CMS later; maybe an 早期作品 · Early works section then.
+- `/about` prints all 中文 paragraphs, then all English ones — long page. Alternate per paragraph?
+  Owner's call.
+- The home hero image is Achin's portrait (captioned 畫家 · Artist, not "featured painting"); a
+  painting would suit the slot better — Achin's choice.
+- Achin's email + Instagram pending (rows hidden while empty).
 
 ## [Guideline] Languages — zh-TW first, English second
 
@@ -324,8 +372,8 @@ direction (its rule governs the media pipeline below).
 and 素描 043 = 素描 068 (likely uploaded twice in triage; owner/Achin to delete one of each). Re-run
 `npm run export-content` after cleaning up.
 **2026-10-24:** many more works look like two photos of one piece (not byte-identical): almost every
-sketch is a pair, and paintings 未命名 at /gallery positions 13/14 and 45/46 (order after the
-test-row deletion). Achin to pick one photo each. Gallery 29 is a pencil drawing filed under paintings.
+sketch is a pair, and 未命名 013 = 014, 未命名 046 = 047 (image hashes match). Achin to pick one
+photo each. 未命名 028 is a pencil drawing (pure greyscale) filed under paintings.
 
 **`/admin` (2026-09-08):** no unsaved-changes guard on the work form (text blocks have one);
 image `<input>` lacks a `<label for>`; roles are not checked anywhere (every `users` row can
@@ -482,6 +530,17 @@ not shared; its verified state (2026-09-08) is in git history.
 - **Homepage has no `<title>`** (only route without `<svelte:head>`); no `<meta description>`
   or OG/Twitter tags anywhere — a shared link shows a blank card on LINE/Instagram/WhatsApp.
 - **`static/favicon.png`** is the SvelteKit default.
+- **Performance (Lighthouse 12, mobile, 2026-09-11, before prerender: perf 66, LCP 7 s on `/`,
+  15 s on `/gallery`; causes re-verified in code 2026-10-23):** (1) the grid asks `?thumb=1600x0`
+  for every screen — add `srcset`/sizes; (2) the first grid image is `loading="lazy"` and is the
+  LCP element — make it eager + `fetchpriority="high"`; (3) Google Fonts stylesheet blocks render
+  (~1 s; 3 families, 13 styles) — trim or self-host; (4) no `width`/`height` on images → CLS
+  0.17 — store dimensions at upload; (5) JPEG only — WebP copy in `pb_hooks`. Re-run after
+  prerender for current numbers: `npm run build && npx vite preview --port 4173`, then
+  `CHROME_PATH=<any Chromium> npx lighthouse@12 http://localhost:4173/gallery`.
+- **A11y:** every `.work` has `aria-label="View {title}"` that doesn't contain its visible text
+  (the `01 / 70` counter) — Lighthouse `label-content-name-mismatch`. (The 1.18 contrast bug of
+  `.section-title em` on the dark band went away with the band, `9a85e10`.)
 - ~~`/admin` `noindex` header~~ — done 2026-09-14 in `netlify.toml`.
 
 ## [Later] Business features — donations, sales, currency
